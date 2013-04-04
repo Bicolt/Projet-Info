@@ -19,15 +19,12 @@ int main(int argc, char *argv[]){
     int continuer = 1;
 
     // SDL_WM_SetIcon(icone, NULL);
-<<<<<<< HEAD
-    if((ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) < 0){
-        fprintf(fichier, "Erreur d'initialisation de la fenêtre");
-=======
+
     ecran = SDL_SetVideoMode(0, 0, 0, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
     if (ecran == NULL) // Si l'ouverture a échoué, on le note et on arrête
     {
         fprintf(stderr, "Impossible de charger le mode vidéo : %s\n", SDL_GetError());
->>>>>>> 4ddf8d4d9e2903ab3a4080bdd4efb85566941dee
+
         exit(EXIT_FAILURE);
     }
     SDL_WM_SetCaption("essai de menu", NULL);
