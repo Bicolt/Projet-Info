@@ -44,7 +44,7 @@ int main(int argc, char *argv[]){
 
 
 //création d'un cadre de selection
-SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
+/* SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
 
     SDL_Surface *rectangle = NULL, *barre_verticale = NULL, *barre_horizontale;
     SDL_Rect positiondebut;
@@ -66,34 +66,51 @@ SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
     positiondebut.x = 0;
     SDL_BlitSurface(barre_horizontale, NULL, rectangle, &positiondebut);
     return rectangle;
+} */
+
+// sélection sous forme de barre horizontale
+SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
+
+    SDL_Surface *rectangle = NULL;
+
+    rectangle = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur, hauteur, 32, 0, 0, 0, 0);
+    SDL_FillRect(rectangle, NULL, SDL_MapRGB(pf, 0, 0, 0));
+    SDL_SetAlpha(rectangle, SDL_SRCALPHA, 100);
+    SDL_SetColorKey(rectangle, SDL_SRCCOLORKEY, SDL_MapRGB(rectangle->format, 255, 255, 255));
+
+    return rectangle;
 }
 
 //menu
 int menu(SDL_Surface *ecran, TTF_Font *police){
-    SDL_Surface *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *font = NULL;
+    SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *font = NULL;
 	SDL_Color Black = {0, 0, 0};
     SDL_Event event;
-    SDL_Rect positiontexte1, positiontexte2, positiontexte3, posrec, pos;
+    SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos;
     int continuer = 1, select=0;
     pos.x = 0; pos.y = 0;
+    positiontitre.x = (ecran->w/2 - 300);
+    positiontitre.y = (ecran->h/2 - 300);
     positiontexte1.x = (ecran->w/2 - 80);
     positiontexte2.x = (ecran->w/2 - 110);
 	positiontexte3.x = (ecran->w/2 - 100);
-    positiontexte1.y = (ecran->h/2 - 245);
-	positiontexte2.y = (ecran->h/2 - 55);
-    positiontexte3.y = (ecran->h/2 + 135);
-    posrec.x = positiontexte3.x - 20;
-    posrec.y = positiontexte1.y + 10;
+    positiontexte1.y = (ecran->h/2 - 175);
+	positiontexte2.y = (ecran->h/2 + 15);
+    positiontexte3.y = (ecran->h/2 + 205);
+    posrec.x = 0;
+    posrec.y = positiontexte1.y + 5;
 
-    rect = selection(245, 75, ecran->format);
-    texte1 = TTF_RenderText_Blended(police, "jouer", Black);
-	texte2 = TTF_RenderText_Blended(police, "options", Black);
-    texte3 = TTF_RenderText_Blended(police, "quitter", Black);
+    rect = selection(ecran->w, 80, ecran->format);
+    titre = TTF_RenderText_Blended(police, "Super Scalable Land", Black);
+    texte1 = TTF_RenderText_Blended(police, "Jouer", Black);
+	texte2 = TTF_RenderText_Blended(police, "Options", Black);
+    texte3 = TTF_RenderText_Blended(police, "Quitter", Black);
 	font = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
 	SDL_FillRect(font, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     // font = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
 
     SDL_BlitSurface(font, NULL, ecran, &pos);
+    SDL_BlitSurface(titre, NULL, font, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
     SDL_BlitSurface(texte2, NULL, ecran, &positiontexte2);
 	SDL_BlitSurface(texte3, NULL, ecran, &positiontexte3);
