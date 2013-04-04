@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL/SDL.h>
+#include <SDL/SDL.h> // pensez à modifier le chemin
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
 
@@ -8,21 +8,26 @@ int menu(SDL_Surface *ecran, TTF_Font *police);
 
 int main(int argc, char *argv[]){
 
-    FILE *fichier = NULL;
-    fichier = fopen("fichierTest.txt", "w");
     SDL_Surface *ecran = NULL; // *icone = SDL_LoadBMP("ressources/sdl_icone.bmp");
     TTF_Font *police = NULL;
-     if(SDL_Init(SDL_INIT_VIDEO) < 0)
+    if(SDL_Init(SDL_INIT_VIDEO) == -1)
     {
-        fprintf(fichier, "Erreur d'initialisation de la SDL");
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError()); // Écriture de l'erreur
+        exit(EXIT_FAILURE); // On quitte le programme
     }
     TTF_Init();
     int continuer = 1;
 
     // SDL_WM_SetIcon(icone, NULL);
+<<<<<<< HEAD
     if((ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) < 0){
         fprintf(fichier, "Erreur d'initialisation de la fenêtre");
+=======
+    ecran = SDL_SetVideoMode(0, 0, 0, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+    if (ecran == NULL) // Si l'ouverture a échoué, on le note et on arrête
+    {
+        fprintf(stderr, "Impossible de charger le mode vidéo : %s\n", SDL_GetError());
+>>>>>>> 4ddf8d4d9e2903ab3a4080bdd4efb85566941dee
         exit(EXIT_FAILURE);
     }
     SDL_WM_SetCaption("essai de menu", NULL);
@@ -44,7 +49,7 @@ int main(int argc, char *argv[]){
 
 
 //création d'un cadre de selection
-SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
+/* SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
 
     SDL_Surface *rectangle = NULL, *barre_verticale = NULL, *barre_horizontale;
     SDL_Rect positiondebut;
@@ -66,34 +71,51 @@ SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
     positiondebut.x = 0;
     SDL_BlitSurface(barre_horizontale, NULL, rectangle, &positiondebut);
     return rectangle;
+} */
+
+// sélection sous forme de barre horizontale
+SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
+
+    SDL_Surface *rectangle = NULL;
+
+    rectangle = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur, hauteur, 32, 0, 0, 0, 0);
+    SDL_FillRect(rectangle, NULL, SDL_MapRGB(pf, 0, 0, 0));
+    SDL_SetAlpha(rectangle, SDL_SRCALPHA, 100);
+    SDL_SetColorKey(rectangle, SDL_SRCCOLORKEY, SDL_MapRGB(rectangle->format, 255, 255, 255));
+
+    return rectangle;
 }
 
 //menu
 int menu(SDL_Surface *ecran, TTF_Font *police){
-    SDL_Surface *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *font = NULL;
+    SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *font = NULL;
 	SDL_Color Black = {0, 0, 0};
     SDL_Event event;
-    SDL_Rect positiontexte1, positiontexte2, positiontexte3, posrec, pos;
+    SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos;
     int continuer = 1, select=0;
     pos.x = 0; pos.y = 0;
+    positiontitre.x = (ecran->w/2 - 300);
+    positiontitre.y = (ecran->h/2 - 300);
     positiontexte1.x = (ecran->w/2 - 80);
     positiontexte2.x = (ecran->w/2 - 110);
 	positiontexte3.x = (ecran->w/2 - 100);
-    positiontexte1.y = (ecran->h/2 - 245);
-	positiontexte2.y = (ecran->h/2 - 55);
-    positiontexte3.y = (ecran->h/2 + 135);
-    posrec.x = positiontexte3.x - 20;
-    posrec.y = positiontexte1.y + 10;
+    positiontexte1.y = (ecran->h/2 - 175);
+	positiontexte2.y = (ecran->h/2 + 15);
+    positiontexte3.y = (ecran->h/2 + 205);
+    posrec.x = 0;
+    posrec.y = positiontexte1.y + 5;
 
-    rect = selection(245, 75, ecran->format);
-    texte1 = TTF_RenderText_Blended(police, "jouer", Black);
-	texte2 = TTF_RenderText_Blended(police, "options", Black);
-    texte3 = TTF_RenderText_Blended(police, "quitter", Black);
+    rect = selection(ecran->w, 80, ecran->format);
+    titre = TTF_RenderText_Blended(police, "Super Scalable Land", Black);
+    texte1 = TTF_RenderText_Blended(police, "Jouer", Black);
+	texte2 = TTF_RenderText_Blended(police, "Options", Black);
+    texte3 = TTF_RenderText_Blended(police, "Quitter", Black);
 	font = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
 	SDL_FillRect(font, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     // font = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
 
     SDL_BlitSurface(font, NULL, ecran, &pos);
+    SDL_BlitSurface(titre, NULL, font, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
     SDL_BlitSurface(texte2, NULL, ecran, &positiontexte2);
 	SDL_BlitSurface(texte3, NULL, ecran, &positiontexte3);
@@ -110,7 +132,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
             switch (event.key.keysym.sym)
             {
                 case SDLK_UP:
-                    select = (select - 1)%3;
+                    select = (select + 2)%3;
                     if(select == 2)
                         posrec.y = posrec.y + 380;
                     else posrec.y = posrec.y - 190;
