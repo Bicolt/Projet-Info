@@ -1,28 +1,37 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL.h> // pensez à modifier le chemin
-#include <SDL_image.h>
-#include <SDL_ttf.h>
+#include <SDL/SDL.h> // pensez à modifier le chemin
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_ttf.h>
 
 int menu(SDL_Surface *ecran, TTF_Font *police);
 
 int main(int argc, char *argv[]){
 
-    FILE *fichier = NULL;
-    fichier = fopen("fichierTest.txt", "w");
     SDL_Surface *ecran = NULL; // *icone = SDL_LoadBMP("ressources/sdl_icone.bmp");
     TTF_Font *police = NULL;
-     if(SDL_Init(SDL_INIT_VIDEO) < 0)
+    if(SDL_Init(SDL_INIT_VIDEO) == -1)
     {
-        fprintf(fichier, "Erreur d'initialisation de la SDL");
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError()); // Écriture de l'erreur
+        exit(EXIT_FAILURE); // On quitte le programme
     }
     TTF_Init();
     int continuer = 1;
 
     // SDL_WM_SetIcon(icone, NULL);
-    if((ecran = SDL_SetVideoMode(0, 0, 0, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) < 0){
+<<<<<<< HEAD
+<<<<<<< HEAD
+    if((ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) < 0){
+=======
+    if((ecran = SDL_SetVideoMode(1600, 900, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) < 0){
+>>>>>>> parent of 44e8980... Adaptation Ã  toute rÃ©so d'Ã©cran
         fprintf(fichier, "Erreur d'initialisation de la fenêtre");
+=======
+    ecran = SDL_SetVideoMode(0, 0, 0, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+    if (ecran == NULL) // Si l'ouverture a échoué, on le note et on arrête
+    {
+        fprintf(stderr, "Impossible de charger le mode vidéo : %s\n", SDL_GetError());
+>>>>>>> 4ddf8d4d9e2903ab3a4080bdd4efb85566941dee
         exit(EXIT_FAILURE);
     }
     SDL_WM_SetCaption("essai de menu", NULL);
