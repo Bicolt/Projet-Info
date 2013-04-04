@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
     int continuer = 1;
 
     // SDL_WM_SetIcon(icone, NULL);
-    if((ecran = SDL_SetVideoMode(1600, 900, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) < 0){
+    if((ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) < 0){
         fprintf(fichier, "Erreur d'initialisation de la fenêtre");
         exit(EXIT_FAILURE);
     }
