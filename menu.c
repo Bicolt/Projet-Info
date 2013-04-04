@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_ttf.h>
+#include <SDL.h> // pensez à modifier le chemin
+#include <SDL_image.h>
+#include <SDL_ttf.h>
 
 int menu(SDL_Surface *ecran, TTF_Font *police);
 
@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
     int continuer = 1;
 
     // SDL_WM_SetIcon(icone, NULL);
-    if((ecran = SDL_SetVideoMode(1600, 900, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) < 0){
+    if((ecran = SDL_SetVideoMode(0, 0, 0, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) < 0){
         fprintf(fichier, "Erreur d'initialisation de la fenêtre");
         exit(EXIT_FAILURE);
     }
@@ -110,7 +110,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
             switch (event.key.keysym.sym)
             {
                 case SDLK_UP:
-                    select = (select - 1)%3;
+                    select = (select + 2)%3;
                     if(select == 2)
                         posrec.y = posrec.y + 380;
                     else posrec.y = posrec.y - 190;
