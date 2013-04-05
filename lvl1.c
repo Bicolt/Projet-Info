@@ -6,9 +6,6 @@
 #include <SDL/SDL_ttf.h>
 #include "lvl1.h"
 
-int niveau(SDL_Surface *ecran);
-
-
 int niveau(SDL_Surface *ecran){
 
     int continuer = 1;
