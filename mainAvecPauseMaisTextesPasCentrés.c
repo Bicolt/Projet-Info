@@ -22,7 +22,7 @@ int main(int argc, char *argv[]){
     int continuer = 1;
 
     // SDL_WM_SetIcon(icone, NULL);
-    ecran = SDL_SetVideoMode(800, 800, 32, SDL_HWSURFACE | SDL_DOUBLEBUF /*| SDL_FULLSCREEN*/);
+    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
     if (ecran == NULL) // Si l'ouverture a échoué, on le note et on arrête
     {
         fprintf(stderr, "Impossible de charger le mode vidéo : %s\n", SDL_GetError());
