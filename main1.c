@@ -97,7 +97,7 @@ void menu(SDL_Surface *ecran, TTF_Font *police, int *choix){
     SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos;
     int xSouris, ySouris;
     int continuer = 1, select=0;
-	
+
 	rect = selection(ecran->w, 80, ecran->format);
     titre = TTF_RenderText_Blended(police, "Super Scalable Land", Black);
     texte1 = TTF_RenderText_Blended(police, "Jouer", Black);
@@ -106,13 +106,13 @@ void menu(SDL_Surface *ecran, TTF_Font *police, int *choix){
 	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
-	
+
     pos.x = 0; pos.y = 0;
     positiontitre.x = ((ecran->w - titre->w)/2);
-+   positiontitre.y = (ecran->h/2 - 300);
-+   positiontexte1.x = ((ecran->w - texte1->w)/2);
-+   positiontexte2.x = ((ecran->w - texte2->w)/2);
-+	positiontexte3.x = ((ecran->w - texte3->w)/2);
+    positiontitre.y = (ecran->h/2 - 300);
+    positiontexte1.x = ((ecran->w - texte1->w)/2);
+    positiontexte2.x = ((ecran->w - texte2->w)/2);
+	positiontexte3.x = ((ecran->w - texte3->w)/2);
 
     positiontexte1.y = (ecran->h/2 - 175);
 	positiontexte2.y = (ecran->h/2 + 15);
