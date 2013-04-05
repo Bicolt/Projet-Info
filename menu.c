@@ -85,34 +85,35 @@ SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
 
 //menu
 int menu(SDL_Surface *ecran, TTF_Font *police){
-    SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *font = NULL;
+    SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
     SDL_Event event;
     SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos;
     int continuer = 1, select=0;
     pos.x = 0; pos.y = 0;
-    positiontitre.x = (ecran->w/2 - 300);
-    positiontitre.y = (ecran->h/2 - 300);
-    positiontexte1.x = (ecran->w/2 - 80);
-    positiontexte2.x = (ecran->w/2 - 110);
-	positiontexte3.x = (ecran->w/2 - 100);
-    positiontexte1.y = (ecran->h/2 - 175);
-	positiontexte2.y = (ecran->h/2 + 15);
-    positiontexte3.y = (ecran->h/2 + 205);
-    posrec.x = 0;
-    posrec.y = positiontexte1.y + 5;
 
     rect = selection(ecran->w, 80, ecran->format);
     titre = TTF_RenderText_Blended(police, "Super Scalable Land", Black);
     texte1 = TTF_RenderText_Blended(police, "Jouer", Black);
 	texte2 = TTF_RenderText_Blended(police, "Options", Black);
     texte3 = TTF_RenderText_Blended(police, "Quitter", Black);
-	font = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
-	SDL_FillRect(font, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-    // font = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
+	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
+    // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
 
-    SDL_BlitSurface(font, NULL, ecran, &pos);
-    SDL_BlitSurface(titre, NULL, font, &positiontitre);
+    positiontitre.x = ((ecran->w - titre->w)/2);
+    positiontitre.y = (ecran->h/2 - 300);
+    positiontexte1.x = ((ecran->w - texte1->w)/2);
+    positiontexte2.x = ((ecran->w - texte2->w)/2);
+	positiontexte3.x = ((ecran->w - texte3->w)/2);
+    positiontexte1.y = (ecran->h/2 - 175);
+	positiontexte2.y = (ecran->h/2 + 15);
+    positiontexte3.y = (ecran->h/2 + 205);
+    posrec.x = 0;
+    posrec.y = positiontexte1.y + 5;
+
+    SDL_BlitSurface(fond, NULL, ecran, &pos);
+    SDL_BlitSurface(titre, NULL, fond, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
     SDL_BlitSurface(texte2, NULL, ecran, &positiontexte2);
 	SDL_BlitSurface(texte3, NULL, ecran, &positiontexte3);
@@ -160,7 +161,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
                 break;
         }
     //SDL_Delay(30);
-    SDL_BlitSurface(font, NULL, ecran, &pos);
+    SDL_BlitSurface(fond, NULL, ecran, &pos);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
     SDL_BlitSurface(texte2, NULL, ecran, &positiontexte2);
 	SDL_BlitSurface(texte3, NULL, ecran, &positiontexte3);
