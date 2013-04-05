@@ -1,6 +1,6 @@
-ï»¿#include <stdlib.h>
+#include <stdlib.h>
 #include <stdio.h>
-#include <SDL/SDL.h> // pensez Ã  modifier le chemin
+#include <SDL/SDL.h> // pensez à modifier le chemin
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
 
@@ -12,7 +12,7 @@ int main(int argc, char *argv[]){
     TTF_Font *police = NULL;
     if(SDL_Init(SDL_INIT_VIDEO) == -1)
     {
-        fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError()); // Ã‰criture de l'erreur
+        fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError()); // Écriture de l'erreur
         exit(EXIT_FAILURE); // On quitte le programme
     }
     TTF_Init();
@@ -21,9 +21,9 @@ int main(int argc, char *argv[]){
     // SDL_WM_SetIcon(icone, NULL);
 
     ecran = SDL_SetVideoMode(0, 0, 0, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
-    if (ecran == NULL) // Si l'ouverture a Ã©chouÃ©, on le note et on arrÃªte
+    if (ecran == NULL) // Si l'ouverture a échoué, on le note et on arrête
     {
-        fprintf(stderr, "Impossible de charger le mode vidÃ©o : %s\n", SDL_GetError());
+        fprintf(stderr, "Impossible de charger le mode vidéo : %s\n", SDL_GetError());
 
         exit(EXIT_FAILURE);
     }
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
 
     while(continuer > 0){
         while(menu(ecran, police) > 0){
-            // Ã  complÃ©tÃ©ter
+            // à complététer
         }
         continuer = 0;
     }
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]){
 
 
 
-//crÃ©ation d'un cadre de selection
+//création d'un cadre de selection
 /* SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
 
     SDL_Surface *rectangle = NULL, *barre_verticale = NULL, *barre_horizontale;
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
     return rectangle;
 } */
 
-// sÃ©lection sous forme de barre horizontale
+// sélection sous forme de barre horizontale
 SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
 
     SDL_Surface *rectangle = NULL;
