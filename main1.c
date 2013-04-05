@@ -5,12 +5,14 @@
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
 
-int menu(SDL_Surface *ecran, TTF_Font *police);
+void menu(SDL_Surface *ecran, TTF_Font *police, int *choix);
+int niveau(SDL_Surface *ecran);
 
 int main(int argc, char *argv[]){
 
     SDL_Surface *ecran = NULL; // *icone = SDL_LoadBMP("ressources/sdl_icone.bmp");
     TTF_Font *police = NULL;
+    int choix = 0;
     if(SDL_Init(SDL_INIT_VIDEO) == -1)
     {
         fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError()); // Écriture de l'erreur
@@ -30,10 +32,13 @@ int main(int argc, char *argv[]){
     police = TTF_OpenFont("ariblk.ttf", 55);
 
     while(continuer > 0){
-        while(menu(ecran, police) > 0){
-            // à complététer
+        choixMenu: menu(ecran, police, &choix);
+        if(choix == 0){
+            niveau(ecran);
+            goto choixMenu;
         }
-        continuer = 0;
+        else if(choix == 2)
+            continuer = 0;
     }
 
     TTF_CloseFont(police);
@@ -83,35 +88,13 @@ SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
 }
 
 //menu
-int menu(SDL_Surface *ecran, TTF_Font *police){
+void menu(SDL_Surface *ecran, TTF_Font *police, int *choix){
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *font = NULL;
 	SDL_Color Black = {0, 0, 0};
     SDL_Event event;
     SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos;
-    cairo_t *cr;
+    int xSouris, ySouris;
     int continuer = 1, select=0;
-    SDL_Surface *sdlsurf = SDL_CreateRGBSurface (
-    0, (ecran->w)/10, (ecran->h)/10, 32,
-    0x00FF0000, /* Rmask */
-    0x0000FF00, /* Gmask */
-    0x000000FF, /* Bmask */
-    0); /* Amask */
-
-    cairo_surface_t *cairosurf = cairo_image_surface_create_for_data (
-    sdlsurf->pixels,
-    CAIRO_FORMAT_RGB24,
-    sdlsurf->w,
-    sdlsurf->h,
-    sdlsurf->pitch);
-    SDL_LockSurface(sdlsurf);{
-    cr = cairo_create (cairosurf);
-    cairo_set_line_width (cr, 0.1);
-    cairo_set_source_rgb (cr, 15, 200, 12);
-    cairo_rectangle (cr, 0.25, 0.25, 0.5, 0.5);
-    cairo_stroke (cr);
-    cairo_destroy (cr);
-    }
-    SDL_UnlockSurface(sdlsurf);
 
     pos.x = 0; pos.y = 0;
     positiontitre.x = (ecran->w/2 - 300);
@@ -135,7 +118,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
     // font = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
 
     SDL_BlitSurface(font, NULL, ecran, &pos);
-    SDL_BlitSurface(titre, NULL, font, &positiontitre);
+    SDL_BlitSurface(titre, NULL, ecran, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
     SDL_BlitSurface(texte2, NULL, ecran, &positiontexte2);
 	SDL_BlitSurface(texte3, NULL, ecran, &positiontexte3);
@@ -148,49 +131,155 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
         SDL_WaitEvent(&event);
         switch(event.type)
         {
-            case SDL_KEYDOWN:
-            switch (event.key.keysym.sym)
-            {
-                case SDLK_UP:
-                    select = (select + 2)%3;
-                    if(select == 2)
-                        posrec.y = posrec.y + 380;
-                    else posrec.y = posrec.y - 190;
-                    break;
-                case SDLK_DOWN:
-                    select = (select + 1)%3;
-                    if(select == 0)
-                        posrec.y = posrec.y - 380;
-                    else posrec.y = posrec.y + 190;
-                    break;
-                case SDLK_ESCAPE:
-                    continuer = 0;
-                    break;
-                case SDLK_RETURN:
-                    if(select == 2)
+            case SDL_MOUSEMOTION:
+                xSouris = event.button.x;
+                ySouris = event.button.y;
+                if(((ecran->h/2 - 175) <= ySouris) && (ySouris < (ecran->h/2 + 15))){
+                    select = 0;
+                    posrec.y=ecran->h/2 - 175 + 5;
+                }
+                else if(((ecran->h/2 + 15) <= ySouris) && (ySouris < (ecran->h/2 + 205))){
+                    select = 1;
+                    posrec.y=ecran->h/2 +15 +5;
+                }
+                else if(((ecran->h/2 + 205) <= ySouris) && (ySouris < (ecran->h/2 + 395))){
+                    select = 2;
+                    posrec.y=ecran->h/2 + 205 +5;
+                }
+                break;
+            case SDL_MOUSEBUTTONUP:
+                if(event.button.button == SDL_BUTTON_LEFT){
+                    xSouris = event.button.x;
+                    ySouris = event.button.y;
+                    if(((ecran->h/2 - 175) <= ySouris) && (ySouris < (ecran->h/2 + 15))){
+                        *choix = 0; //jouer
                         continuer = 0;
-                    else if(select == 1){
-						return 1; //options
                     }
-					else return 2; //jouer
-                    break;
-                default:
-                    break;
-            }
+                    else if(((ecran->h/2 + 15) <= ySouris) && (ySouris < (ecran->h/2 + 205))){
+                        *choix = 1; //option
+                        continuer = 0;
+                    }
+                    else if(((ecran->h/2 + 205) <= ySouris) && (ySouris < (ecran->h/2 + 395))){
+                        *choix = 2; //quitter
+                        continuer = 0;
+                    }
+                }
             break;
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym)
+                {
+                    case SDLK_UP:
+                        select = (select + 2)%3;
+                        if(select == 2)
+                            posrec.y = posrec.y + 380;
+                        else posrec.y = posrec.y - 190;
+                        break;
+                    case SDLK_DOWN:
+                        select = (select + 1)%3;
+                        if(select == 0)
+                            posrec.y = posrec.y - 380;
+                        else posrec.y = posrec.y + 190;
+                        break;
+                    case SDLK_ESCAPE:
+                            *choix = 2;
+                            continuer = 0;
+                        break;
+                    case SDLK_RETURN:
+                        if(select == 2){
+                            *choix = 2;
+                            continuer = 0;
+                        }
+                        else if(select == 1){
+                            *choix = 1; //options
+                            continuer = 0;
+                        }
+                        else{
+                            *choix = 0;
+                            continuer = 0;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
             case SDL_QUIT:
-                continuer = 0;
+                    *choix = 2;
+                    continuer = 0;
                 break;
         }
     //SDL_Delay(30);
     SDL_BlitSurface(font, NULL, ecran, &pos);
-    SDL_BlitSurface(sdlsurf, NULL, ecran, &pos);
+    SDL_BlitSurface(titre, NULL, ecran, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
     SDL_BlitSurface(texte2, NULL, ecran, &positiontexte2);
 	SDL_BlitSurface(texte3, NULL, ecran, &positiontexte3);
     SDL_BlitSurface(rect, NULL, ecran, &posrec);
     SDL_Flip(ecran);
     }
-    return 0;
 }
 
+int niveau(SDL_Surface *ecran){
+
+    int continuer = 1;
+    SDL_Rect pos, posligne;
+    pos.x = posligne.x = 0;
+    pos.y = posligne.y = 0;
+    cairo_surface_t *surface, *surfaceFond;
+    SDL_Surface *surfRect = NULL, *surfLigne = NULL;
+    surfRect = SDL_CreateRGBSurface(SDL_HWSURFACE, 150, 495, 32, 0, 0, 0, 0);
+    surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
+    SDL_Event event;
+    SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
+    SDL_FillRect(surfRect, NULL, SDL_MapRGB(surfRect->format, 255, 255, 255));
+    SDL_FillRect(surfLigne, NULL, SDL_MapRGB(surfRect->format, 255, 255, 255));
+
+
+    surface = cairo_image_surface_create_for_data (surfRect->pixels,
+                                                      CAIRO_FORMAT_ARGB32,
+                                                      surfRect->w,
+                                                      surfRect->h,
+                                                      surfRect->pitch);
+    surfaceFond = cairo_image_surface_create_for_data (surfLigne->pixels,
+                                                      CAIRO_FORMAT_ARGB32,
+                                                      surfLigne->w,
+                                                      surfLigne->h,
+                                                      surfLigne->pitch);
+    cairo_t *droite = cairo_create(surfaceFond);
+    cairo_t *rectangle = cairo_create(surface);
+    cairo_move_to(droite, 0., 500.);
+    cairo_line_to(droite, ecran->w, 500.);
+    cairo_set_line_width(droite,10.);
+    cairo_set_source_rgba (droite, 0, 0, 0, 1);
+    cairo_stroke(droite);
+    cairo_rectangle(rectangle, 0., 440, 100, 50);
+    cairo_set_line_width(rectangle,10.);
+    cairo_set_source_rgba (rectangle, 0, 0, 0, 1); // rgb, transparence tous compris entre 0 et 1
+    cairo_fill_preserve(rectangle);
+    cairo_stroke(rectangle);
+    SDL_UnlockSurface(ecran);
+    SDL_BlitSurface(surfLigne, NULL, ecran, &pos);
+    SDL_BlitSurface(surfRect, NULL, ecran, &pos);
+    SDL_Flip(ecran);
+    while(continuer){
+        SDL_Delay(30);
+        pos.x = (pos.x + 2)%(ecran -> w);
+        SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
+        SDL_BlitSurface(surfLigne, NULL, ecran, &posligne);
+        SDL_BlitSurface(surfRect, NULL, ecran, &pos);
+        SDL_Flip(ecran);
+        SDL_PollEvent(&event);
+        switch(event.type){
+            case SDL_KEYDOWN:
+                switch(event.key.keysym.sym){
+                    case SDLK_ESCAPE:
+                        continuer = 0;
+                        break;
+                    default:
+                        break;
+                }
+            default:
+                break;
+        }
+    }
+    return 0;
+}
