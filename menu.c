@@ -1,6 +1,6 @@
-#include <stdlib.h>
+ï»¿#include <stdlib.h>
 #include <stdio.h>
-#include <SDL/SDL.h> // pensez à modifier le chemin
+#include <SDL/SDL.h> // pensez Ã  modifier le chemin
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
 
@@ -12,26 +12,19 @@ int main(int argc, char *argv[]){
     TTF_Font *police = NULL;
     if(SDL_Init(SDL_INIT_VIDEO) == -1)
     {
-        fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError()); // Écriture de l'erreur
+        fprintf(stderr, "Erreur d'initialisation de la SDL : %s\n", SDL_GetError()); // Ã‰criture de l'erreur
         exit(EXIT_FAILURE); // On quitte le programme
     }
     TTF_Init();
     int continuer = 1;
 
     // SDL_WM_SetIcon(icone, NULL);
-<<<<<<< HEAD
-<<<<<<< HEAD
-    if((ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) < 0){
-=======
-    if((ecran = SDL_SetVideoMode(1600, 900, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)) < 0){
->>>>>>> parent of 44e8980... Adaptation Ã  toute rÃ©so d'Ã©cran
-        fprintf(fichier, "Erreur d'initialisation de la fenêtre");
-=======
+
     ecran = SDL_SetVideoMode(0, 0, 0, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
-    if (ecran == NULL) // Si l'ouverture a échoué, on le note et on arrête
+    if (ecran == NULL) // Si l'ouverture a Ã©chouÃ©, on le note et on arrÃªte
     {
-        fprintf(stderr, "Impossible de charger le mode vidéo : %s\n", SDL_GetError());
->>>>>>> 4ddf8d4d9e2903ab3a4080bdd4efb85566941dee
+        fprintf(stderr, "Impossible de charger le mode vidÃ©o : %s\n", SDL_GetError());
+
         exit(EXIT_FAILURE);
     }
     SDL_WM_SetCaption("essai de menu", NULL);
@@ -39,7 +32,7 @@ int main(int argc, char *argv[]){
 
     while(continuer > 0){
         while(menu(ecran, police) > 0){
-            // à complététer
+            // Ã  complÃ©tÃ©ter
         }
         continuer = 0;
     }
@@ -52,7 +45,7 @@ int main(int argc, char *argv[]){
 
 
 
-//création d'un cadre de selection
+//crÃ©ation d'un cadre de selection
 /* SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
 
     SDL_Surface *rectangle = NULL, *barre_verticale = NULL, *barre_horizontale;
@@ -77,7 +70,7 @@ int main(int argc, char *argv[]){
     return rectangle;
 } */
 
-// sélection sous forme de barre horizontale
+// sÃ©lection sous forme de barre horizontale
 SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
 
     SDL_Surface *rectangle = NULL;
