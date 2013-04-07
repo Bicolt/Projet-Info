@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <cairo.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_ttf.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <math.h>
 #include "lvl1.h"
+#include "main.h"
 
 int niveau(SDL_Surface *ecran);
 cairo_t * pperso(SDL_Surface *ecran, cairo_surface_t *surface);
@@ -70,7 +71,9 @@ int niveau(SDL_Surface *ecran){
             case SDL_KEYDOWN:
                 switch(event.key.keysym.sym){
                     case SDLK_ESCAPE:
-                        continuer = 0;
+                        if(pause(ecran))
+                            continuer = 0;
+                            else event.key.keysym.sym = SDLK_a;
                         break;
                     default:
                         break;
