@@ -20,20 +20,20 @@ int niveau(SDL_Surface *ecran){
     posperso.x = 0;
     posperso.y = 358;
     cairo_surface_t *surface, *surfaceFond;
-    SDL_Surface *surfRect = NULL, *surfLigne = NULL;
-    surfRect = SDL_CreateRGBSurface(SDL_HWSURFACE, 60, 140, 32, 0, 0, 0, 0);
+    SDL_Surface *surfPerso = NULL, *surfLigne = NULL;
+    surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, 60, 140, 32, 0, 0, 0, 0);
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
     SDL_Event event;
     SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-    SDL_FillRect(surfRect, NULL, SDL_MapRGB(surfRect->format, 255, 255, 255));
-    SDL_FillRect(surfLigne, NULL, SDL_MapRGB(surfRect->format, 255, 255, 255));
+    SDL_FillRect(surfPerso, NULL, SDL_MapRGB(surfPerso->format, 255, 255, 255));
+    SDL_FillRect(surfLigne, NULL, SDL_MapRGB(surfPerso->format, 255, 255, 255));
 
-    // Création d'une surface cairo pour le rectangle ayant pour format d'affichage celui d'une surface SDL
-    surface = cairo_image_surface_create_for_data (surfRect->pixels,
+    // Création d'une surface cairo pour le personnage ayant pour format d'affichage celui d'une surface SDL
+    surface = cairo_image_surface_create_for_data (surfPerso->pixels,
                                                       CAIRO_FORMAT_ARGB32,
-                                                      surfRect->w,
-                                                      surfRect->h,
-                                                      surfRect->pitch);
+                                                      surfPerso->w,
+                                                      surfPerso->h,
+                                                      surfPerso->pitch);
         // Création d'une surface cairo ayant pour format d'affichage celui d'une surface SDL
     surfaceFond = cairo_image_surface_create_for_data (surfLigne->pixels,
                                                       CAIRO_FORMAT_ARGB32,
@@ -41,7 +41,7 @@ int niveau(SDL_Surface *ecran){
                                                       surfLigne->h,
                                                       surfLigne->pitch);
     cairo_t *droite = cairo_create(surfaceFond);
-    cairo_t *rectangle = pperso(ecran, surface); // cairo_create(surface);
+    cairo_t *personnage = pperso(ecran, surface);
     cairo_move_to(droite, 0., 500.); //debut de ligne
     cairo_line_to(droite, ecran->w, 500.); //fin de ligne
     cairo_set_line_width(droite,EPAISSEUR_TRAIT);
@@ -49,14 +49,9 @@ int niveau(SDL_Surface *ecran){
     cairo_stroke_preserve(droite);
     cairo_line_to(droite, ecran->w-100, 600.);
     cairo_stroke(droite);
-    /* cairo_rectangle(rectangle, 0., 440, 100, 50);
-    cairo_set_line_width(rectangle,EPAISSEUR_TRAIT);
-    cairo_set_source_rgba (rectangle, 0, 0, 0, 1); // rgb, transparence tous compris entre 0 et 1
-    cairo_fill_preserve(rectangle);
-    cairo_stroke(rectangle);*/
     SDL_UnlockSurface(ecran);
-    SDL_SetColorKey(surfRect, SDL_SRCCOLORKEY, SDL_MapRGB(surfRect->format,255,255,255));
-    SDL_BlitSurface(surfRect, NULL, ecran, &pos);
+    SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
+    SDL_BlitSurface(surfPerso, NULL, ecran, &pos);
     SDL_BlitSurface(surfLigne, NULL, ecran, &pos);
     SDL_Flip(ecran);
     while(continuer){
@@ -64,7 +59,7 @@ int niveau(SDL_Surface *ecran){
         posperso.x = (posperso.x + 2)%(ecran -> w);
         SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
         SDL_BlitSurface(surfLigne, NULL, ecran, &posligne);
-        SDL_BlitSurface(surfRect, NULL, ecran, &posperso);
+        SDL_BlitSurface(surfPerso, NULL, ecran, &posperso);
         SDL_Flip(ecran);
         SDL_PollEvent(&event);
         switch(event.type){
