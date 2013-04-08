@@ -12,7 +12,7 @@ int niveau(SDL_Surface *ecran);
 cairo_t * pperso(SDL_Surface *ecran, cairo_surface_t *surface);
 
 int niveau(SDL_Surface *ecran){
-
+		//youpi... NINJA !
     int continuer = 1;
     SDL_Rect pos, posligne, posperso;
     pos.x = posligne.x = 0;
