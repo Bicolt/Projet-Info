@@ -11,14 +11,25 @@
 int niveau(SDL_Surface *ecran);
 cairo_t * pperso(SDL_Surface *ecran, cairo_surface_t *surface);
 
+
+//A la definition de la fonction avancer, j'ai cree :
+unsigned int getpixel(SDL_Surface *s, int x, int y);
+int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain);
+int solsouspieds ( SDL_Rect* pposperso, SDL_Surface* terrain);
+void tomber ( SDL_Rect* pposperso, SDL_Surface* terrain);
+int monter( SDL_Rect* pposperso, SDL_Surface* terrain );
+int plater( SDL_Rect* pposperso, SDL_Surface* terrain );
+int descendre( SDL_Rect* pposperso, SDL_Surface* terrain );
+
+
 int niveau(SDL_Surface *ecran){
-		//youpi... NINJA !
+
     int continuer = 1;
     SDL_Rect pos, posligne, posperso;
     pos.x = posligne.x = 0;
     pos.y = posligne.y = 0;
     posperso.x = 0;
-    posperso.y = 358;
+    posperso.y = 50;
     cairo_surface_t *surface, *surfaceFond;
     SDL_Surface *surfPerso = NULL, *surfLigne = NULL;
     surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, 60, 140, 32, 0, 0, 0, 0);
@@ -42,12 +53,17 @@ int niveau(SDL_Surface *ecran){
                                                       surfLigne->pitch);
     cairo_t *droite = cairo_create(surfaceFond);
     cairo_t *personnage = pperso(ecran, surface);
-    cairo_move_to(droite, 0., 500.); //debut de ligne
-    cairo_line_to(droite, ecran->w, 500.); //fin de ligne
+    cairo_move_to(droite, 0., 300.); //debut de ligne
+    cairo_curve_to(droite, 0., 300., 100., 400., 300., 400.);
+    cairo_move_to(droite, 250., 600.);
+    cairo_line_to(droite, ecran->w-200, 600.);
+    cairo_curve_to(droite, ecran->w, 600., ecran->w, 400., ecran->w, 400.);
+    cairo_line_to(droite, ecran->w-200., 550.);
+    //fin de ligne
     cairo_set_line_width(droite,EPAISSEUR_TRAIT);
     cairo_set_source_rgba (droite, 0, 0, 0, 1);
     cairo_stroke_preserve(droite);
-    cairo_line_to(droite, ecran->w-100, 600.);
+    //cairo_line_to(droite, ecran->w-100, 600.);
     cairo_stroke(droite);
     SDL_UnlockSurface(ecran);
     SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
@@ -56,7 +72,7 @@ int niveau(SDL_Surface *ecran){
     SDL_Flip(ecran);
     while(continuer){
         SDL_Delay(30);
-        posperso.x = (posperso.x + 2)%(ecran -> w);
+        continuer = avancer(&posperso, surfLigne);//posperso.x = (posperso.x + 2)%(ecran -> w);
         SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
         SDL_BlitSurface(surfLigne, NULL, ecran, &posligne);
         SDL_BlitSurface(surfPerso, NULL, ecran, &posperso);
@@ -79,6 +95,95 @@ int niveau(SDL_Surface *ecran){
     }
     return 0;
 }
+
+unsigned int getpixel(SDL_Surface *s, int x, int y) {
+    return ((unsigned int*)s->pixels)[y*(s->pitch/sizeof(unsigned int)) + x];
+}
+
+int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain) {
+    if (solsouspieds(pposperso, terrain) == 0) {
+        tomber(pposperso, terrain);
+        return 1;
+    }
+    if (monter(pposperso, terrain) == 1) {
+        tomber(pposperso, terrain);
+        tomber(pposperso, terrain);
+    }
+    else {
+        if ( plater(pposperso, terrain) == 1 ) {
+            tomber(pposperso, terrain);
+        }
+        else {
+            descendre(pposperso, terrain);
+        }
+    }
+    return 1;
+
+}
+
+int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
+    int i;
+    for(i=0 ; i<= 10 ; i++) {
+        if ( getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y - 5) == 4278190080 )
+            return 0;
+    }
+    for(i=0 ; i<= 20 ; i++) {
+        if ( getpixel(terrain, pposperso->x + 54, pposperso->y + 5*i - 5) == 4278190080 )
+            return 0;
+    }
+    //Si on a survécu aux deux boucles, on peut monter (meme si on est sur du plat). Du coup on s'en prive pas.
+    pposperso->x += 4;
+    pposperso->y -= 5;
+    return 1;
+}
+
+int descendre( SDL_Rect* pposperso, SDL_Surface* terrain ) {
+    int i;
+    for(i=0 ; i<= 10 ; i++) {
+        if ( getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y + 105) == 4278190080 )
+            return 0;
+    }
+    for(i=0 ; i<= 20 ; i++) {
+        if ( getpixel(terrain, pposperso->x + 54, pposperso->y + 5 + 5*i) == 4278190080 )
+            return 0;
+    }
+    //Si on a survécu aux deux boucles, on peut avancer. Du coup on s'en prive pas.
+    pposperso->x += 4;
+    pposperso->y += 5;
+    return 1;
+}
+
+int plater( SDL_Rect* pposperso, SDL_Surface* terrain ) {
+    int i;
+    for(i=0 ; i< 20 ; i++) {
+        if ( getpixel(terrain, pposperso->x + 54, pposperso->y + 5*i) == 4278190080 )
+            return 0;
+    }
+    if ( getpixel(terrain, pposperso->x + 54, pposperso->y + 99) == 4278190080 ) //On teste le pixel tout en bas à par, pour le réhausser d'un pixel.
+        return 0;
+    pposperso->x += 4;
+    return 1;
+}
+
+int solsouspieds ( SDL_Rect* pposperso, SDL_Surface* terrain) {
+    int i;
+    for(i=0 ; i<= 10 ; i++) {
+        if ( getpixel(terrain, pposperso->x - 5*i + 50, pposperso->y + 100) == 4278190080 )
+            return 1;
+    }
+    return 0;
+
+}
+
+void tomber ( SDL_Rect* pposperso, SDL_Surface* terrain) {
+    int i;
+    for(i = 0 ; i < 5 ; i++) {
+        if (solsouspieds(pposperso, terrain) == 1)
+            break;
+        (pposperso->y) ++ ;
+    }
+}
+
 
 cairo_t * pperso(SDL_Surface *ecran, cairo_surface_t *surface)
 {
