@@ -54,7 +54,7 @@ int niveau(SDL_Surface *ecran){
                                                       surfLigne->w,
                                                       surfLigne->h,
                                                       surfLigne->pitch);
-    cairo_t *droite1 = tterrain(ecran, surfaceFond); 
+    cairo_t *droite1 = tterrain(ecran, surfaceFond);
 	cairo_t *personnage = pperso(surfNiveau, surface);
     /* cairo_t *droite2 = cairo_create(surfaceFond);
     cairo_move_to(droite1, 0., 300.); //debut de ligne
@@ -62,7 +62,7 @@ int niveau(SDL_Surface *ecran){
     /*cairo_move_to(droite, 250., 600.);
     cairo_line_to(droite, surfNiveau->w-200, 600.);
     cairo_curve_to(droite, surfNiveau->w, 600., surfNiveau->w, 400., surfNiveau->w, 400.);
-    cairo_line_to(droite, surfNiveau->w-200., 550.); 
+    cairo_line_to(droite, surfNiveau->w-200., 550.);
     //fin de ligne
     cairo_set_source_rgba (droite1, 0, 0, 0, 1);
     cairo_set_line_width(droite1,EPAISSEUR_TRAIT);
@@ -113,8 +113,8 @@ int niveau(SDL_Surface *ecran){
                     xSouris = event.button.x;
                     ySouris = event.button.y;
                     if(((ecran->w - 77) <= xSouris) && (ySouris < 76)){
-                        if(pause(ecran))
-                            continuer = 0;
+                        if(pause(ecran)==SORTIE)
+                            return SORTIE;
                             else {event.button.button=SDL_BUTTON_RIGHT;
                             SDL_SetAlpha(rect, SDL_SRCALPHA, 0);}
                             }
@@ -123,16 +123,18 @@ int niveau(SDL_Surface *ecran){
             case SDL_KEYDOWN:
                 switch(event.key.keysym.sym){
                     case SDLK_ESCAPE:
-                        if(pause(ecran)){
+                        if(pause(ecran)==SORTIE){
                             /*cairo_surface_destroy(surfaceFond);
                             SDL_FreeSurface(surfNiveau);*/
-                            continuer = 0;
+                            return SORTIE;
                         }
                             else event.key.keysym.sym = SDLK_a;
                         break;
                     default:
                         break;
                 }
+                    case SDL_QUIT:
+                        return SORTIE;
             default:
                 break;
         }

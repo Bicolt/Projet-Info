@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
     int continuer = 1;
 
     // SDL_WM_SetIcon(icone, NULL);
-    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); // | SDL_FULLSCREEN
     if (ecran == NULL){  // Si l'ouverture a échoué, on le note et on arrête
         fprintf(stderr, "Impossible de charger le mode vidéo : %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
@@ -44,11 +44,13 @@ int main(int argc, char *argv[]){
             switch(choixNiveau(ecran))
             {
                 case 0:
-                case 42:
+                case SORTIE:
                     continuer=0;
                     break;
                 case 1:
-                    niveau(ecran);
+                    if(niveau(ecran)==SORTIE)
+                        continuer=0;
+                    break;
                 default:
                     goto choixMenu;
                     break;
@@ -309,7 +311,7 @@ int pause(SDL_Surface* ecran){
                 }
                 break;
             case SDL_QUIT:
-                    return 1;
+                    return SORTIE;
                 break;
         }
     //SDL_Delay(30);
@@ -455,7 +457,7 @@ int choixNiveau (SDL_Surface *ecran) {
                 }
                 break;
             case SDL_QUIT:
-                return 42;
+                return SORTIE;
                 break;
         }
     //SDL_Delay(30);
@@ -599,7 +601,7 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
                         break;
                     case SDLK_RETURN:
                         if(select == 2){
-                                  SDL_Quit();
+                                  return SORTIE;
                             continuer = 0;
                         }
                         else if(select == 1){
@@ -615,7 +617,7 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
                 }
                 break;
             case SDL_QUIT:
-                    continuer = 0;
+                    return SORTIE;
                 break;
         }
     SDL_Delay(30);
