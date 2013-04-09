@@ -6,7 +6,7 @@
 #include <SDL_ttf.h>
 #include "affichage.h"
 #include "main.h"
-#include "lvl1.h"
+#include "niveau.h"
 
 SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf);
 
