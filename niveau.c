@@ -15,7 +15,7 @@ cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond);
 
 int niveau(SDL_Surface *ecran){
 
-    int continuer = 1, select = 0, vitesse = 0;
+    int continuer = 1, select = 0;
     int xSouris, ySouris;
 
     SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL;
@@ -73,7 +73,6 @@ int niveau(SDL_Surface *ecran){
     cairo_set_source_rgba (droite2, 0, 0, 0, 1);
     //cairo_line_to(droite, surfNiveau->w-100, 600.);
     cairo_stroke(droite2); */
-    SDL_UnlockSurface(surfNiveau);
     SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_BlitSurface(surfPerso, NULL, surfNiveau, &pos);
     SDL_BlitSurface(surfLigne, NULL, surfNiveau, &pos);
@@ -83,10 +82,12 @@ int niveau(SDL_Surface *ecran){
     SDL_BlitSurface(rect, NULL, surfNiveau, &posrec);
     SDL_BlitSurface(surfNiveau, &selecNiveau, ecran, NULL);
     SDL_Flip(ecran);
-    while(continuer){
+    while(continuer!=0){
         SDL_Delay(30);
         if( (pospersoNiveau.x - surfNiveau->w) < (surfNiveau->w)/3 )
-            vitesse = avancer(&pospersoNiveau, surfNiveau);
+            continuer = avancer(&pospersoNiveau, surfNiveau, selecNiveau);
+		if(continuer = 0)
+			return (-1); //gameOver
         SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(surfNiveau->format, 255, 255, 255));
         SDL_BlitSurface(surfLigne, NULL, surfNiveau, &posligne);
         SDL_BlitSurface(surfPerso, NULL, surfNiveau, &pospersoNiveau);
@@ -94,7 +95,7 @@ int niveau(SDL_Surface *ecran){
         SDL_BlitSurface(surfPause, NULL, ecran, &pospause);
         SDL_BlitSurface(rect, NULL, ecran, &posrec);
         SDL_Flip(ecran);
-        if(vitesse!=2){
+        if(continuer!=2){
             selecNiveau.x = selecNiveau.x + 4;}
         SDL_PollEvent(&event);
         switch(event.type){

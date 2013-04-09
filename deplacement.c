@@ -10,13 +10,13 @@
 #include "affichage.h"
 
 unsigned int getpixel(SDL_Surface *s, int x, int y);
-int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain);
+int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Rect selecNiveau);
 int solsouspieds ( SDL_Rect* pposperso, SDL_Surface* terrain);
 void tomber ( SDL_Rect* pposperso, SDL_Surface* terrain);
 int monter( SDL_Rect* pposperso, SDL_Surface* terrain );
 int plater( SDL_Rect* pposperso, SDL_Surface* terrain );
 int descendre( SDL_Rect* pposperso, SDL_Surface* terrain );
-int sortir (SDL_Rect *pposperso, SDL_Surface *terrain);
+int sortir (SDL_Rect *pposperso, SDL_Surface *terrain, SDL_Rect selecNiveau);
 
 
 unsigned int getpixel(SDL_Surface *s, int x, int y) {
@@ -24,11 +24,10 @@ unsigned int getpixel(SDL_Surface *s, int x, int y) {
     return ((unsigned int*)s->pixels)[y*(s->pitch/sizeof(unsigned int)) + x];
 }
 
-int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain) {
-    if (sortir(pposperso, terrain)){
-        if(pause(terrain))
+int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Rect selecNiveau) {
+    if (sortir(pposperso, terrain, selecNiveau)){
             return 0;
-         }
+        }
     if (solsouspieds(pposperso, terrain) == 0) {
         tomber(pposperso, terrain);
         return 2;
@@ -111,11 +110,11 @@ void tomber ( SDL_Rect* pposperso, SDL_Surface* terrain) {
     }
 }
 
-int sortir (SDL_Rect *pposperso, SDL_Surface *terrain){
-    if (pposperso->y > terrain->h){
+int sortir (SDL_Rect *pposperso, SDL_Surface *terrain, SDL_Rect selecNiveau){
+    if (pposperso->y > terrain->h - 150){
         return 1;
     }
-    if (pposperso->x < 0){
+    if (pposperso->x < selecNiveau.x + 6){
         return 1;
     }
     return 0;
