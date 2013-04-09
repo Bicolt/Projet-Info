@@ -11,7 +11,7 @@
 
 int niveau(SDL_Surface *ecran);
 cairo_t * pperso(SDL_Surface *surfNiveau, cairo_surface_t *surface);
-
+cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond);
 
 int niveau(SDL_Surface *ecran){
 
@@ -19,7 +19,7 @@ int niveau(SDL_Surface *ecran){
     int xSouris, ySouris;
 
     SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL;
-    surfNiveau = SDL_CreateRGBSurface(SDL_HWSURFACE, 10*ecran->w, ecran->h, 32, 0, 0, 0, 0);
+    surfNiveau = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ecran->w, ecran->h, 32, 0, 0, 0, 0);
     surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, 60, 140, 32, 0, 0, 0, 0);
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, surfNiveau->w, surfNiveau->h, 32, 0, 0, 0, 0);
     surfPause = SDL_CreateRGBSurface(SDL_HWSURFACE, 70, 70, 32, 0, 0, 0, 0);
@@ -54,15 +54,15 @@ int niveau(SDL_Surface *ecran){
                                                       surfLigne->w,
                                                       surfLigne->h,
                                                       surfLigne->pitch);
-    cairo_t *droite1 = cairo_create(surfaceFond);
-    cairo_t *droite2 = cairo_create(surfaceFond);
-    cairo_t *personnage = pperso(surfNiveau, surface);
+    cairo_t *droite1 = tterrain(ecran, surfaceFond); 
+	cairo_t *personnage = pperso(surfNiveau, surface);
+    /* cairo_t *droite2 = cairo_create(surfaceFond);
     cairo_move_to(droite1, 0., 300.); //debut de ligne
     cairo_line_to(droite1, 1500., 300.);
     /*cairo_move_to(droite, 250., 600.);
     cairo_line_to(droite, surfNiveau->w-200, 600.);
     cairo_curve_to(droite, surfNiveau->w, 600., surfNiveau->w, 400., surfNiveau->w, 400.);
-    cairo_line_to(droite, surfNiveau->w-200., 550.); */
+    cairo_line_to(droite, surfNiveau->w-200., 550.); 
     //fin de ligne
     cairo_set_source_rgba (droite1, 0, 0, 0, 1);
     cairo_set_line_width(droite1,EPAISSEUR_TRAIT);
@@ -72,7 +72,7 @@ int niveau(SDL_Surface *ecran){
     cairo_set_line_width(droite2,EPAISSEUR_TRAIT);
     cairo_set_source_rgba (droite2, 0, 0, 0, 1);
     //cairo_line_to(droite, surfNiveau->w-100, 600.);
-    cairo_stroke(droite2);
+    cairo_stroke(droite2); */
     SDL_UnlockSurface(surfNiveau);
     SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_BlitSurface(surfPerso, NULL, surfNiveau, &pos);
@@ -138,6 +138,24 @@ int niveau(SDL_Surface *ecran){
         }
     }
     return 0;
+}
+
+cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
+
+    cairo_t *droite = cairo_create(surfaceFond);
+    cairo_set_line_width(droite,EPAISSEUR_TRAIT);
+    cairo_set_source_rgba (droite, 0, 0, 0, 1);
+    cairo_move_to(droite, 0., 300.); //debut de ligne
+    cairo_curve_to(droite, 0., 300., 100., 400., 300., 400.);
+    cairo_move_to(droite, 250., 600.);
+    cairo_line_to(droite, ecran->w-200, 600.);
+    cairo_curve_to(droite, ecran->w, 600., ecran->w, 400., ecran->w, 400.);
+    cairo_line_to(droite, ecran->w-200., 550.);
+    //fin de ligne
+    cairo_stroke_preserve(droite);
+    //cairo_line_to(droite, ecran->w-100, 600.);
+    cairo_stroke(droite);
+    return (surfaceFond);
 }
 
 
