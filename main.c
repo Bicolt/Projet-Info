@@ -17,12 +17,12 @@ int main(int argc, char *argv[]){
     }
     TTF_Init();
 
-    SDL_Surface *ecran = NULL; // *icone = SDL_LoadBMP("ressources/sdl_icone.bmp");
+    SDL_Surface *ecran = NULL, *icone = SDL_LoadBMP("sdl_icone.bmp");
     TTF_Font *police = NULL;
     int choix = 0, retourNiveau = 0, retourGO = 0;
     int continuer = 1;
 
-    // SDL_WM_SetIcon(icone, NULL);
+    SDL_WM_SetIcon(icone, NULL);
     ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
     if (ecran == NULL){  // Si l'ouverture a échoué, on le note et on arrête
         fprintf(stderr, "Impossible de charger le mode vidéo : %s\n", SDL_GetError());
