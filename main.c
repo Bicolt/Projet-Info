@@ -36,8 +36,18 @@ int main(int argc, char *argv[]){
     while(continuer > 0){
         choixMenu: menu(ecran, police, &choix);
         if(choix == 0){
-            niveau(ecran);
-            goto choixMenu;
+            switch(choixNiveau(ecran))
+            {
+                case 0:
+                case 42:
+                    continuer=0;
+                    break;
+                case 1:
+                    niveau(ecran);
+                default:
+                    goto choixMenu;
+                    break;
+            }
         }
         else if(choix == 2)
             continuer = 0;
@@ -306,4 +316,180 @@ int pause(SDL_Surface* ecran){
     SDL_Flip(ecran);
     }
     return 1;
+}
+
+
+int choixNiveau (SDL_Surface *ecran) {
+
+    TTF_Font *police = TTF_OpenFont("ariblk.ttf", 55);
+    SDL_Surface *fond = NULL;
+	SDL_Color Black = {0, 0, 0};
+    SDL_Event event;
+    SDL_Rect pos;
+    int xSouris, ySouris;
+    int continuer = 1, select = 1;
+    int posx = ecran->w/2 - 150, posy = 300, largeur = 100, hauteur = 100;
+
+    pos.x = 0; pos.y = 0;
+
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
+	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
+    // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
+
+
+    SDL_BlitSurface(fond, NULL, ecran, &pos);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Choix du niveau", ecran->w/2, 150);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Menu principal", ecran->w/2, 650);
+    afficherTexteCentre(ecran, "ariblk.ttf", 58, "1", ecran->w/2 - 150, 300);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "2", ecran->w/2, 300);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "3", ecran->w/2 + 150, 300);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "4", ecran->w/2 - 150, 450);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "5", ecran->w/2, 450);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "6", ecran->w/2 + 150, 450);
+
+    afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
+    SDL_Flip(ecran);
+
+    SDL_EnableKeyRepeat(150, 10);
+
+
+    while(continuer){
+        SDL_WaitEvent(&event);
+        switch(event.type)
+        {
+            case SDL_MOUSEMOTION:
+                xSouris = event.button.x;
+                ySouris = event.button.y;
+                    if ((ySouris < 350)&&(ySouris > 250)){
+                        if ((xSouris > ecran->w/2 - 200)&&(xSouris < ecran->w/2 + 200)){
+                            if (xSouris < ecran->w/2 - 100)
+                                select = 1;
+                            else if (xSouris > ecran->w/2 +100)
+                                select = 3;
+                            else
+                                select = 2;
+                        }
+                        largeur = hauteur = 100;
+                    }
+                    else if  ((ySouris < 500)&&(ySouris > 400)){
+                        if ((xSouris > ecran->w/2 - 200)&&(xSouris < ecran->w/2 + 200)){
+                            if (xSouris < ecran->w/2 - 100)
+                                select = 4;
+                            else if (xSouris > ecran->w/2 +100)
+                                select = 6;
+                            else
+                                select = 5;
+                        }
+                        largeur = hauteur = 100;
+                    }
+                    else if (ySouris > 600)
+                        select = 7;
+                break;
+            case SDL_MOUSEBUTTONUP:
+                if(event.button.button == SDL_BUTTON_LEFT)
+                    return select;
+            break;
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym)
+                {
+                    case SDLK_UP:
+                        switch (select) {
+                            case 1:
+                            case 2:
+                            case 3:
+                                select = 7;
+                                break;
+                            case 4:
+                            case 5:
+                            case 6:
+                                select = select - 3;
+                                break;
+                            case 0:
+                            case 7:
+                                select = 6;
+                                break;
+                            default:
+                                break;
+
+                        }
+                        break;
+                    case SDLK_DOWN:
+                        switch (select) {
+                            case 1:
+                            case 2:
+                            case 3:
+                                select = select + 3;
+                                break;
+                            case 4:
+                            case 5:
+                            case 6:
+                                select = 7;
+                                break;
+                            case 0:
+                            case 7:
+                                select = 1;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case SDLK_RIGHT:
+                        select = (select + 1)%7;
+                        break;
+                    case SDLK_LEFT:
+                        select = (select + 6)%7;
+                        break;
+                    case SDLK_ESCAPE:
+                        return 7;
+                        break;
+                    case SDLK_RETURN:
+                        return select;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case SDL_QUIT:
+                return 42;
+                break;
+        }
+    //SDL_Delay(30);
+    if (select < 7 ){
+        if (select < 4 )
+            posy = 300;
+        else
+            posy = 450;
+        largeur = 100;
+    }
+    switch (select){
+        case 1:
+        case 4:
+            posx = ecran->w/2 - 150;
+            break;
+        case 2:
+        case 5:
+            posx = ecran->w/2;
+            break;
+        case 3:
+        case 6:
+            posx = ecran->w/2 + 150;
+            break;
+        default:
+            posy = 650;
+            posx = ecran->w/2;
+            largeur = ecran->w;
+    }
+    SDL_BlitSurface(fond, NULL, ecran, &pos);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Choix du niveau", ecran->w/2, 150);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Menu principal", ecran->w/2, 650);
+    afficherTexteCentre(ecran, "ariblk.ttf", 58, "1", ecran->w/2 - 150, 300);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "2", ecran->w/2, 300);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "3", ecran->w/2 + 150, 300);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "4", ecran->w/2 - 150, 450);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "5", ecran->w/2, 450);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "6", ecran->w/2 + 150, 450);
+	afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
+    SDL_Flip(ecran);
+    }
+    return 0;
 }
