@@ -7,6 +7,7 @@
 #include <math.h>
 #include "lvl1.h"
 #include "main.h"
+#include "affichage.h"
 
 int niveau(SDL_Surface *ecran);
 cairo_t * pperso(SDL_Surface *ecran, cairo_surface_t *surface);
@@ -14,28 +15,35 @@ cairo_t * pperso(SDL_Surface *ecran, cairo_surface_t *surface);
 
 //A la definition de la fonction avancer, j'ai cree :
 unsigned int getpixel(SDL_Surface *s, int x, int y);
-int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain);
+int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Surface *ecran);
 int solsouspieds ( SDL_Rect* pposperso, SDL_Surface* terrain);
 void tomber ( SDL_Rect* pposperso, SDL_Surface* terrain);
 int monter( SDL_Rect* pposperso, SDL_Surface* terrain );
 int plater( SDL_Rect* pposperso, SDL_Surface* terrain );
 int descendre( SDL_Rect* pposperso, SDL_Surface* terrain );
+int sortir (SDL_Rect *pposperso, SDL_Surface *ecran);
 
 
 int niveau(SDL_Surface *ecran){
 
-    int continuer = 1;
-    SDL_Rect pos, posligne, posperso;
+    int continuer = 1, select = 0;
+    int xSouris, ySouris;
+    SDL_Rect pos, posligne, posperso, pospause, posrec;
     pos.x = posligne.x = 0;
     pos.y = posligne.y = 0;
+    pospause.x = ecran->w - 70;
+    pospause.y = 0;
     posperso.x = 0;
     posperso.y = 50;
     cairo_surface_t *surface, *surfaceFond;
-    SDL_Surface *surfPerso = NULL, *surfLigne = NULL;
+    SDL_Surface *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL;
     surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, 60, 140, 32, 0, 0, 0, 0);
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
+    surfPause = SDL_CreateRGBSurface(SDL_HWSURFACE, 70, 70, 32, 0, 0, 0, 0);
+    rect = selection(60, 60, ecran->format);
     SDL_Event event;
     SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
+    SDL_FillRect(surfPause, NULL, SDL_MapRGB(surfPause->format, 255, 255, 255));
     SDL_FillRect(surfPerso, NULL, SDL_MapRGB(surfPerso->format, 255, 255, 255));
     SDL_FillRect(surfLigne, NULL, SDL_MapRGB(surfPerso->format, 255, 255, 255));
 
@@ -69,16 +77,42 @@ int niveau(SDL_Surface *ecran){
     SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_BlitSurface(surfPerso, NULL, ecran, &pos);
     SDL_BlitSurface(surfLigne, NULL, ecran, &pos);
+    afficherTexte(surfPause, "ariblk.ttf", 60, "II", 0, 0);
+    SDL_BlitSurface(surfPause, NULL, ecran, &pospause);
+    SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
+    SDL_BlitSurface(rect, NULL, ecran, &posrec);
     SDL_Flip(ecran);
     while(continuer){
         SDL_Delay(30);
-        continuer = avancer(&posperso, surfLigne);//posperso.x = (posperso.x + 2)%(ecran -> w);
+        continuer = avancer(&posperso, surfLigne, ecran);//posperso.x = (posperso.x + 2)%(ecran -> w);
         SDL_FillRect(ecran, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
         SDL_BlitSurface(surfLigne, NULL, ecran, &posligne);
         SDL_BlitSurface(surfPerso, NULL, ecran, &posperso);
+        SDL_BlitSurface(surfPause, NULL, ecran, &pospause);
+        SDL_BlitSurface(rect, NULL, ecran, &posrec);
         SDL_Flip(ecran);
         SDL_PollEvent(&event);
         switch(event.type){
+            case SDL_MOUSEMOTION:
+                xSouris = event.button.x;
+                ySouris = event.button.y;
+                if(((ecran->w - 76) <= xSouris) && (ySouris < 76)){
+                    SDL_SetAlpha(rect, SDL_SRCALPHA, 120);
+                    select = 0;
+                    posrec.x=ecran->w - 76;
+                    posrec.y=14;
+                }
+                else { SDL_SetAlpha(rect, SDL_SRCALPHA, 0);}
+            case SDL_MOUSEBUTTONUP:
+                if(event.button.button == SDL_BUTTON_LEFT){
+                    xSouris = event.button.x;
+                    ySouris = event.button.y;
+                    if(((ecran->w - 76) <= xSouris) && (ySouris < 76)){
+                        if(pause(ecran))
+                            continuer = 0;}
+                            }
+                    else event.button.button = SDL_MOUSEBUTTONDOWN;
+                break;
             case SDL_KEYDOWN:
                 switch(event.key.keysym.sym){
                     case SDLK_ESCAPE:
@@ -100,7 +134,11 @@ unsigned int getpixel(SDL_Surface *s, int x, int y) {
     return ((unsigned int*)s->pixels)[y*(s->pitch/sizeof(unsigned int)) + x];
 }
 
-int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain) {
+int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Surface *ecran) {
+    if (sortir(pposperso, ecran)){
+        if(pause(ecran))
+            return 0;
+         }
     if (solsouspieds(pposperso, terrain) == 0) {
         tomber(pposperso, terrain);
         return 1;
@@ -118,17 +156,16 @@ int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain) {
         }
     }
     return 1;
-
 }
 
 int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
     for(i=0 ; i<= 10 ; i++) {
-        if ( getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y - 5) == 4278190080 )
+        if ( getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y - 5) == 4278190080LL )
             return 0;
     }
     for(i=0 ; i<= 20 ; i++) {
-        if ( getpixel(terrain, pposperso->x + 64, pposperso->y + 5*i - 5) == 4278190080 )
+        if ( getpixel(terrain, pposperso->x + 64, pposperso->y + 5*i - 5) == 4278190080LL )
             return 0;
     }
     //Si on a survécu aux deux boucles, on peut monter (meme si on est sur du plat). Du coup on s'en prive pas.
@@ -140,11 +177,11 @@ int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
 int descendre( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
     for(i=0 ; i<= 10 ; i++) {
-        if ( getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y + 145) == 4278190080 )
+        if ( getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y + 145) == 4278190080LL )
             return 0;
     }
     for(i=0 ; i<= 20 ; i++) {
-        if ( getpixel(terrain, pposperso->x + 64, pposperso->y + 5 + 5*i) == 4278190080 )
+        if ( getpixel(terrain, pposperso->x + 64, pposperso->y + 5 + 5*i) == 4278190080LL )
             return 0;
     }
     //Si on a survécu aux deux boucles, on peut avancer. Du coup on s'en prive pas.
@@ -156,10 +193,10 @@ int descendre( SDL_Rect* pposperso, SDL_Surface* terrain ) {
 int plater( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
     for(i=0 ; i< 20 ; i++) {
-        if ( getpixel(terrain, pposperso->x + 64, pposperso->y + 5*i) == 4278190080 )
+        if ( getpixel(terrain, pposperso->x + 64, pposperso->y + 5*i) == 4278190080LL )
             return 0;
     }
-    if ( getpixel(terrain, pposperso->x + 64, pposperso->y + 139) == 4278190080 ) //On teste le pixel tout en bas à par, pour le réhausser d'un pixel.
+    if ( getpixel(terrain, pposperso->x + 64, pposperso->y + 139) == 4278190080LL ) //On teste le pixel tout en bas à par, pour le réhausser d'un pixel.
         return 0;
     pposperso->x += 4;
     return 1;
@@ -168,7 +205,7 @@ int plater( SDL_Rect* pposperso, SDL_Surface* terrain ) {
 int solsouspieds ( SDL_Rect* pposperso, SDL_Surface* terrain) {
     int i;
     for(i=0 ; i<= 10 ; i++) {
-        if ( getpixel(terrain, pposperso->x - 5*i + 60, pposperso->y + 140) == 4278190080 )
+        if ( getpixel(terrain, pposperso->x - 5*i + 60, pposperso->y + 140) == 4278190080LL )
             return 1;
     }
     return 0;
@@ -184,6 +221,15 @@ void tomber ( SDL_Rect* pposperso, SDL_Surface* terrain) {
     }
 }
 
+int sortir (SDL_Rect *pposperso, SDL_Surface *ecran){
+    if (pposperso->y > ecran->h){
+        return 1;
+    }
+    if (pposperso->x < 0){
+        return 1;
+    }
+    return 0;
+}
 
 cairo_t * pperso(SDL_Surface *ecran, cairo_surface_t *surface)
 {
