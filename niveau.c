@@ -55,8 +55,15 @@ int niveau(SDL_Surface *ecran){
                                                       surfLigne->w,
                                                       surfLigne->h,
                                                       surfLigne->pitch);
+
     cairo_t *droite1 = tterrain(ecran, surfaceFond);
 	cairo_t *personnage = pperso(surfNiveau, surface);
+	cairo_t *cr = cairo_create(surfaceFond);
+    cairo_set_source_surface (cr, surfaceFond, 0, -280); //remplit cr avec le chemin présent dans surfaceFond en commancant en 0,0 dans cr => 0, 280 dans surfaceFond
+    //cairo_paint(cr); recouvre tout surfaceFond avec cr
+    cairo_rectangle (cr, 0, 0, 100, 100);
+    cairo_fill (cr); // ne recouvre surfaceFond que dans le carrée dont le coin supérieur gauche est en 0,0 et de largeur 100)
+    //cairo_paint(cr);
     /* cairo_t *droite2 = cairo_create(surfaceFond);
     cairo_move_to(droite1, 0., 300.); //debut de ligne
     cairo_line_to(droite1, 1500., 300.);
@@ -180,7 +187,7 @@ cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
     //fin de ligne
     cairo_stroke_preserve(droite);
     //cairo_line_to(droite, ecran->w-100, 600.);
-    cairo_stroke(droite);
+    //cairo_stroke(droite);
     return (droite);
 }
 
