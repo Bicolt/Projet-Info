@@ -6,7 +6,7 @@
 #include <SDL_ttf.h>
 #include <math.h>
 #include "niveau.h"
-#include "main.h"
+#include "interface.h"
 #include "affichage.h"
 #include "deplacement.h"
 
@@ -110,50 +110,60 @@ int niveau(SDL_Surface *ecran){
                     posrec.y=14;
                 }
                 else { SDL_SetAlpha(rect, SDL_SRCALPHA, 0);}
+                break;
             case SDL_MOUSEBUTTONUP:
                 if(event.button.button == SDL_BUTTON_LEFT){
                     xSouris = event.button.x;
                     ySouris = event.button.y;
                     if(((ecran->w - 77) <= xSouris) && (ySouris < 76)){
                         switch (pause(ecran)){
-                        case SORTIE:
-                        return SORTIE;
-                        break;
-                        case 0:
-                        return 1;
-                        break;
-                        case 1:
-                            event.button.button=SDL_BUTTON_RIGHT;
-                            SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
-                            break; }
+                            case SORTIE:
+                                return SORTIE;
+                                break;
+                            case 1:
+                                return 1;
+                                break;
+                            case 0:
+                                event.button.button=SDL_BUTTON_RIGHT;
+                                SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
+                                break;
+                            default:
+                                break;
                             }
-                            }
+                    }
+                }
                 break;
             case SDL_KEYDOWN:
                 switch(event.key.keysym.sym){
                     case SDLK_ESCAPE:
                         switch (pause(ecran)){
-                        case SORTIE:
-                        return SORTIE;
-                        break;
-                        case 0:
-                        return 1;
-                        break;
-                        case 1:
+                            case SORTIE:
+                                return SORTIE;
+                                break;
+                            case 1:
+                                return 1;
+                                break;
+                            case 0:
                             /*cairo_surface_destroy(surfaceFond);
                             SDL_FreeSurface(surfNiveau);*/
-                        event.key.keysym.sym = SDLK_a;
-                        break;}
+                                event.key.keysym.sym = SDLK_a;
+                                break;
+                            default:
+                                break;
+                            }
+                        break;
                     default:
                         break;
                 }
-                    case SDL_QUIT:
-                        return SORTIE;
+                break;
+            case SDL_QUIT:
+                return SORTIE;
+                break;
             default:
                 break;
         }
     }
-    return 0;
+    return 1;
 }
 
 cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond){

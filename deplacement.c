@@ -6,7 +6,7 @@
 #include <SDL_ttf.h>
 #include <math.h>
 #include "niveau.h"
-#include "main.h"
+#include "interface.h"
 #include "affichage.h"
 #include "deplacement.h"
 
