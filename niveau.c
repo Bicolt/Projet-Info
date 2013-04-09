@@ -8,6 +8,7 @@
 #include "niveau.h"
 #include "main.h"
 #include "affichage.h"
+#include "deplacement.h"
 
 int niveau(SDL_Surface *ecran);
 cairo_t * pperso(SDL_Surface *surfNiveau, cairo_surface_t *surface);
@@ -15,7 +16,7 @@ cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond);
 
 int niveau(SDL_Surface *ecran){
 
-    int continuer = 1, select = 0, vitesse = 0;
+    int continuer = 1, select = 0;
     int xSouris, ySouris;
 
     SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL;
@@ -59,7 +60,7 @@ int niveau(SDL_Surface *ecran){
     /* cairo_t *droite2 = cairo_create(surfaceFond);
     cairo_move_to(droite1, 0., 300.); //debut de ligne
     cairo_line_to(droite1, 1500., 300.);
-    /*cairo_move_to(droite, 250., 600.);
+    cairo_move_to(droite, 250., 600.);
     cairo_line_to(droite, surfNiveau->w-200, 600.);
     cairo_curve_to(droite, surfNiveau->w, 600., surfNiveau->w, 400., surfNiveau->w, 400.);
     cairo_line_to(droite, surfNiveau->w-200., 550.);
@@ -73,7 +74,6 @@ int niveau(SDL_Surface *ecran){
     cairo_set_source_rgba (droite2, 0, 0, 0, 1);
     //cairo_line_to(droite, surfNiveau->w-100, 600.);
     cairo_stroke(droite2); */
-    SDL_UnlockSurface(surfNiveau);
     SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_BlitSurface(surfPerso, NULL, surfNiveau, &pos);
     SDL_BlitSurface(surfLigne, NULL, surfNiveau, &pos);
@@ -83,10 +83,12 @@ int niveau(SDL_Surface *ecran){
     SDL_BlitSurface(rect, NULL, surfNiveau, &posrec);
     SDL_BlitSurface(surfNiveau, &selecNiveau, ecran, NULL);
     SDL_Flip(ecran);
-    while(continuer){
+    while(continuer!=0){
         SDL_Delay(30);
         if( (pospersoNiveau.x - surfNiveau->w) < (surfNiveau->w)/3 )
-            vitesse = avancer(&pospersoNiveau, surfNiveau);
+            continuer = avancer(&pospersoNiveau, surfNiveau, selecNiveau);
+		if(continuer == 0)
+			return (-1); //gameOver
         SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(surfNiveau->format, 255, 255, 255));
         SDL_BlitSurface(surfLigne, NULL, surfNiveau, &posligne);
         SDL_BlitSurface(surfPerso, NULL, surfNiveau, &pospersoNiveau);
@@ -94,7 +96,7 @@ int niveau(SDL_Surface *ecran){
         SDL_BlitSurface(surfPause, NULL, ecran, &pospause);
         SDL_BlitSurface(rect, NULL, ecran, &posrec);
         SDL_Flip(ecran);
-        if(vitesse!=2){
+        if(continuer!=2){
             selecNiveau.x = selecNiveau.x + 4;}
         SDL_PollEvent(&event);
         switch(event.type){
@@ -113,23 +115,35 @@ int niveau(SDL_Surface *ecran){
                     xSouris = event.button.x;
                     ySouris = event.button.y;
                     if(((ecran->w - 77) <= xSouris) && (ySouris < 76)){
-                        if(pause(ecran)==SORTIE)
-                            return SORTIE;
-                            else {event.button.button=SDL_BUTTON_RIGHT;
-                            SDL_SetAlpha(rect, SDL_SRCALPHA, 0);}
+                        switch (pause(ecran)){
+                        case SORTIE:
+                        return SORTIE;
+                        break;
+                        case 0:
+                        return 1;
+                        break;
+                        case 1:
+                            event.button.button=SDL_BUTTON_RIGHT;
+                            SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
+                            break; }
                             }
                             }
                 break;
             case SDL_KEYDOWN:
                 switch(event.key.keysym.sym){
                     case SDLK_ESCAPE:
-                        if(pause(ecran)==SORTIE){
+                        switch (pause(ecran)){
+                        case SORTIE:
+                        return SORTIE;
+                        break;
+                        case 0:
+                        return 1;
+                        break;
+                        case 1:
                             /*cairo_surface_destroy(surfaceFond);
                             SDL_FreeSurface(surfNiveau);*/
-                            return SORTIE;
-                        }
-                            else event.key.keysym.sym = SDLK_a;
-                        break;
+                        event.key.keysym.sym = SDLK_a;
+                        break;}
                     default:
                         break;
                 }
@@ -157,7 +171,7 @@ cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
     cairo_stroke_preserve(droite);
     //cairo_line_to(droite, ecran->w-100, 600.);
     cairo_stroke(droite);
-    return (surfaceFond);
+    return (droite);
 }
 
 

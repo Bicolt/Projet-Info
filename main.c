@@ -25,11 +25,11 @@ int main(int argc, char *argv[]){
 
     SDL_Surface *ecran = NULL; // *icone = SDL_LoadBMP("ressources/sdl_icone.bmp");
     TTF_Font *police = NULL;
-    int choix = 0;
+    int choix = 0, retourNiveau = 0, retourGO = 0;
     int continuer = 1;
 
     // SDL_WM_SetIcon(icone, NULL);
-    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); // | SDL_FULLSCREEN
+    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
     if (ecran == NULL){  // Si l'ouverture a échoué, on le note et on arrête
         fprintf(stderr, "Impossible de charger le mode vidéo : %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
@@ -48,9 +48,16 @@ int main(int argc, char *argv[]){
                     continuer=0;
                     break;
                 case 1:
-                    if(niveau(ecran)==SORTIE)
-                        continuer=0;
-                    break;
+                    Niveaux: retourNiveau = niveau(ecran);
+					if(retourNiveau == -1)
+						retourGO = gameover(ecran);
+						if(retourGO == 0)
+							goto Niveaux;
+						else if(retourGO == 1)
+							goto choixMenu;
+						else if(retourGO == SORTIE)
+							continuer = 0;
+						else continuer = 0;
                 default:
                     goto choixMenu;
                     break;
@@ -569,14 +576,13 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
                     ySouris = event.button.y;
                     if(((ecran->h/2 - 175) <= ySouris) && (ySouris < (ecran->h/2 + 15))){
                         niveau(ecran);
-                      return 1;
+						return 0;
                     }
                     else if(((ecran->h/2 + 15) <= ySouris) && (ySouris < (ecran->h/2 + 205))){
                         return 1;
                     }
                     else if(((ecran->h/2 + 205) <= ySouris) && (ySouris < (ecran->h/2 + 395))){
-                     SDL_Quit();
-                        continuer = 0;
+						return SORTIE;
                     }
                 }
             break;
@@ -609,7 +615,7 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
                         }
                         else{
                             niveau(ecran);
-                            return 1;
+                            return 0;
                         }
                         break;
                     default:
