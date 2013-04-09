@@ -63,10 +63,10 @@ int niveau(SDL_Surface *ecran){
     cairo_t *personnage = pperso(ecran, surface);
     cairo_move_to(droite, 0., 300.); //debut de ligne
     cairo_curve_to(droite, 0., 300., 100., 400., 300., 400.);
-    cairo_move_to(droite, 250., 600.);
+    /*cairo_move_to(droite, 250., 600.);
     cairo_line_to(droite, ecran->w-200, 600.);
     cairo_curve_to(droite, ecran->w, 600., ecran->w, 400., ecran->w, 400.);
-    cairo_line_to(droite, ecran->w-200., 550.);
+    cairo_line_to(droite, ecran->w-200., 550.); */
     //fin de ligne
     cairo_set_line_width(droite,EPAISSEUR_TRAIT);
     cairo_set_source_rgba (droite, 0, 0, 0, 1);
@@ -109,9 +109,11 @@ int niveau(SDL_Surface *ecran){
                     ySouris = event.button.y;
                     if(((ecran->w - 76) <= xSouris) && (ySouris < 76)){
                         if(pause(ecran))
-                            continuer = 0;}
+                            continuer = 0;
+                            else {event.button.button=SDL_BUTTON_RIGHT;
+                            SDL_SetAlpha(rect, SDL_SRCALPHA, 0);}
                             }
-                    else event.button.button = SDL_MOUSEBUTTONDOWN;
+                            }
                 break;
             case SDL_KEYDOWN:
                 switch(event.key.keysym.sym){
@@ -131,6 +133,7 @@ int niveau(SDL_Surface *ecran){
 }
 
 unsigned int getpixel(SDL_Surface *s, int x, int y) {
+   // if(y*(s->pitch/sizeof(unsigned int))+x>=(s->w)*(s->h))
     return ((unsigned int*)s->pixels)[y*(s->pitch/sizeof(unsigned int)) + x];
 }
 
