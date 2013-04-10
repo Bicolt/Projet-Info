@@ -20,8 +20,9 @@ int niveau(SDL_Surface *ecran){
     int xSourisButton = 0, ySourisButton = 0;
 
 
-    SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL;
+    SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
     surfNiveau = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ecran->w, ecran->h, 32, 0, 0, 0, 0);
+    surfSelec = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
     surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, 60, 140, 32, 0, 0, 0, 0);
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, surfNiveau->w, surfNiveau->h, 32, 0, 0, 0, 0);
     surfPause = SDL_CreateRGBSurface(SDL_HWSURFACE, 70, 70, 32, 0, 0, 0, 0);
@@ -39,6 +40,7 @@ int niveau(SDL_Surface *ecran){
     rect = selection(60, 60, surfNiveau->format);
     SDL_Event event;
     SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
+    SDL_FillRect(surfSelec, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     SDL_FillRect(surfPause, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     SDL_FillRect(surfPerso, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     SDL_FillRect(surfLigne, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
@@ -59,6 +61,7 @@ int niveau(SDL_Surface *ecran){
 	cairo_t *personnage = pperso(surfNiveau, surface, surfPerso);
 
     SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
+    SDL_SetColorKey(surfSelec, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_BlitSurface(surfPerso, NULL, surfNiveau, &pos);
     SDL_BlitSurface(surfLigne, NULL, surfNiveau, NULL);
     afficherTexte(surfPause, "ariblk.ttf", 60, "II", 0, 0);
@@ -66,9 +69,11 @@ int niveau(SDL_Surface *ecran){
     SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
     SDL_BlitSurface(rect, NULL, surfNiveau, &posrec);
     SDL_BlitSurface(surfNiveau, &selecNiveau, ecran, NULL);
+    SDL_BlitSurface(surfSelec, NULL, ecran, NULL);
     SDL_Flip(ecran);
     while(continuer!=0){
         SDL_Delay(30);
+        SDL_FillRect(surfSelec, NULL, SDL_MapRGB(surfNiveau->format, 255, 255, 255));
         if( (pospersoNiveau.x - surfNiveau->w) < (surfNiveau->w)/3 )
             continuer = avancer(&pospersoNiveau, surfNiveau, selecNiveau);
 		if(continuer == 0)
@@ -86,12 +91,26 @@ int niveau(SDL_Surface *ecran){
             enSelection = 0;
             dejaSelectionne = 0;
         }
+        if(enSelection){
+            if(dejaSelectionne){
+                pointilleSelection(surfSelec, selecNiveau, posSelection, -1, -1);
+                pointilleSelection(surfSelec, selecNiveau, posDestination, xSouris, ySouris);
+            }
+            else{
+                pointilleSelection(surfSelec, selecNiveau, posSelection, xSouris, ySouris);
+            }
+        }
+        else if(dejaSelectionne){
+            pointilleSelection(surfSelec, selecNiveau, posSelection, -1, -1);
+        }
         SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(surfNiveau->format, 255, 255, 255));
+        SDL_SetColorKey(surfSelec, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
         SDL_BlitSurface(surfLigne, NULL, surfNiveau, NULL);
         SDL_BlitSurface(surfPerso, NULL, surfNiveau, &pospersoNiveau);
         SDL_BlitSurface(surfNiveau, &selecNiveau, ecran, NULL);
         SDL_BlitSurface(surfPause, NULL, ecran, &pospause);
         SDL_BlitSurface(rect, NULL, ecran, &posrec);
+        SDL_BlitSurface(surfSelec, NULL, ecran, NULL);
         SDL_Flip(ecran);
         SDL_PollEvent(&event);
         switch(event.type){
@@ -283,6 +302,12 @@ int min(int a, int b){
     return b;
 }
 
+int max(int a, int b){
+    if(a <= b)
+        return b;
+    return a;
+}
+
 void decouperColler(cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination){
 
 	cairo_t *enSelect = cairo_create(surfaceFond);
@@ -296,4 +321,48 @@ void decouperColler(cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rec
     cairo_fill (enSelect); // ne recouvre surfaceFond que
     //dans le carrée dont le coin supérieur gauche est en 0,0 et de largeur 100)
 
+}
+
+void pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect pos, int xSouris, int ySouris){
+
+    cairo_surface_t *surfaceFond;
+    int x_rel = 0, coinHG_x = 0, coinHG_y = 0, coinHD_x = 0, coinBD_y = 0, coinBG_x = 0;
+    x_rel = pos.x-selecNiveau.x;
+    if((xSouris == -1) && (ySouris == -1)){
+        coinHG_x = coinBG_x = x_rel;
+        coinHG_y = pos.y;
+        coinHD_x = coinHG_x + pos.w;
+        coinBD_y = pos.y + pos.h;
+
+    }
+    else{
+        coinHG_x = coinBG_x = min(x_rel,xSouris);
+        coinHG_y = min(pos.y, ySouris);
+        coinHD_x = max(x_rel, xSouris);
+        coinBD_y = max(pos.y, ySouris);
+    }
+    if(x_rel > 0) {
+        surfaceFond = cairo_image_surface_create_for_data (surfSelec->pixels,
+                                                              CAIRO_FORMAT_ARGB32,
+                                                              surfSelec->w,
+                                                              surfSelec->h,
+                                                              surfSelec->pitch);
+
+        cairo_t *ligne = cairo_create(surfaceFond);
+        double dashes[] = {10.0,  /* ink */
+                           10.0  /* skip*/
+                          };
+        int    ndash  = sizeof (dashes)/sizeof(dashes[0]);
+        double offset = 0.0;
+        cairo_set_dash (ligne, dashes, ndash, offset);
+        cairo_set_line_width (ligne, 5.0);
+        cairo_move_to(ligne, coinHG_x, coinHG_y);
+        cairo_line_to(ligne, coinHD_x, coinHG_y);
+        cairo_rel_line_to(ligne, 0, coinBD_y-coinHG_y);
+        cairo_rel_line_to(ligne, coinBG_x-coinHD_x, 0);
+        cairo_rel_line_to(ligne, 0, coinHG_y-coinBD_y);
+        cairo_stroke(ligne);
+        cairo_destroy(ligne);
+        cairo_surface_destroy(surfaceFond);
+    }
 }
