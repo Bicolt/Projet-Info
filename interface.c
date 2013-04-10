@@ -278,8 +278,11 @@ int choixNiveau (SDL_Surface *ecran) {
     SDL_Event event;
     SDL_Rect pos;
     int xSouris, ySouris;
-    int continuer = 1, select = 1;
-    int posx = ecran->w/2 - ecran->h/8, posy = ecran->h*7/16, largeur = ecran->h/12, hauteur = ecran->h/12;
+
+    int continuer = 1, select = 0;
+    int centrex = ecran->w/2;
+    int posyTitre = ecran->h/6, posy0 = 2*ecran->h/6, posyl1 = 3*ecran->h/6, posyl2 = 4*ecran->h/6, posyMenu = 5*ecran->h/6;
+    int posx = centrex, posy = posy0, largeur = ecran->w, hauteur = ecran->h/7;
 
     pos.x = 0; pos.y = 0;
 
@@ -289,14 +292,15 @@ int choixNiveau (SDL_Surface *ecran) {
 
 
     SDL_BlitSurface(fond, NULL, ecran, &pos);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Choix du niveau", ecran->w/2, ecran->h/8);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Menu principal", ecran->w/2, ecran->h*13/16);
-    afficherTexteCentre(ecran, "ariblk.ttf", 58, "1", ecran->w/2 - ecran->h/8, ecran->h*7/16);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "2", ecran->w/2, ecran->h*7/16);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "3", ecran->w/2 + ecran->h/8, ecran->h*7/16);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "4", ecran->w/2 - ecran->h/8, ecran->h*5/8);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "5", ecran->w/2, ecran->h*5/8);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "6", ecran->w/2 + ecran->h/8, ecran->h*5/8);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Choix du niveau", centrex, posyTitre);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Menu principal", centrex, posyMenu);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Tutoriel", centrex, posy0);
+    afficherTexteCentre(ecran, "ariblk.ttf", 58, "1", centrex - ecran->w/7, posyl1);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "2", centrex, posyl1);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "3", centrex + ecran->w/7, posyl1);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "4", centrex - ecran->w/7, posyl2);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "5", centrex, posyl2);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "6", centrex + ecran->w/7, posyl2);
 
     afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
     SDL_Flip(ecran);
@@ -311,29 +315,31 @@ int choixNiveau (SDL_Surface *ecran) {
             case SDL_MOUSEMOTION:
                 xSouris = event.button.x;
                 ySouris = event.button.y;
-                    if ((ySouris < 350)&&(ySouris > 250)){
-                        if ((xSouris > ecran->w/2 - 200)&&(xSouris < ecran->w/2 + 200)){
-                            if (xSouris < ecran->w/2 - 100)
+                    if (ySouris < posy0 + ecran->h/12)
+                        select = 0;
+                    if ((ySouris < posyl1 + ecran->h/12)&&(ySouris > posyl1 - ecran->h/12)){
+                        if ((xSouris > centrex - 3*ecran->w/14)&&(xSouris < centrex + 3*ecran->w/14)){
+                            if (xSouris < centrex - ecran->w/14)
                                 select = 1;
-                            else if (xSouris > ecran->w/2 +100)
+                            else if (xSouris > centrex + ecran->w/14)
                                 select = 3;
                             else
                                 select = 2;
                         }
-                        largeur = hauteur = ecran->h/12;
+                        largeur = hauteur;
                     }
-                    else if  ((ySouris < 500)&&(ySouris > 400)){
-                        if ((xSouris > ecran->w/2 - 200)&&(xSouris < ecran->w/2 + 200)){
-                            if (xSouris < ecran->w/2 - 100)
+                    else if  ((ySouris < posyl2 + ecran->h/12)&&(ySouris > posyl2 - ecran->h/12)){
+                        if ((xSouris > centrex - 3*ecran->w/14)&&(xSouris < centrex + 3*ecran->w/14)){
+                            if (xSouris < centrex - ecran->w/14)
                                 select = 4;
-                            else if (xSouris > ecran->w/2 +100)
+                            else if (xSouris > centrex + ecran->w/14)
                                 select = 6;
                             else
                                 select = 5;
                         }
-                        largeur = hauteur = ecran->h/12;
+                        largeur = hauteur;
                     }
-                    else if (ySouris > 600)
+                    else if (ySouris > posyMenu - ecran->h/12)
                         select = 7;
                 break;
             case SDL_MOUSEBUTTONUP:
@@ -345,19 +351,21 @@ int choixNiveau (SDL_Surface *ecran) {
                 {
                     case SDLK_UP:
                         switch (select) {
+                            case 0:
+                                select = 7;
+                                break;
                             case 1:
                             case 2:
                             case 3:
-                                select = 7;
+                                select = 0;
                                 break;
                             case 4:
                             case 5:
                             case 6:
                                 select = select - 3;
                                 break;
-                            case 0:
                             case 7:
-                                select = 6;
+                                select = 5;
                                 break;
                             default:
                                 break;
@@ -366,6 +374,9 @@ int choixNiveau (SDL_Surface *ecran) {
                         break;
                     case SDLK_DOWN:
                         switch (select) {
+                            case 0:
+                                select = 2;
+                                break;
                             case 1:
                             case 2:
                             case 3:
@@ -376,19 +387,18 @@ int choixNiveau (SDL_Surface *ecran) {
                             case 6:
                                 select = 7;
                                 break;
-                            case 0:
                             case 7:
-                                select = 1;
+                                select = 0;
                                 break;
                             default:
                                 break;
                         }
                         break;
                     case SDLK_RIGHT:
-                        select = (select + 1)%7;
+                        select = (select + 1)%8;
                         break;
                     case SDLK_LEFT:
-                        select = (select + 6)%7;
+                        select = (select + 7)%8;
                         break;
                     case SDLK_ESCAPE:
                         return 7;
@@ -405,40 +415,49 @@ int choixNiveau (SDL_Surface *ecran) {
                 break;
         }
     //SDL_Delay(30);
-    if (select < 7 ){
+    if ((select > 0) && (select < 7)){
         if (select < 4 )
-            posy = ecran->h*7/16;
+            posy = posyl1;
         else
-            posy = ecran->h*5/8;
-        largeur = ecran->h/12;
+            posy = posyl2;
+        largeur = hauteur;
     }
     switch (select){
+        case 0:
+            posx = centrex;
+            posy = posy0;
+            largeur = ecran->w;
+            break;
         case 1:
         case 4:
-            posx = ecran->w/2 - ecran->h/8;
+            posx = centrex - ecran->w/7;
             break;
         case 2:
         case 5:
-            posx = ecran->w/2;
+            posx = centrex;
             break;
         case 3:
         case 6:
-            posx = ecran->w/2 + ecran->h/8;
+            posx = centrex + ecran->w/7;
+            break;
+        case 7:
+            posy = posyMenu;
+            posx = centrex;
+            largeur = ecran->w;
             break;
         default:
-            posy = ecran->h*13/16;
-            posx = ecran->w/2;
-            largeur = ecran->w;
+            break;
     }
     SDL_BlitSurface(fond, NULL, ecran, &pos);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Choix du niveau", ecran->w/2, ecran->h/8);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Menu principal", ecran->w/2, ecran->h*13/16);
-    afficherTexteCentre(ecran, "ariblk.ttf", 58, "1", ecran->w/2 - ecran->h/8, ecran->h*7/16);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "2", ecran->w/2, ecran->h*7/16);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "3", ecran->w/2 + ecran->h/8, ecran->h*7/16);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "4", ecran->w/2 - ecran->h/8, ecran->h*5/8);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "5", ecran->w/2, ecran->h*5/8);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "6", ecran->w/2 + ecran->h/8, ecran->h*5/8);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Choix du niveau", centrex, posyTitre);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Menu principal", centrex, posyMenu);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Tutoriel", centrex, posy0);
+    afficherTexteCentre(ecran, "ariblk.ttf", 58, "1", centrex - ecran->w/7, posyl1);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "2", centrex, posyl1);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "3", centrex + ecran->w/7, posyl1);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "4", centrex - ecran->w/7, posyl2);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "5", centrex, posyl2);
+	afficherTexteCentre(ecran, "ariblk.ttf", 58, "6", centrex + ecran->w/7, posyl2);
 	afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
     SDL_Flip(ecran);
     }
