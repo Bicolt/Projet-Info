@@ -37,8 +37,7 @@ int main(int argc, char *argv[]){
         if(choix == 0){
             switch(choixNiveau(ecran))
             {
-                case 0:
-                case SORTIE:
+				case SORTIE:
                     continuer=0;
                     break;
                 case 1:
