@@ -392,7 +392,9 @@ int tuto (SDL_Surface *ecran) {
 	afficherTexteCentre(ecran, "ariblk.ttf", 22, "Pour cela, vous pouvez sélectionner une partie de l'écran", ecran->w/2, ecran->h*5/12);
 	afficherTexteCentre(ecran, "ariblk.ttf", 22, "en cliquant puis relachant la souris afin de tracer un rectangle de sélection,", ecran->w/2, ecran->h*6/12);
 	afficherTexteCentre(ecran, "ariblk.ttf", 22, "puis la coller à un autre endroit en cliquant puis en traçant un nouveau rectangle de collage.", ecran->w/2, ecran->h*7/12);
-	afficherTexteCentre(ecran, "ariblk.ttf", 22, "Attention ! Une sortie de l'écran ou une chute trop haute pourront tuer votre personnage.", ecran->w/2, ecran->h*10/12);
+	afficherTexteCentre(ecran, "ariblk.ttf", 26, "Attention ! Une sortie de l'écran ou une chute trop haute pourront tuer votre personnage.", ecran->w/2, ecran->h*9/12);
+    afficherTexteCentre(ecran, "ariblk.ttf", 22, "Ce descriptif renvoie automatiquement au menu au bout de 20 secondes.", ecran->w/2, ecran->h*10/12);
+
     SDL_Flip(ecran);
 
     SDL_Delay(20000);
