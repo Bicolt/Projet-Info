@@ -8,8 +8,9 @@
 void afficherTexte (SDL_Surface *ecran, char *font, int size, char *txt, int x, int y) {
     TTF_Font *police = TTF_OpenFont(font, size);
     SDL_Color Black = {0, 0, 0};
+    SDL_Color White = {255, 255, 255};
     SDL_Rect positiontexte;
-    SDL_Surface *texte = TTF_RenderText_Blended(police, txt, Black);
+    SDL_Surface *texte = TTF_RenderText_Shaded(police, txt, Black, White);
     positiontexte.x = x;
     positiontexte.y = y;
     SDL_BlitSurface(texte, NULL, ecran, &positiontexte);
@@ -19,8 +20,9 @@ void afficherTexte (SDL_Surface *ecran, char *font, int size, char *txt, int x, 
 void afficherTexteCentre (SDL_Surface *ecran, char *font, int size, char *txt, int x, int y) {
     TTF_Font *police = TTF_OpenFont(font, size);
     SDL_Color Black = {0, 0, 0};
+    SDL_Color White = {255, 255, 255};
     SDL_Rect positiontexte;
-    SDL_Surface *texte = TTF_RenderText_Blended(police, txt, Black);
+    SDL_Surface *texte = TTF_RenderText_Shaded(police, txt, Black, White);
     positiontexte.x = x-texte->w/2;
     positiontexte.y = y-texte->h/2;
     SDL_BlitSurface(texte, NULL, ecran, &positiontexte);
