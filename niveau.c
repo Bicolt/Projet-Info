@@ -328,7 +328,7 @@ void decouperColler(cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rec
     //dans surfaceFond en commancant en 0,0 dans cr => 0, 280 dans surfaceFond
     //cairo_set_source_surface (enSelect, source, x_dest*scale_x-x_source, y_dest*scale_y-y_source);
     //cairo_paint(enSelect); //recouvre tout surfaceFond avec cr
-    cairo_rectangle (enSelect, posDestination.x/scale_x, posDestination.y/scale_y, posDestination.w/scale_x, posDestination.h/scale_y); //cairo_rectangle (enSelect, x_dest*scale_x, y_dest*scale_y, width, heigh);
+    cairo_rectangle (enSelect, posDestination.x/scale_x, posDestination.y/scale_y, min(posDestination.w/scale_x,posSelection.w), min(posDestination.h/scale_y,posSelection.h)); //cairo_rectangle (enSelect, x_dest*scale_x, y_dest*scale_y, width, heigh);
     cairo_fill (enSelect); // ne recouvre surfaceFond que
     //dans le carrée dont le coin supérieur gauche est en 0,0 et de largeur 100)
 
