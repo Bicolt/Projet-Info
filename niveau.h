@@ -11,3 +11,4 @@ void decouperColler(cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rec
 int niveau(SDL_Surface *ecran);
 cairo_t * pperso(SDL_Surface *ecran, cairo_surface_t *surface, SDL_Surface * surfPerso);
 cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond);
+int tuto (SDL_Surface *ecran);

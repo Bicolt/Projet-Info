@@ -379,3 +379,21 @@ void pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect p
         cairo_surface_destroy(surfaceFond);
     }
 }
+
+int tuto (SDL_Surface *ecran) {
+    SDL_Surface *fond = NULL;
+    SDL_Rect pos;
+    pos.x = 0; pos.y = 0;
+    fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
+	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
+
+    SDL_BlitSurface(fond, NULL, ecran, &pos);
+	afficherTexteCentre(ecran, "ariblk.ttf", 26, "But du jeu : permettre au personnage d'avancer jusqu'au bout du niveau", ecran->w/2, ecran->h/6);
+	afficherTexteCentre(ecran, "ariblk.ttf", 22, "Pour cela, vous pouvez sélectionner une partie de l'écran", ecran->w/2, ecran->h*5/12);
+	afficherTexteCentre(ecran, "ariblk.ttf", 22, "en cliquant puis relachant la souris afin de tracer un rectangle de sélection,", ecran->w/2, ecran->h*6/12);
+	afficherTexteCentre(ecran, "ariblk.ttf", 22, "puis la coller à un autre endroit en cliquant puis en traçant un nouveau rectangle de collage.", ecran->w/2, ecran->h*7/12);
+	afficherTexteCentre(ecran, "ariblk.ttf", 22, "Attention ! Une sortie de l'écran ou une chute trop haute pourront tuer votre personnage.", ecran->w/2, ecran->h*10/12);
+    SDL_Flip(ecran);
+
+    SDL_Delay(20000);
+}

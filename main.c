@@ -40,6 +40,10 @@ int main(int argc, char *argv[]){
 				case SORTIE:
                     continuer=0;
                     break;
+                case 0:
+                    tuto(ecran);
+                    goto choixMenu;
+                    break;
                 case 1:
                     Niveaux: retourNiveau = niveau(ecran);
                     if(retourNiveau == 0){
