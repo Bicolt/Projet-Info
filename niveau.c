@@ -23,7 +23,7 @@ int niveau(SDL_Surface *ecran){
     SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
     surfNiveau = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ecran->w, ecran->h, 32, 0, 0, 0, 0);
     surfSelec = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
-    surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, 60, 140, 32, 0, 0, 0, 0);
+    surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, L_PERSO, H_PERSO, 32, 0, 0, 0, 0);
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, surfNiveau->w, surfNiveau->h, 32, 0, 0, 0, 0);
     surfPause = SDL_CreateRGBSurface(SDL_HWSURFACE, 70, 70, 32, 0, 0, 0, 0);
 
@@ -35,7 +35,7 @@ int niveau(SDL_Surface *ecran){
     pospause.x = ecran->w - 70;
     pospause.y = 0;
     pospersoNiveau.x = 200;
-    pospersoNiveau.y = 60;
+    pospersoNiveau.y = 300;
     cairo_surface_t *surface, *surfaceFond;
     rect = selection(60, 60, surfNiveau->format);
     SDL_Event event;
@@ -81,7 +81,7 @@ int niveau(SDL_Surface *ecran){
         if (continuer == -1)
             return 0; //Victoire
         if(continuer!=2){
-            if (chute >= 280){
+            if (chute >= 2*H_PERSO){
 				return -1;
             }
 				else {chute = 0;}
