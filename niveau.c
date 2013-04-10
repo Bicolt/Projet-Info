@@ -73,6 +73,8 @@ int niveau(SDL_Surface *ecran){
             continuer = avancer(&pospersoNiveau, surfNiveau, selecNiveau);
 		if(continuer == 0)
 			return (-1); //gameOver
+        if (continuer == -1)
+            return 0; //Victoire
         if(continuer!=2){
             if (chute >= 2*H_PERSO){
 				return -1;
@@ -225,7 +227,7 @@ cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
     cairo_curve_to(droite, 2200, 600, 2500, 300, 2800, 200);
     cairo_line_to(droite, 3000, 200);
     cairo_move_to(droite, 2900, 500);
-    cairo_line_to(droite, 3600, 500);
+    cairo_line_to(droite, X_FIN + 200, 500);
     //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
     //cairo_line_to(droite, ecran->w-200., 550.);
     cairo_stroke_preserve(droite);

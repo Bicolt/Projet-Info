@@ -19,7 +19,7 @@ int main(int argc, char *argv[]){
 
     SDL_Surface *ecran = NULL, *icone = SDL_LoadBMP("sdl_icone.bmp");
     TTF_Font *police = NULL;
-    int choix = 0, retourNiveau = 0, retourGO = 0;
+    int choix = 0, retourNiveau = 0, retourGO = 0, retourVict = 0;
     int continuer = 1;
 
     SDL_WM_SetIcon(icone, NULL);
@@ -43,6 +43,16 @@ int main(int argc, char *argv[]){
                     break;
                 case 1:
                     Niveaux: retourNiveau = niveau(ecran);
+                    if(retourNiveau == 0){
+                        retourVict = victoire(ecran);
+                        if (retourVict == 0)
+                            goto choixMenu;
+                        else if (retourVict == 1)
+                            goto choixMenu;
+                        else if (retourVict == SORTIE)
+                            continuer =0;
+                        else continuer =0;
+                    }
 					if(retourNiveau == -1){
 						retourGO = gameover(ecran);
 						if(retourGO == 0)
