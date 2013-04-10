@@ -10,10 +10,6 @@
 #include "affichage.h"
 #include "deplacement.h"
 
-int min(int a, int b);
-int niveau(SDL_Surface *ecran);
-cairo_t * pperso(SDL_Surface *surfNiveau, cairo_surface_t *surface);
-cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond);
 
 int niveau(SDL_Surface *ecran){
 
@@ -49,11 +45,7 @@ int niveau(SDL_Surface *ecran){
     SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
 
     // Création d'une surface cairo pour le personnage ayant pour format d'affichage celui d'une surface SDL
-    surface = cairo_image_surface_create_for_data (surfPerso->pixels,
-                                                      CAIRO_FORMAT_ARGB32,
-                                                      surfPerso->w,
-                                                      surfPerso->h,
-                                                      surfPerso->pitch);
+
     // Création d'une surface cairo ayant pour format d'affichage celui d'une surface SDL
     surfaceFond = cairo_image_surface_create_for_data (surfLigne->pixels,
                                                       CAIRO_FORMAT_ARGB32,
@@ -64,7 +56,7 @@ int niveau(SDL_Surface *ecran){
 
 
     cairo_t *droite1 = tterrain(ecran, surfaceFond);
-	cairo_t *personnage = pperso(surfNiveau, surface);
+	cairo_t *personnage = pperso(surfNiveau, surface, surfPerso);
 
     SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_BlitSurface(surfPerso, NULL, surfNiveau, &pos);
@@ -236,8 +228,13 @@ cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
 }
 
 
-cairo_t * pperso(SDL_Surface *surfNiveau, cairo_surface_t *surface)
+cairo_t * pperso(SDL_Surface *surfNiveau, cairo_surface_t *surface, SDL_Surface *surfPerso)
 {
+    surface = cairo_image_surface_create_for_data (surfPerso->pixels,
+                                                      CAIRO_FORMAT_ARGB32,
+                                                      surfPerso->w,
+                                                      surfPerso->h,
+                                                      surfPerso->pitch);
 
     cairo_t *perso = cairo_create(surface);
     cairo_set_line_width(perso, EPAISSEUR_TRAIT);
@@ -289,7 +286,7 @@ int min(int a, int b){
 void decouperColler(cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination){
 
 	cairo_t *enSelect = cairo_create(surfaceFond);
-	double scale_x = (posDestination.w/posSelection.w), scale_y = (posDestination.h/posSelection.h);
+	double scale_x = 1, scale_y = 1; //scale_x = (posDestination.w/posSelection.w), scale_y = (posDestination.h/posSelection.h);
     cairo_scale(enSelect, scale_x, scale_y);
     cairo_set_source_surface (enSelect, surfaceFond,  (posDestination.x/scale_x) - posSelection.x, (posDestination.y/scale_y) - posSelection.y); //remplit cr avec le chemin présent
     //dans surfaceFond en commancant en 0,0 dans cr => 0, 280 dans surfaceFond
