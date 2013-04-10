@@ -54,7 +54,6 @@ void menu(SDL_Surface *ecran, TTF_Font *police, int *choix){
     posrec.y = positiontexte1.y;
 
     SDL_BlitSurface(fond, NULL, ecran, &pos);
-    afficherTexte(ecran, "ariblk.ttf", 18, "testlol", 12, 12);
     SDL_BlitSurface(titre, NULL, ecran, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
     SDL_BlitSurface(texte2, NULL, ecran, &positiontexte2);
@@ -147,7 +146,6 @@ void menu(SDL_Surface *ecran, TTF_Font *police, int *choix){
     //SDL_Delay(30);
 
     SDL_BlitSurface(fond, NULL, ecran, &pos);
-    afficherTexte(ecran, "ariblk.ttf", 18, "testlol", 12, 12);
     SDL_BlitSurface(titre, NULL, ecran, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
     SDL_BlitSurface(texte2, NULL, ecran, &positiontexte2);
