@@ -592,7 +592,7 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
     return 1;
 }
 
-int victoire(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau chargé pour le recharger dans recommencer
+int victoire(SDL_Surface *ecran){
 
     TTF_Font *police = TTF_OpenFont("ariblk.ttf", 55);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
@@ -698,7 +698,7 @@ int victoire(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
                             return 1;
                         }
                         else{
-                            niveau(ecran);
+                            choixNiveau(ecran);
                             return 0;
                         }
                         break;

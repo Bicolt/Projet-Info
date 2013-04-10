@@ -78,6 +78,8 @@ int niveau(SDL_Surface *ecran){
             continuer = avancer(&pospersoNiveau, surfNiveau, selecNiveau);
 		if(continuer == 0)
 			return (-1); //gameOver
+        if (continuer == -1)
+            return 0; //Victoire
         if(continuer!=2){
             if (chute >= 280){
 				return -1;
@@ -234,12 +236,21 @@ cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
     cairo_t *droite = cairo_create(surfaceFond);
     cairo_set_line_width(droite,EPAISSEUR_TRAIT);
     cairo_set_source_rgba (droite, 0, 0, 0, 1);
-    cairo_move_to(droite, 0., 200.);
-    cairo_line_to(droite, 300., 200.);
-    cairo_move_to(droite, 250., 400.);
-    cairo_line_to(droite, 500, 400.);
-    cairo_move_to(droite, 250., 700.);
-    cairo_line_to(droite, ecran->w, 700.);
+
+    cairo_move_to(droite, 0., 500.);
+    cairo_line_to(droite, 400., 500.);
+    cairo_curve_to(droite, 700, 600, 800, 50, 1100., 200.);
+    cairo_line_to(droite, 1300, 200.);
+    cairo_move_to(droite, 1250., 400.);
+    cairo_line_to(droite, 1300, 400.);
+    cairo_line_to(droite, 1600, 600);
+    cairo_curve_to(droite, 1800, 300, 1900, 350, 2200, 600);
+    cairo_curve_to(droite, 2200, 600, 2500, 300, 2800, 200);
+    cairo_line_to(droite, 3000, 200);
+    cairo_move_to(droite, 2900, 500);
+    cairo_line_to(droite, X_FIN + 200, 500);
+    cairo_move_to(droite, 2450, 400);
+    cairo_line_to(droite, 2450, 350);
     //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
     //cairo_line_to(droite, ecran->w-200., 550.);
     cairo_stroke_preserve(droite);

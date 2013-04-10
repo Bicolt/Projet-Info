@@ -6,3 +6,4 @@ int monter( SDL_Rect* pposperso, SDL_Surface* terrain );
 int plater( SDL_Rect* pposperso, SDL_Surface* terrain );
 int descendre( SDL_Rect* pposperso, SDL_Surface* terrain );
 int sortir (SDL_Rect *pposperso, SDL_Surface *terrain, SDL_Rect selecNiveau);
+int finir (SDL_Rect *pposperso);

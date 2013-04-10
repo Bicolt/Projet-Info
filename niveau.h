@@ -2,6 +2,7 @@
 #define NOMBRE_ECRANS 10
 #define H_PERSO 130
 #define L_PERSO 60
+#define X_FIN 3400
 
 int min(int a, int b);
 int max(int a, int b);
