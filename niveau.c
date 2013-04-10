@@ -34,7 +34,7 @@ int niveau(SDL_Surface *ecran){
     selecNiveau.w = ecran -> w;
     pospause.x = ecran->w - 70;
     pospause.y = 0;
-    pospersoNiveau.x = 200;
+    pospersoNiveau.x = ecran->w/3;
     pospersoNiveau.y = 300;
     cairo_surface_t *surface, *surfaceFond;
     rect = selection(60, 60, surfNiveau->format);
