@@ -23,7 +23,7 @@ int niveau(SDL_Surface *ecran){
     SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
     surfNiveau = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ecran->w, ecran->h, 32, 0, 0, 0, 0);
     surfSelec = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
-    surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, 60, 140, 32, 0, 0, 0, 0);
+    surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, L_PERSO, H_PERSO, 32, 0, 0, 0, 0);
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, surfNiveau->w, surfNiveau->h, 32, 0, 0, 0, 0);
     surfPause = SDL_CreateRGBSurface(SDL_HWSURFACE, 70, 70, 32, 0, 0, 0, 0);
 
@@ -35,7 +35,7 @@ int niveau(SDL_Surface *ecran){
     pospause.x = ecran->w - 70;
     pospause.y = 0;
     pospersoNiveau.x = 200;
-    pospersoNiveau.y = 60;
+    pospersoNiveau.y = 200;
     cairo_surface_t *surface, *surfaceFond;
     rect = selection(60, 60, surfNiveau->format);
     SDL_Event event;
@@ -79,7 +79,7 @@ int niveau(SDL_Surface *ecran){
 		if(continuer == 0)
 			return (-1); //gameOver
         if(continuer!=2){
-            if (chute >= 280){
+            if (chute >= 2*H_PERSO){
 				return -1;
             }
 				else {chute = 0;}
@@ -234,12 +234,17 @@ cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
     cairo_t *droite = cairo_create(surfaceFond);
     cairo_set_line_width(droite,EPAISSEUR_TRAIT);
     cairo_set_source_rgba (droite, 0, 0, 0, 1);
-    cairo_move_to(droite, 0., 200.);
-    cairo_line_to(droite, 300., 200.);
-    cairo_move_to(droite, 250., 400.);
-    cairo_line_to(droite, 500, 400.);
-    cairo_move_to(droite, 250., 700.);
-    cairo_line_to(droite, ecran->w, 700.);
+    cairo_move_to(droite, 0., 500.);
+    cairo_line_to(droite, 400., 500.);
+    cairo_curve_to(droite, 700, 600, 800, 50, 1100., 200.);
+    cairo_line_to(droite, 1300, 200.);
+    cairo_move_to(droite, 1250., 400.);
+    cairo_line_to(droite, 1500, 400.);
+    cairo_line_to(droite, 1900, 600);
+    cairo_curve_to(droite, 2200, 600, 2500, 300, 2800, 200);
+    cairo_line_to(droite, 3000, 200);
+    cairo_move_to(droite, 2900, 500);
+    cairo_line_to(droite, 3600, 500);
     //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
     //cairo_line_to(droite, ecran->w-200., 550.);
     cairo_stroke_preserve(droite);
