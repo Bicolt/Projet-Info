@@ -98,7 +98,7 @@ void tomber ( SDL_Rect* pposperso, SDL_Surface* terrain) {
     for(i = 0 ; i < 5 ; i++) {
         if (solsouspieds(pposperso, terrain) == 1)
             break;
-        (pposperso->y) ++ ;
+        (pposperso->y) ++;
     }
 }
 

@@ -16,7 +16,7 @@ cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond);
 
 int niveau(SDL_Surface *ecran){
 
-    int continuer = 1, select = 0;
+    int continuer = 1, select = 0, chute = 0;
     int xSouris, ySouris;
 
     SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL;
@@ -63,24 +63,6 @@ int niveau(SDL_Surface *ecran){
     //cairo_paint(cr); recouvre tout surfaceFond avec cr
     cairo_rectangle (cr, 0, 0, 100, 100);
     cairo_fill (cr); // ne recouvre surfaceFond que dans le carrée dont le coin supérieur gauche est en 0,0 et de largeur 100)
-    //cairo_paint(cr);
-    /* cairo_t *droite2 = cairo_create(surfaceFond);
-    cairo_move_to(droite1, 0., 300.); //debut de ligne
-    cairo_line_to(droite1, 1500., 300.);
-    cairo_move_to(droite, 250., 600.);
-    cairo_line_to(droite, surfNiveau->w-200, 600.);
-    cairo_curve_to(droite, surfNiveau->w, 600., surfNiveau->w, 400., surfNiveau->w, 400.);
-    cairo_line_to(droite, surfNiveau->w-200., 550.);
-    //fin de ligne
-    cairo_set_source_rgba (droite1, 0, 0, 0, 1);
-    cairo_set_line_width(droite1,EPAISSEUR_TRAIT);
-    cairo_stroke(droite1);
-    cairo_move_to(droite2, 1500., 170.); //debut de ligne
-    cairo_line_to(droite2, 1250., 170.);
-    cairo_set_line_width(droite2,EPAISSEUR_TRAIT);
-    cairo_set_source_rgba (droite2, 0, 0, 0, 1);
-    //cairo_line_to(droite, surfNiveau->w-100, 600.);
-    cairo_stroke(droite2); */
     SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_BlitSurface(surfPerso, NULL, surfNiveau, &pos);
     SDL_BlitSurface(surfLigne, NULL, surfNiveau, &pos);
@@ -104,7 +86,12 @@ int niveau(SDL_Surface *ecran){
         SDL_BlitSurface(rect, NULL, ecran, &posrec);
         SDL_Flip(ecran);
         if(continuer!=2){
+                if (chute >= 280){
+            return -1;
+            }
+            else {chute = 0;}
             selecNiveau.x = selecNiveau.x + 4;}
+            else {chute +=5;}
         SDL_PollEvent(&event);
         switch(event.type){
             case SDL_MOUSEMOTION:
@@ -178,16 +165,15 @@ cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
     cairo_t *droite = cairo_create(surfaceFond);
     cairo_set_line_width(droite,EPAISSEUR_TRAIT);
     cairo_set_source_rgba (droite, 0, 0, 0, 1);
-    cairo_move_to(droite, 0., 300.); //debut de ligne
-    cairo_curve_to(droite, 0., 300., 100., 400., 300., 400.);
-    cairo_move_to(droite, 250., 600.);
-    cairo_line_to(droite, ecran->w-200, 600.);
-    cairo_curve_to(droite, ecran->w, 600., ecran->w, 400., ecran->w, 400.);
-    cairo_line_to(droite, ecran->w-200., 550.);
-    //fin de ligne
+    cairo_move_to(droite, 0., 200.);
+    cairo_line_to(droite, 300., 200.);
+    cairo_move_to(droite, 250., 400.);
+    cairo_line_to(droite, 500, 400.);
+    cairo_move_to(droite, 250., 700.);
+    cairo_line_to(droite, ecran->w, 700.);
+    //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
+    //cairo_line_to(droite, ecran->w-200., 550.);
     cairo_stroke_preserve(droite);
-    //cairo_line_to(droite, ecran->w-100, 600.);
-    //cairo_stroke(droite);
     return (droite);
 }
 

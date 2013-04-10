@@ -25,6 +25,7 @@ SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
 void menu(SDL_Surface *ecran, TTF_Font *police, int *choix){
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
+	SDL_Color White = {255, 255, 255};
     SDL_Event event;
     SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos;
     int xSouris, ySouris;
@@ -33,10 +34,10 @@ void menu(SDL_Surface *ecran, TTF_Font *police, int *choix){
     pos.x = 0; pos.y = 0;
 
     rect = selection(ecran->w, 80, ecran->format);
-    titre = TTF_RenderText_Blended(police, "Super Scalable Land", Black);
-    texte1 = TTF_RenderText_Blended(police, "Jouer", Black);
-	texte2 = TTF_RenderText_Blended(police, "Options", Black);
-    texte3 = TTF_RenderText_Blended(police, "Quitter", Black);
+    titre = TTF_RenderText_Shaded(police, "Super Scalable Land", Black, White);
+    texte1 = TTF_RenderText_Shaded(police, "Jouer", Black, White);
+	texte2 = TTF_RenderText_Shaded(police, "Options", Black, White);
+    texte3 = TTF_RenderText_Shaded(police, "Quitter", Black, White);
 	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
@@ -161,6 +162,7 @@ int pause(SDL_Surface* ecran){
     TTF_Font *police = TTF_OpenFont("ariblk.ttf", 55);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
+	SDL_Color White = {255, 255, 255};
     SDL_Event event;
     SDL_Rect positiontitre, positiontexte1, positiontexte3, posrec, pos;
     int xSouris, ySouris;
@@ -169,9 +171,9 @@ int pause(SDL_Surface* ecran){
     pos.x = 0; pos.y = 0;
 
     rect = selection(ecran->w, 80, ecran->format);
-    titre = TTF_RenderText_Blended(police, "Pause", Black);
-    texte1 = TTF_RenderText_Blended(police, "Reprendre", Black);
-    texte3 = TTF_RenderText_Blended(police, "Quitter", Black);
+    titre = TTF_RenderText_Shaded(police, "Pause", Black, White);
+    texte1 = TTF_RenderText_Shaded(police, "Reprendre", Black, White);
+    texte3 = TTF_RenderText_Shaded(police, "Quitter", Black, White);
 	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
@@ -448,6 +450,7 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
     TTF_Font *police = TTF_OpenFont("ariblk.ttf", 55);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
+	SDL_Color White = {255, 255, 255};
     SDL_Event event;
     SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos;
     int xSouris, ySouris;
@@ -456,10 +459,10 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
     pos.x = 0; pos.y = 0;
 
     rect = selection(ecran->w, 80, ecran->format);
-    titre = TTF_RenderText_Blended(police, "GAME OVER", Black);
-    texte1 = TTF_RenderText_Blended(police, "Recommencer", Black);
-    texte2 = TTF_RenderText_Blended(police, "Menu principal", Black);
-    texte3 = TTF_RenderText_Blended(police, "Quitter", Black);
+    titre = TTF_RenderText_Shaded(police, "GAME OVER", Black, White);
+    texte1 = TTF_RenderText_Shaded(police, "Recommencer", Black, White);
+    texte2 = TTF_RenderText_Shaded(police, "Menu principal", Black, White);
+    texte3 = TTF_RenderText_Shaded(police, "Quitter", Black, White);
 	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
