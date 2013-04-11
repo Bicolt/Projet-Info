@@ -88,7 +88,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 			selecNiveau.x = selecNiveau.x + 4;}
             else {chute +=5;}
         if(collagePossible){
-            decouperColler(surfaceFond, posSelection, posDestination);
+            decouperColler(surfLigne, surfaceFond, posSelection, posDestination);
             collagePossible = 0;
             enSelection = 0;
             dejaSelectionne = 0;
@@ -293,8 +293,9 @@ int max(int a, int b){
     return a;
 }
 
-void decouperColler(cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination){
+void decouperColler(SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination){
 
+    recollementContinu(surfLigne, posSelection, &posDestination);
 	cairo_t *enSelect = cairo_create(surfaceFond);
 	double scale_x = 1, scale_y = 1; //scale_x = (posDestination.w/posSelection.w), scale_y = (posDestination.h/posSelection.h);
     cairo_scale(enSelect, scale_x, scale_y);
@@ -306,6 +307,25 @@ void decouperColler(cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rec
     cairo_fill (enSelect); // ne recouvre surfaceFond que
     //dans le carrée dont le coin supérieur gauche est en 0,0 et de largeur 100)
 
+}
+
+void recollementContinu(SDL_Surface *surfLigne, SDL_Rect posSelection, SDL_Rect *posDestination){
+    int decallage = 0, trouve = 1, compteur = 0, rel_compteur, continuer = 1;
+    while(continuer && (compteur < (min(posSelection.h, posDestination->h) + 16))){
+        if(getpixel(surfLigne,posSelection.x + 1, posSelection.y + compteur ) == 4278190080LL){
+            rel_compteur = max((compteur - 15),0);
+            while((rel_compteur < compteur + 16)&&trouve){
+                if(getpixel(surfLigne, posDestination->x-2, posDestination->y + rel_compteur ) == 4278190080LL){
+                    continuer = 0;
+                    trouve = 0;
+                    decallage = (rel_compteur - compteur);
+                }
+                rel_compteur++;
+            }
+        }
+        compteur++;
+    }
+    posDestination->y=max(posDestination->y+decallage, 0);
 }
 
 void pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect pos, int xSouris, int ySouris){
