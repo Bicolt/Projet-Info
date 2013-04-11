@@ -311,10 +311,10 @@ void decouperColler(SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Re
 
 void recollementContinu(SDL_Surface *surfLigne, SDL_Rect posSelection, SDL_Rect *posDestination){
     int decallage = 0, trouve = 1, compteur = 0, rel_compteur, continuer = 1;
-    while(continuer && (compteur < (min(posSelection.h, posDestination->h) + 16))){
+    while(continuer && (compteur < (min(posSelection.h, posDestination->h) - 16))){
         if(getpixel(surfLigne,posSelection.x + 1, posSelection.y + compteur ) == 4278190080LL){
             rel_compteur = max((compteur - 15),0);
-            while((rel_compteur < compteur + 16)&&trouve){
+            while((rel_compteur < compteur + 15)&&trouve){
                 if(getpixel(surfLigne, posDestination->x-2, posDestination->y + rel_compteur ) == 4278190080LL){
                     continuer = 0;
                     trouve = 0;
