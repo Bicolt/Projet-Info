@@ -22,7 +22,7 @@ SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
 }
 
 //menu
-void menu(SDL_Surface *ecran, TTF_Font *police, int *choix){
+int menu(SDL_Surface *ecran, TTF_Font *police){
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
 	SDL_Color White = {255, 255, 255};
@@ -88,16 +88,13 @@ void menu(SDL_Surface *ecran, TTF_Font *police, int *choix){
                     xSouris = event.button.x;
                     ySouris = event.button.y;
                     if(((ecran->h*6/16) <= ySouris) && (ySouris < (ecran->h*9/16))){
-                        *choix = 0; //jouer
-                        continuer = 0;
+                        return 0;
                     }
                     else if(((ecran->h*9/16) <= ySouris) && (ySouris < (ecran->h*12/16))){
-                        *choix = 1; //option
-                        continuer = 0;
+                        return 1;
                     }
                     else if(((ecran->h*12/16) <= ySouris) && (ySouris < (ecran->h*14/16))){
-                        *choix = 2; //quitter
-                        continuer = 0;
+                        return SORTIE;
                     }
                 }
             break;
@@ -117,21 +114,17 @@ void menu(SDL_Surface *ecran, TTF_Font *police, int *choix){
                         else posrec.y = posrec.y + ecran->h*3/16;
                         break;
                     case SDLK_ESCAPE:
-                            *choix = 2;
-                            continuer = 0;
+                            return SORTIE;
                         break;
                     case SDLK_RETURN:
                         if(select == 2){
-                            *choix = 2;
-                            continuer = 0;
+                            return SORTIE;
                         }
                         else if(select == 1){
-                            *choix = 1; //options
-                            continuer = 0;
+                            return 1;
                         }
                         else{
-                            *choix = 0;
-                            continuer = 0;
+                            return 0;
                         }
                         break;
                     default:
@@ -139,8 +132,7 @@ void menu(SDL_Surface *ecran, TTF_Font *police, int *choix){
                 }
                 break;
             case SDL_QUIT:
-                    *choix = 2;
-                    continuer = 0;
+                    return SORTIE;
                 break;
         }
     //SDL_Delay(30);
@@ -153,6 +145,7 @@ void menu(SDL_Surface *ecran, TTF_Font *police, int *choix){
     SDL_BlitSurface(rect, NULL, ecran, &posrec);
     SDL_Flip(ecran);
     }
+    return SORTIE;
 }
 
 int pause(SDL_Surface* ecran){
@@ -218,7 +211,7 @@ int pause(SDL_Surface* ecran){
                         return 0;
                     }
                     else if(((ecran->h*12/16) <= ySouris)){
-                        return 1;
+                        return MENU;
                     }
                 }
             break;
@@ -238,11 +231,11 @@ int pause(SDL_Surface* ecran){
                         else posrec.y = posrec.y + ecran->h*6/16;
                         break;
                     case SDLK_ESCAPE:
-                            return 1;
+                            return 0;
                         break;
                     case SDLK_RETURN:
                         if(select == 1){
-                            return 1;
+                            return MENU;
                         }
                         else{
                             return 0;
@@ -264,7 +257,7 @@ int pause(SDL_Surface* ecran){
     SDL_BlitSurface(rect, NULL, ecran, &posrec);
     SDL_Flip(ecran);
     }
-    return 1;
+    return MENU;
 }
 
 
@@ -459,11 +452,12 @@ int choixNiveau (SDL_Surface *ecran) {
 	afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
     SDL_Flip(ecran);
     }
-    return 0;
+    return MENU;
 }
 
 int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau chargé pour le recharger dans recommencer
 
+    fprintf(stdout,"bouh\n");
     TTF_Font *police = TTF_OpenFont("ariblk.ttf", 55);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
@@ -530,11 +524,10 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
                     xSouris = event.button.x;
                     ySouris = event.button.y;
                     if(((ecran->h*6/16) <= ySouris) && (ySouris < (ecran->h*9/16))){
-                        niveau(ecran);
 						return 0;
                     }
                     else if(((ecran->h*9/16) <= ySouris) && (ySouris < (ecran->h*12/16))){
-                        return 1;
+                        return MENU;
                     }
                     else if(((ecran->h*12/16) <= ySouris) && (ySouris < (ecran->h*14/16))){
 						return SORTIE;
@@ -561,14 +554,12 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
                         break;
                     case SDLK_RETURN:
                         if(select == 2){
-                                  return SORTIE;
-                            continuer = 0;
+                            return SORTIE;
                         }
                         else if(select == 1){
-                            return 1;
+                            return MENU;
                         }
                         else{
-                            niveau(ecran);
                             return 0;
                         }
                         break;
@@ -589,7 +580,7 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
     SDL_BlitSurface(rect, NULL, ecran, &posrec);
     SDL_Flip(ecran);
     }
-    return 1;
+    return MENU;
 }
 
 int victoire(SDL_Surface *ecran){
@@ -660,11 +651,10 @@ int victoire(SDL_Surface *ecran){
                     xSouris = event.button.x;
                     ySouris = event.button.y;
                     if(((ecran->h*6/16) <= ySouris) && (ySouris < (ecran->h*9/16))){
-                        niveau(ecran);
 						return 0;
                     }
                     else if(((ecran->h*9/16) <= ySouris) && (ySouris < (ecran->h*12/16))){
-                        return 1;
+                        return MENU;
                     }
                     else if(((ecran->h*12/16) <= ySouris) && (ySouris < (ecran->h*14/16))){
 						return SORTIE;
@@ -691,11 +681,10 @@ int victoire(SDL_Surface *ecran){
                         break;
                     case SDLK_RETURN:
                         if(select == 2){
-                                  return SORTIE;
-                            continuer = 0;
+                            return SORTIE;
                         }
                         else if(select == 1){
-                            return 1;
+                            return MENU;
                         }
                         else{
                             choixNiveau(ecran);
@@ -719,5 +708,5 @@ int victoire(SDL_Surface *ecran){
     SDL_BlitSurface(rect, NULL, ecran, &posrec);
     SDL_Flip(ecran);
     }
-    return 1;
+    return MENU;
 }

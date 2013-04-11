@@ -19,8 +19,8 @@ int main(int argc, char *argv[]){
 
     SDL_Surface *ecran = NULL, *icone = SDL_LoadBMP("sdl_icone.bmp");
     TTF_Font *police = NULL;
-    int choix = 0, retourNiveau = 0, retourGO = 0, retourVict = 0;
-    int continuer = 1;
+    int choix = 0, retourMenu = 0, retourChoixNiveau = 0, retourNiveau = 0, retourGO = 0, retourVict = 0;
+    int continuer = 1, enNiveau = 1;
 
     SDL_WM_SetIcon(icone, NULL);
     ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
@@ -32,49 +32,68 @@ int main(int argc, char *argv[]){
 
     police = TTF_OpenFont("ariblk.ttf", 55);
 
-    while(continuer > 0){
-        choixMenu: menu(ecran, police, &choix);
-        if(choix == 0){
-            switch(choixNiveau(ecran))
-            {
-				case SORTIE:
-                    continuer=0;
-                    break;
-                case 0:
-                    tuto(ecran);
-                    goto choixMenu;
-                    break;
-                case 1:
-                    Niveaux: retourNiveau = niveau(ecran);
-                    if(retourNiveau == 0){
-                        retourVict = victoire(ecran);
-                        if (retourVict == 0)
-                            goto choixMenu;
-                        else if (retourVict == 1)
-                            goto choixMenu;
-                        else if (retourVict == SORTIE)
-                            continuer =0;
-                        else continuer =0;
+    while(continuer){
+        enNiveau=1;
+        retourMenu = menu(ecran,police);
+        if(retourMenu == 0){
+            retourChoixNiveau = choixNiveau(ecran);
+            if(0<=retourChoixNiveau<=6){
+                while(enNiveau){
+                    retourNiveau = niveau(ecran, retourChoixNiveau);
+                    switch(retourNiveau){
+                        case -1:
+                            retourGO = gameover(ecran);
+                            switch(retourGO){
+                                case 0:
+                                    break;
+                                case MENU:
+                                    enNiveau=0;
+                                    break;
+                                case SORTIE:
+                                    enNiveau=0;
+                                    continuer=0;
+                                    break;
+                            }
+                            break;
+                        case 0: //victoire
+                            retourVict = victoire(ecran);
+                            switch(retourVict){
+                                case 0:
+                                    if(retourChoixNiveau<6){
+                                        retourChoixNiveau++;
+                                    }
+                                    else retourChoixNiveau = 1; //ecran spécial vitoire finale !
+                                    break;
+                                case MENU:
+                                    enNiveau=0;
+                                    break;
+                                case SORTIE:
+                                    enNiveau=0;
+                                    continuer=0;
+                            }
+                            break;
+                        case MENU:
+                            enNiveau=0;
+                            break;
+                        case SORTIE:
+                            enNiveau=0;
+                            continuer=0;
+                            break;
                     }
-					if(retourNiveau == -1){
-						retourGO = gameover(ecran);
-						if(retourGO == 0)
-							goto Niveaux;
-						else if(retourGO == 1)
-							goto choixMenu;
-						else if(retourGO == SORTIE)
-							continuer = 0;
-						else continuer = 0;
-					}
-					else if(retourNiveau == 1)
-                        goto choixMenu;
-                default:
-                    goto choixMenu;
-                    break;
+                }
+            }
+            else if(retourChoixNiveau==MENU){
+                enNiveau=0;
+            }
+            else if(retourChoixNiveau==SORTIE){
+                enNiveau=0;
+                continuer=0;
             }
         }
-        else if(choix == 2)
+        else if(retourMenu == 1){} //options
+        else if(retourMenu == SORTIE){
             continuer = 0;
+        }
     }
 
     TTF_CloseFont(police);

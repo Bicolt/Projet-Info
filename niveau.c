@@ -11,7 +11,7 @@
 #include "deplacement.h"
 
 
-int niveau(SDL_Surface *ecran){
+int niveau(SDL_Surface *ecran, int choixTerrain){
 
 
     int continuer = 1, select = 0;
@@ -57,7 +57,7 @@ int niveau(SDL_Surface *ecran){
 
 
 
-    cairo_t *droite1 = tterrain(ecran, surfaceFond);
+    chargerTerrain(ecran, surfaceFond, choixTerrain);
 	cairo_t *personnage = pperso(surfNiveau, surface, surfPerso);
 
     SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
@@ -157,8 +157,8 @@ int niveau(SDL_Surface *ecran){
                             case SORTIE:
                                 return SORTIE;
                                 break;
-                            case 1:
-                                return 1;
+                            case MENU:
+                                return MENU;
                                 break;
                             case 0:
                                 event.button.button=SDL_BUTTON_RIGHT;
@@ -205,8 +205,8 @@ int niveau(SDL_Surface *ecran){
                             case SORTIE:
                                 return SORTIE;
                                 break;
-                            case 1:
-                                return 1;
+                            case MENU:
+                                return MENU;
                                 break;
                             case 0:
                             /*cairo_surface_destroy(surfaceFond);
@@ -228,35 +228,8 @@ int niveau(SDL_Surface *ecran){
                 break;
         }
     }
-    return 1;
+    return MENU;
 }
-
-cairo_t * tterrain(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
-
-    cairo_t *droite = cairo_create(surfaceFond);
-    cairo_set_line_width(droite,EPAISSEUR_TRAIT);
-    cairo_set_source_rgba (droite, 0, 0, 0, 1);
-
-    cairo_move_to(droite, 0., 500.);
-    cairo_line_to(droite, 400., 500.);
-    cairo_curve_to(droite, 700, 600, 800, 50, 1100., 200.);
-    cairo_line_to(droite, 1300, 200.);
-    cairo_move_to(droite, 1250., 400.);
-    cairo_line_to(droite, 1300, 400.);
-    cairo_line_to(droite, 1600, 600);
-    cairo_curve_to(droite, 1800, 300, 1900, 350, 2200, 600);
-    cairo_curve_to(droite, 2200, 600, 2500, 300, 2800, 200);
-    cairo_line_to(droite, 3000, 200);
-    cairo_move_to(droite, 2900, 500);
-    cairo_line_to(droite, X_FIN + 200, 500);
-    cairo_move_to(droite, 2450, 400);
-    cairo_line_to(droite, 2450, 350);
-    //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
-    //cairo_line_to(droite, ecran->w-200., 550.);
-    cairo_stroke_preserve(droite);
-    return (droite);
-}
-
 
 cairo_t * pperso(SDL_Surface *surfNiveau, cairo_surface_t *surface, SDL_Surface *surfPerso)
 {
@@ -380,22 +353,206 @@ void pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect p
     }
 }
 
-int tuto (SDL_Surface *ecran) {
-    SDL_Surface *fond = NULL;
-    SDL_Rect pos;
-    pos.x = 0; pos.y = 0;
-    fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
-	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
+void chargerTerrain(SDL_Surface *ecran, cairo_surface_t *surfaceFond, int choixTerrain){
+    switch(choixTerrain){
+        case 0:
+            tterrain0(ecran, surfaceFond);
+            break;
+        case 1:
+            tterrain1(ecran, surfaceFond);
+            break;
+        case 2:
+            tterrain2(ecran, surfaceFond);
+            break;
+        case 3:
+            tterrain3(ecran, surfaceFond);
+            break;
+        case 4:
+            tterrain4(ecran, surfaceFond);
+            break;
+        case 5:
+            tterrain5(ecran, surfaceFond);
+            break;
+        case 6:
+            tterrain6(ecran, surfaceFond);
+            break;
+        default:
+            break;
+    }
+}
 
-    SDL_BlitSurface(fond, NULL, ecran, &pos);
-	afficherTexteCentre(ecran, "ariblk.ttf", 26, "But du jeu : permettre au personnage d'avancer jusqu'au bout du niveau", ecran->w/2, ecran->h/6);
-	afficherTexteCentre(ecran, "ariblk.ttf", 22, "Pour cela, vous pouvez sélectionner une partie de l'écran", ecran->w/2, ecran->h*5/12);
-	afficherTexteCentre(ecran, "ariblk.ttf", 22, "en cliquant puis relachant la souris afin de tracer un rectangle de sélection,", ecran->w/2, ecran->h*6/12);
-	afficherTexteCentre(ecran, "ariblk.ttf", 22, "puis la coller à un autre endroit en cliquant puis en traçant un nouveau rectangle de collage.", ecran->w/2, ecran->h*7/12);
-	afficherTexteCentre(ecran, "ariblk.ttf", 26, "Attention ! Une sortie de l'écran ou une chute trop haute pourront tuer votre personnage.", ecran->w/2, ecran->h*9/12);
-    afficherTexteCentre(ecran, "ariblk.ttf", 22, "Ce descriptif renvoie automatiquement au menu au bout de 20 secondes.", ecran->w/2, ecran->h*10/12);
+void tterrain0(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
 
-    SDL_Flip(ecran);
+    cairo_t *droite = cairo_create(surfaceFond);
+    cairo_set_line_width(droite,EPAISSEUR_TRAIT);
+    cairo_set_source_rgba (droite, 0, 0, 0, 1);
+    cairo_select_font_face (droite, "Sans", CAIRO_FONT_SLANT_NORMAL,
+                               CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size (droite, 90.0);
 
-    SDL_Delay(20000);
+    cairo_move_to (droite, 10.0, 135.0);
+    cairo_show_text (droite, "Hello");
+
+    cairo_move_to(droite, 0., 500.);
+    cairo_line_to(droite, X_FIN+200, 500.);
+    //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
+    //cairo_line_to(droite, ecran->w-200., 550.);
+    cairo_stroke(droite);
+    cairo_destroy(droite);
+}
+
+void tterrain1(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
+
+    cairo_t *droite = cairo_create(surfaceFond);
+    cairo_set_line_width(droite,EPAISSEUR_TRAIT);
+    cairo_set_source_rgba (droite, 0, 0, 0, 1);
+
+    cairo_move_to(droite, 0., 500.);
+    cairo_line_to(droite, 400., 500.);
+    cairo_curve_to(droite, 700, 600, 800, 50, 1100., 200.);
+    cairo_line_to(droite, 1300, 200.);
+    cairo_move_to(droite, 1250., 400.);
+    cairo_line_to(droite, 1300, 400.);
+    cairo_line_to(droite, 1600, 600);
+    cairo_curve_to(droite, 1800, 300, 1900, 350, 2200, 600);
+    cairo_curve_to(droite, 2200, 600, 2500, 300, 2800, 200);
+    cairo_line_to(droite, 3000, 200);
+    cairo_move_to(droite, 2900, 500);
+    cairo_line_to(droite, X_FIN + 200, 500);
+    cairo_move_to(droite, 2450, 400);
+    cairo_line_to(droite, 2450, 350);
+    //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
+    //cairo_line_to(droite, ecran->w-200., 550.);
+    cairo_stroke(droite);
+    cairo_destroy(droite);
+}
+
+void tterrain2(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
+
+    cairo_t *droite = cairo_create(surfaceFond);
+    cairo_set_line_width(droite,EPAISSEUR_TRAIT);
+    cairo_set_source_rgba (droite, 0, 0, 0, 1);
+
+    cairo_move_to(droite, 0., 500.);
+    cairo_line_to(droite, 400., 500.);
+    cairo_curve_to(droite, 700, 600, 800, 50, 1100., 200.);
+    cairo_line_to(droite, 1300, 200.);
+    cairo_move_to(droite, 1250., 400.);
+    cairo_line_to(droite, 1300, 400.);
+    cairo_line_to(droite, 1600, 600);
+    cairo_curve_to(droite, 1800, 300, 1900, 350, 2200, 600);
+    cairo_curve_to(droite, 2200, 600, 2500, 300, 2800, 200);
+    cairo_line_to(droite, 3000, 200);
+    cairo_move_to(droite, 2900, 500);
+    cairo_line_to(droite, X_FIN + 200, 500);
+    cairo_move_to(droite, 2450, 400);
+    cairo_line_to(droite, 2450, 350);
+    //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
+    //cairo_line_to(droite, ecran->w-200., 550.);
+    cairo_stroke(droite);
+    cairo_destroy(droite);
+}
+
+void tterrain3(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
+
+    cairo_t *droite = cairo_create(surfaceFond);
+    cairo_set_line_width(droite,EPAISSEUR_TRAIT);
+    cairo_set_source_rgba (droite, 0, 0, 0, 1);
+
+    cairo_move_to(droite, 0., 500.);
+    cairo_line_to(droite, 400., 500.);
+    cairo_curve_to(droite, 700, 600, 800, 50, 1100., 200.);
+    cairo_line_to(droite, 1300, 200.);
+    cairo_move_to(droite, 1250., 400.);
+    cairo_line_to(droite, 1300, 400.);
+    cairo_line_to(droite, 1600, 600);
+    cairo_curve_to(droite, 1800, 300, 1900, 350, 2200, 600);
+    cairo_curve_to(droite, 2200, 600, 2500, 300, 2800, 200);
+    cairo_line_to(droite, 3000, 200);
+    cairo_move_to(droite, 2900, 500);
+    cairo_line_to(droite, X_FIN + 200, 500);
+    cairo_move_to(droite, 2450, 400);
+    cairo_line_to(droite, 2450, 350);
+    //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
+    //cairo_line_to(droite, ecran->w-200., 550.);
+    cairo_stroke(droite);
+    cairo_destroy(droite);
+}
+
+void tterrain4(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
+
+    cairo_t *droite = cairo_create(surfaceFond);
+    cairo_set_line_width(droite,EPAISSEUR_TRAIT);
+    cairo_set_source_rgba (droite, 0, 0, 0, 1);
+
+    cairo_move_to(droite, 0., 500.);
+    cairo_line_to(droite, 400., 500.);
+    cairo_curve_to(droite, 700, 600, 800, 50, 1100., 200.);
+    cairo_line_to(droite, 1300, 200.);
+    cairo_move_to(droite, 1250., 400.);
+    cairo_line_to(droite, 1300, 400.);
+    cairo_line_to(droite, 1600, 600);
+    cairo_curve_to(droite, 1800, 300, 1900, 350, 2200, 600);
+    cairo_curve_to(droite, 2200, 600, 2500, 300, 2800, 200);
+    cairo_line_to(droite, 3000, 200);
+    cairo_move_to(droite, 2900, 500);
+    cairo_line_to(droite, X_FIN + 200, 500);
+    cairo_move_to(droite, 2450, 400);
+    cairo_line_to(droite, 2450, 350);
+    //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
+    //cairo_line_to(droite, ecran->w-200., 550.);
+    cairo_stroke(droite);
+    cairo_destroy(droite);
+}
+
+void tterrain5(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
+
+    cairo_t *droite = cairo_create(surfaceFond);
+    cairo_set_line_width(droite,EPAISSEUR_TRAIT);
+    cairo_set_source_rgba (droite, 0, 0, 0, 1);
+
+    cairo_move_to(droite, 0., 500.);
+    cairo_line_to(droite, 400., 500.);
+    cairo_curve_to(droite, 700, 600, 800, 50, 1100., 200.);
+    cairo_line_to(droite, 1300, 200.);
+    cairo_move_to(droite, 1250., 400.);
+    cairo_line_to(droite, 1300, 400.);
+    cairo_line_to(droite, 1600, 600);
+    cairo_curve_to(droite, 1800, 300, 1900, 350, 2200, 600);
+    cairo_curve_to(droite, 2200, 600, 2500, 300, 2800, 200);
+    cairo_line_to(droite, 3000, 200);
+    cairo_move_to(droite, 2900, 500);
+    cairo_line_to(droite, X_FIN + 200, 500);
+    cairo_move_to(droite, 2450, 400);
+    cairo_line_to(droite, 2450, 350);
+    //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
+    //cairo_line_to(droite, ecran->w-200., 550.);
+    cairo_stroke(droite);
+    cairo_destroy(droite);
+}
+
+void tterrain6(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
+
+    cairo_t *droite = cairo_create(surfaceFond);
+    cairo_set_line_width(droite,EPAISSEUR_TRAIT);
+    cairo_set_source_rgba (droite, 0, 0, 0, 1);
+
+    cairo_move_to(droite, 0., 500.);
+    cairo_line_to(droite, 400., 500.);
+    cairo_curve_to(droite, 700, 600, 800, 50, 1100., 200.);
+    cairo_line_to(droite, 1300, 200.);
+    cairo_move_to(droite, 1250., 400.);
+    cairo_line_to(droite, 1300, 400.);
+    cairo_line_to(droite, 1600, 600);
+    cairo_curve_to(droite, 1800, 300, 1900, 350, 2200, 600);
+    cairo_curve_to(droite, 2200, 600, 2500, 300, 2800, 200);
+    cairo_line_to(droite, 3000, 200);
+    cairo_move_to(droite, 2900, 500);
+    cairo_line_to(droite, X_FIN + 200, 500);
+    cairo_move_to(droite, 2450, 400);
+    cairo_line_to(droite, 2450, 350);
+    //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
+    //cairo_line_to(droite, ecran->w-200., 550.);
+    cairo_stroke(droite);
+    cairo_destroy(droite);
 }
