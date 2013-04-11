@@ -19,7 +19,7 @@ int main(int argc, char *argv[]){
 
     SDL_Surface *ecran = NULL, *icone = SDL_LoadBMP("sdl_icone.bmp");
     TTF_Font *police = NULL;
-    int choix = 0, retourMenu = 0, retourChoixNiveau = 0, retourNiveau = 0, retourGO = 0, retourVict = 0;
+    int retourMenu = 0, retourChoixNiveau = 0, retourNiveau = 0, retourGO = 0, retourVict = 0;
     int continuer = 1, enNiveau = 1;
 
     SDL_WM_SetIcon(icone, NULL);
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]){
         retourMenu = menu(ecran,police);
         if(retourMenu == 0){
             retourChoixNiveau = choixNiveau(ecran);
-            if(0<=retourChoixNiveau<=6){
+            if((0<=retourChoixNiveau) && (retourChoixNiveau<=6)){
                 while(enNiveau){
                     retourNiveau = niveau(ecran, retourChoixNiveau);
                     switch(retourNiveau){

@@ -10,7 +10,7 @@ void pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect p
 void decouperColler(cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination);
 int niveau(SDL_Surface *ecran, int choixTerrain);
 void chargerTerrain(SDL_Surface *ecran, cairo_surface_t *surfaceFond, int choixTerrain);
-cairo_t * pperso(SDL_Surface *ecran, cairo_surface_t *surface, SDL_Surface * surfPerso);
+cairo_t * pperso(SDL_Surface *ecran, SDL_Surface * surfPerso);
 void tterrain0(SDL_Surface *ecran, cairo_surface_t * surfaceFond);
 void tterrain1(SDL_Surface *ecran, cairo_surface_t * surfaceFond);
 void tterrain2(SDL_Surface *ecran, cairo_surface_t * surfaceFond);

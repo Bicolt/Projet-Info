@@ -36,7 +36,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     pospause.y = 0;
     pospersoNiveau.x = ecran->w/3;
     pospersoNiveau.y = 300;
-    cairo_surface_t *surface, *surfaceFond;
+    cairo_surface_t *surfaceFond;
     rect = selection(60, 60, surfNiveau->format);
     SDL_Event event;
     SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
@@ -58,7 +58,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 
 
     chargerTerrain(ecran, surfaceFond, choixTerrain);
-	cairo_t *personnage = pperso(surfNiveau, surface, surfPerso);
+	cairo_t *personnage = pperso(surfNiveau, surfPerso);
 
     SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_SetColorKey(surfSelec, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
@@ -231,8 +231,9 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     return MENU;
 }
 
-cairo_t * pperso(SDL_Surface *surfNiveau, cairo_surface_t *surface, SDL_Surface *surfPerso)
+cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso)
 {
+    cairo_surface_t *surface = NULL;
     surface = cairo_image_surface_create_for_data (surfPerso->pixels,
                                                       CAIRO_FORMAT_ARGB32,
                                                       surfPerso->w,
