@@ -15,9 +15,11 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 
 
     int continuer = 1, select = 0;
-    int enSelection = 0, dejaSelectionne = 0, collagePossible = 0, chute = 0;
+    int enSelection = 0, dejaSelectionne = 0, collagePossible = 0, enDrag = 0, chute = 0;
+    Uint32 temps_precedent = SDL_GetTicks(), temps_actuel = SDL_GetTicks();
     int xSouris = 0, ySouris = 0;
     int xSourisButton = 0, ySourisButton = 0;
+    int xRinit = 0, yRinit = 0;
 
 
     SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
@@ -27,15 +29,17 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, surfNiveau->w, surfNiveau->h, 32, 0, 0, 0, 0);
     surfPause = SDL_CreateRGBSurface(SDL_HWSURFACE, 70, 70, 32, 0, 0, 0, 0);
 
-    SDL_Rect pos, posligne, pospersoNiveau, pospause, posrec, selecNiveau, posSelection, posDestination;
-    pos.x = selecNiveau.x = posligne.x = posSelection.x = posDestination.x = 0;
-    pos.y = selecNiveau.y = posligne.y = posSelection.y = posDestination.y = 0;
+    SDL_Rect pos, posligne, pospersoNiveau, pospause, posrec, selecNiveau, posSelection, posDestination, posAppercu, posPersoEcran;
+    pos.x = selecNiveau.x = posligne.x = posSelection.x = posDestination.x = posAppercu.x = 0;
+    pos.y = selecNiveau.y = posligne.y = posSelection.y = posDestination.y = posAppercu.y = 0;
     selecNiveau.h = ecran -> h;
     selecNiveau.w = ecran -> w;
     pospause.x = ecran->w - 70;
     pospause.y = 0;
     pospersoNiveau.x = ecran->w/3;
     pospersoNiveau.y = 300;
+    posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
+    posPersoEcran.y = pospersoNiveau.y;
     cairo_surface_t *surfaceFond;
     rect = selection(60, 60, surfNiveau->format);
     SDL_Event event;
@@ -72,10 +76,12 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     SDL_BlitSurface(surfSelec, NULL, ecran, NULL);
     SDL_Flip(ecran);
     while(continuer!=0){
-        SDL_Delay(30);
+        temps_actuel = SDL_GetTicks();
+        SDL_Delay(max(60 - (temps_actuel-temps_precedent),0));
+        temps_precedent = temps_actuel;
         SDL_FillRect(surfSelec, NULL, SDL_MapRGB(surfNiveau->format, 255, 255, 255));
-        if( (pospersoNiveau.x - surfNiveau->w) < (surfNiveau->w)/3 )
-            continuer = avancer(&pospersoNiveau, surfNiveau, selecNiveau);
+        fprintf(stdout,"%lu \n", getpixel(ecran, 650, 350));
+        continuer = avancer(&pospersoNiveau, surfNiveau, selecNiveau);
 		if(continuer == 0)
 			return (-1); //gameOver
         if (continuer == -1)
@@ -85,32 +91,34 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 				return -1;
             }
 				else {chute = 0;}
-			selecNiveau.x = selecNiveau.x + 4;}
+			selecNiveau.x = selecNiveau.x + 4;
+			}
             else {chute +=5;}
         if(collagePossible){
             decouperColler(surfLigne, surfaceFond, posSelection, posDestination);
             collagePossible = 0;
             enSelection = 0;
             dejaSelectionne = 0;
+            enDrag = 0;
         }
         if(enSelection){
-            if(dejaSelectionne){
-                pointilleSelection(surfSelec, selecNiveau, posSelection, -1, -1);
-                pointilleSelection(surfSelec, selecNiveau, posDestination, xSouris, ySouris);
-            }
-            else{
-                pointilleSelection(surfSelec, selecNiveau, posSelection, xSouris, ySouris);
-            }
+            pointilleSelection(surfSelec, selecNiveau, posSelection, xSouris, ySouris);
         }
         else if(dejaSelectionne){
             pointilleSelection(surfSelec, selecNiveau, posSelection, -1, -1);
         }
         SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(surfNiveau->format, 255, 255, 255));
-        SDL_SetColorKey(surfSelec, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
         SDL_BlitSurface(surfLigne, NULL, surfNiveau, NULL);
-        SDL_BlitSurface(surfPerso, NULL, surfNiveau, &pospersoNiveau);
         SDL_BlitSurface(surfNiveau, &selecNiveau, ecran, NULL);
         SDL_BlitSurface(surfPause, NULL, ecran, &pospause);
+        if(enDrag){
+            posAppercu.x =  min(xSouris - xRinit, ecran->w - posSelection.w);
+            posAppercu.y =  min(ySouris - yRinit, ecran->h - posSelection.h);
+            SDL_BlitSurface(surfLigne, &posSelection, ecran, &posAppercu);
+        }
+        posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
+        posPersoEcran.y = pospersoNiveau.y;
+        SDL_BlitSurface(surfPerso, NULL, ecran, &posPersoEcran);
         SDL_BlitSurface(rect, NULL, ecran, &posrec);
         SDL_BlitSurface(surfSelec, NULL, ecran, NULL);
         SDL_Flip(ecran);
@@ -128,30 +136,37 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                 else { SDL_SetAlpha(rect, SDL_SRCALPHA, 0);}
                 break;
             case SDL_MOUSEBUTTONDOWN:
+                xSourisButton = event.button.x;
+                ySourisButton = event.button.y;
                 if(event.button.button == SDL_BUTTON_LEFT){
-                    xSourisButton = event.button.x;
-                    ySourisButton = event.button.y;
                     xSourisButton = xSourisButton + selecNiveau.x;
                     ySourisButton = ySourisButton + selecNiveau.y;
-                    if(collagePossible == 0){
-                        if(enSelection == 0){
-                            enSelection = 1;
-                            if(dejaSelectionne){
-                                posDestination.x = xSourisButton;
-                                posDestination.y = ySourisButton;
-                            }
-                            else{
-                                posSelection.x = xSourisButton;
-                                posSelection.y = ySourisButton;
-                            }
+                    if(enSelection == 0){
+                        enDrag = 0;
+                        dejaSelectionne = 0;
+                        enSelection = 1;
+                        posSelection.x = xSourisButton;
+                        posSelection.y = ySourisButton;
+
+                    }
+                }
+                else if(event.button.button == SDL_BUTTON_RIGHT){
+                    if(!enDrag){
+                        xRinit = xSourisButton - xSouris;
+                        yRinit = ySourisButton - ySouris;
+                        if(dejaSelectionne){
+                            enDrag=1;
+                            posAppercu = posSelection;
+                            posAppercu.x = posSelection.x - selecNiveau.x;
+                            posAppercu.y = posSelection.y - selecNiveau.y;
                         }
                     }
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
+                xSourisButton = event.button.x;
+                ySourisButton = event.button.y;
                 if(event.button.button == SDL_BUTTON_LEFT){
-                    xSourisButton = event.button.x;
-                    ySourisButton = event.button.y;
                     if(((ecran->w - 77) <= xSourisButton) && (ySourisButton < 76)){
                         switch (pause(ecran)){
                             case SORTIE:
@@ -161,10 +176,11 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                                 return MENU;
                                 break;
                             case 0:
-                                event.button.button=SDL_BUTTON_RIGHT;
+                                event.button.button=SDL_BUTTON_MIDDLE;
                                 SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
                                 collagePossible = 0;
                                 enSelection = 0;
+                                enDrag = 0;
                                 dejaSelectionne = 0;
                                 break;
                             default:
@@ -176,24 +192,26 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                         ySourisButton = ySourisButton + selecNiveau.y;
                         if(collagePossible == 0){
                             if(enSelection){
-                                if(dejaSelectionne){
-                                    posDestination.w = abs(posDestination.x-xSourisButton);
-                                    posDestination.h = abs(posDestination.y-ySourisButton);
-                                    posDestination.x = min(posDestination.x, xSourisButton);
-                                    posDestination.y = min(posDestination.y, ySourisButton);
-                                    event.type = SDL_MOUSEMOTION;
-                                    collagePossible = 1;
-                                }
-                                else {
-                                    posSelection.w = abs(posSelection.x-xSourisButton);
-                                    posSelection.h = abs(posSelection.y-ySourisButton);
-                                    posSelection.x = min(posSelection.x, xSourisButton);
-                                    posSelection.y = min(posSelection.y, ySourisButton);
-                                    enSelection = 0;
-                                    dejaSelectionne = 1;
-                                    event.type = SDL_MOUSEMOTION;
-                                }
+                                posSelection.w = abs(posSelection.x-xSourisButton);
+                                posSelection.h = abs(posSelection.y-ySourisButton);
+                                posSelection.x = min(posSelection.x, xSourisButton);
+                                posSelection.y = min(posSelection.y, ySourisButton);
+                                enSelection = 0;
+                                dejaSelectionne = 1;
                             }
+                        }
+                    }
+                }
+                if(event.button.button == SDL_BUTTON_RIGHT){
+                    xSourisButton = xSourisButton + selecNiveau.x;
+                    ySourisButton = ySourisButton + selecNiveau.y;
+                    if(enDrag){
+                        enDrag=0;
+                        if(dejaSelectionne){
+                            collagePossible = 1;
+                            posDestination = posAppercu;
+                            posDestination.x = posAppercu.x + selecNiveau.x;
+                            posDestination.y = posAppercu.y + selecNiveau.y;
                         }
                     }
                 }
@@ -295,27 +313,43 @@ int max(int a, int b){
 
 void decouperColler(SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination){
 
+    SDL_Surface *collage = NULL;
+    SDL_Rect posRelative;
+    posRelative.x = 0;
+    posRelative.y = 0;
+    posRelative.w = posSelection.w;
+    posRelative.h = posSelection.h;
+
+    collage = SDL_CreateRGBSurface(SDL_HWSURFACE , posSelection.w, posSelection.h, 32, 0, 0, 0, 0);
+    cairo_surface_t *surfCollage = cairo_image_surface_create_for_data (collage->pixels,
+                                                      CAIRO_FORMAT_ARGB32,
+                                                      collage->w,
+                                                      collage->h,
+                                                      collage->pitch);
+
     recollementContinu(surfLigne, posSelection, &posDestination);
-	cairo_t *enSelect = cairo_create(surfaceFond);
+
+	cairo_t *enSelect = cairo_create(surfCollage);
 	double scale_x = 1, scale_y = 1; //scale_x = (posDestination.w/posSelection.w), scale_y = (posDestination.h/posSelection.h);
     cairo_scale(enSelect, scale_x, scale_y);
-    cairo_set_source_surface (enSelect, surfaceFond,  (posDestination.x/scale_x) - posSelection.x, (posDestination.y/scale_y) - posSelection.y); //remplit cr avec le chemin présent
+    cairo_set_source_surface (enSelect, surfaceFond,  (posRelative.x/scale_x) - posSelection.x, (posRelative.y/scale_y) - posSelection.y); //remplit cr avec le chemin présent
     //dans surfaceFond en commancant en 0,0 dans cr => 0, 280 dans surfaceFond
     //cairo_set_source_surface (enSelect, source, x_dest*scale_x-x_source, y_dest*scale_y-y_source);
     //cairo_paint(enSelect); //recouvre tout surfaceFond avec cr
-    cairo_rectangle (enSelect, posDestination.x/scale_x, posDestination.y/scale_y, min(posDestination.w/scale_x,posSelection.w), min(posDestination.h/scale_y,posSelection.h)); //cairo_rectangle (enSelect, x_dest*scale_x, y_dest*scale_y, width, heigh);
+    cairo_rectangle (enSelect, posRelative.x/scale_x, posRelative.y/scale_y, min(posDestination.w/scale_x,posSelection.w), min(posDestination.h/scale_y,posSelection.h)); //cairo_rectangle (enSelect, x_dest*scale_x, y_dest*scale_y, width, heigh);
     cairo_fill (enSelect); // ne recouvre surfaceFond que
-    //dans le carrée dont le coin supérieur gauche est en 0,0 et de largeur 100)
+    //dans le carrée dont le coin supérieur gauche est en 0,0 et de largeur 100
+    SDL_BlitSurface(collage, NULL, surfLigne, &posDestination);
 
 }
 
 void recollementContinu(SDL_Surface *surfLigne, SDL_Rect posSelection, SDL_Rect *posDestination){
     int decallage = 0, trouve = 1, compteur = 0, rel_compteur, continuer = 1;
     while(continuer && (compteur < (min(posSelection.h, posDestination->h) - 16))){
-        if(getpixel(surfLigne,posSelection.x + 1, posSelection.y + compteur ) == 4278190080LL){
+        if(getpixel(surfLigne,posSelection.x, posSelection.y + compteur ) == 4278190080LL){
             rel_compteur = max((compteur - 15),0);
             while((rel_compteur < compteur + 15)&&trouve){
-                if(getpixel(surfLigne, posDestination->x-2, posDestination->y + rel_compteur ) == 4278190080LL){
+                if(getpixel(surfLigne, posDestination->x-1, posDestination->y + rel_compteur ) == 4278190080LL){
                     continuer = 0;
                     trouve = 0;
                     decallage = (rel_compteur - compteur);
@@ -414,7 +448,7 @@ void tterrain0(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
     cairo_move_to (droite, 10.5, 135.5);
     cairo_show_text (droite, "Hello");
 
-    cairo_move_to(droite, -0.5, 500.5);
+    cairo_move_to(droite, 0, 500.5);
     cairo_line_to(droite, X_FIN+200.5, 500.5);
     //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
     //cairo_line_to(droite, ecran->w-200., 550.);

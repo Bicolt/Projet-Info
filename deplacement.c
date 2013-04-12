@@ -11,9 +11,9 @@
 #include "deplacement.h"
 
 
-unsigned int getpixel(SDL_Surface *s, int x, int y) {
+long unsigned int getpixel(SDL_Surface *s, int x, int y) {
    // if(y*(s->pitch/sizeof(unsigned int))+x>=(s->w)*(s->h))
-    return ((unsigned int*)s->pixels)[y*(s->pitch/sizeof(unsigned int)) + x];
+    return ((long unsigned int*)s->pixels)[y*(s->pitch/sizeof(long unsigned int)) + x];
 }
 
 int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Rect selecNiveau) {
