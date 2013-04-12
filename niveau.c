@@ -80,7 +80,6 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
         SDL_Delay(max(60 - (temps_actuel-temps_precedent),0));
         temps_precedent = temps_actuel;
         SDL_FillRect(surfSelec, NULL, SDL_MapRGB(surfNiveau->format, 255, 255, 255));
-        fprintf(stdout,"%lu \n", getpixel(ecran, 650, 350));
         continuer = avancer(&pospersoNiveau, surfNiveau, selecNiveau);
 		if(continuer == 0)
 			return (-1); //gameOver
