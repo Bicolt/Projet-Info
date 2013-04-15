@@ -18,12 +18,14 @@ long unsigned int getpixel(SDL_Surface *s, int x, int y) {
 
 int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Rect selecNiveau) {
     if (sortir(pposperso, terrain, selecNiveau))
-            return 0;
+            return 0; // game over
     if(finir(pposperso) == -1)
-        return -1;
+        return -1; // Victoire
+    if (solsouspieds(pposperso, terrain) == -1)
+        return 0; // game over
     if (solsouspieds(pposperso, terrain) == 0) {
         tomber(pposperso, terrain);
-        return 2;
+        return 2; // tomber
     }
     if (monter(pposperso, terrain) == 1) {
         tomber(pposperso, terrain);
@@ -37,13 +39,13 @@ int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Rect selecNiveau) {
             descendre(pposperso, terrain);
         }
     }
-    return 1;
+    return 1; // avancer
 }
 
 int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
     for(i=0 ; i<= 10 ; i++) {
-        if ( getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y - 5) == 4278190080LL )
+        if ( getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y - 5) == 4278190080LL ) //noir
             return 0;
     }
     for(i=0 ; i<= 20 ; i++) {
@@ -89,6 +91,8 @@ int solsouspieds ( SDL_Rect* pposperso, SDL_Surface* terrain) {
     for(i=0 ; i<= 10 ; i++) {
         if ( getpixel(terrain, pposperso->x - 5*i + L_PERSO, pposperso->y + H_PERSO) == 4278190080LL )
             return 1;
+        else if ( getpixel(terrain, pposperso->x - 5*i + L_PERSO, pposperso->y + H_PERSO) == 4294901760LL ) // zone rouge
+            return -1;
     }
     return 0;
 

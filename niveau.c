@@ -50,8 +50,6 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     SDL_FillRect(surfLigne, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
 
-    // Création d'une surface cairo pour le personnage ayant pour format d'affichage celui d'une surface SDL
-
     // Création d'une surface cairo ayant pour format d'affichage celui d'une surface SDL
     surfaceFond = cairo_image_surface_create_for_data (surfLigne->pixels,
                                                       CAIRO_FORMAT_ARGB32,
@@ -501,6 +499,10 @@ void tterrain2(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
     cairo_line_to(droite, X_FIN + 200.5, 500.5);
     cairo_move_to(droite, 2450.5, 400.5);
     cairo_line_to(droite, 2450.5, 350.5);
+    cairo_stroke(droite);
+    cairo_set_source_rgba (droite, 1, 0, 0, 1);
+    cairo_move_to(droite, 1450.5, 500.5);
+    cairo_line_to(droite, 1600.5, 600.5);
     //cairo_curve_to(droite, ecran->w, 400., ecran->w, 400., ecran->w, 400.);
     //cairo_line_to(droite, ecran->w-200., 550.);
     cairo_stroke(droite);

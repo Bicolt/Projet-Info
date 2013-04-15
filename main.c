@@ -30,7 +30,7 @@ int main(int argc, char *argv[]){
     }
     SDL_WM_SetCaption("essai de menu", NULL);
 
-    police = TTF_OpenFont("ariblk.ttf", 55);
+    police = TTF_OpenFont("VirtualVectorVortex.ttf", 85);
 
     while(continuer){
         enNiveau=1;

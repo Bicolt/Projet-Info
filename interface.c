@@ -150,7 +150,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
 
 int pause(SDL_Surface* ecran){
 
-    TTF_Font *police = TTF_OpenFont("ariblk.ttf", 55);
+    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
 	SDL_Color White = {255, 255, 255};
@@ -263,7 +263,7 @@ int pause(SDL_Surface* ecran){
 
 int choixNiveau (SDL_Surface *ecran) {
 
-    TTF_Font *police = TTF_OpenFont("ariblk.ttf", 55);
+    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 55);
     SDL_Surface *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
     SDL_Event event;
@@ -283,15 +283,15 @@ int choixNiveau (SDL_Surface *ecran) {
 
 
     SDL_BlitSurface(fond, NULL, ecran, &pos);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Choix du niveau", centrex, posyTitre);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Menu principal", centrex, posyMenu);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Tutoriel", centrex, posy0);
-    afficherTexteCentre(ecran, "ariblk.ttf", 58, "1", centrex - ecran->w/7, posyl1);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "2", centrex, posyl1);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "3", centrex + ecran->w/7, posyl1);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "4", centrex - ecran->w/7, posyl2);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "5", centrex, posyl2);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "6", centrex + ecran->w/7, posyl2);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "Choix du niveau", centrex, posyTitre);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "Menu principal", centrex, posyMenu);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "Tutoriel", centrex, posy0);
+    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "1", centrex - ecran->w/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "2", centrex, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "3", centrex + ecran->w/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "4", centrex - ecran->w/7, posyl2);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "5", centrex, posyl2);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "6", centrex + ecran->w/7, posyl2);
 
     afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
     SDL_Flip(ecran);
@@ -440,15 +440,15 @@ int choixNiveau (SDL_Surface *ecran) {
             break;
     }
     SDL_BlitSurface(fond, NULL, ecran, &pos);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Choix du niveau", centrex, posyTitre);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Menu principal", centrex, posyMenu);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "Tutoriel", centrex, posy0);
-    afficherTexteCentre(ecran, "ariblk.ttf", 58, "1", centrex - ecran->w/7, posyl1);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "2", centrex, posyl1);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "3", centrex + ecran->w/7, posyl1);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "4", centrex - ecran->w/7, posyl2);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "5", centrex, posyl2);
-	afficherTexteCentre(ecran, "ariblk.ttf", 58, "6", centrex + ecran->w/7, posyl2);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "Choix du niveau", centrex, posyTitre);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "Menu principal", centrex, posyMenu);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "Tutoriel", centrex, posy0);
+    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "1", centrex - ecran->w/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "2", centrex, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "3", centrex + ecran->w/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "4", centrex - ecran->w/7, posyl2);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "5", centrex, posyl2);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "6", centrex + ecran->w/7, posyl2);
 	afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
     SDL_Flip(ecran);
     }
@@ -458,7 +458,7 @@ int choixNiveau (SDL_Surface *ecran) {
 int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau chargé pour le recharger dans recommencer
 
     fprintf(stdout,"bouh\n");
-    TTF_Font *police = TTF_OpenFont("ariblk.ttf", 55);
+    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
 	SDL_Color White = {255, 255, 255};
@@ -585,7 +585,7 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
 
 int victoire(SDL_Surface *ecran){
 
-    TTF_Font *police = TTF_OpenFont("ariblk.ttf", 55);
+    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
 	SDL_Color White = {255, 255, 255};
