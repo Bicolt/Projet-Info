@@ -114,7 +114,7 @@ int sortir (SDL_Rect *pposperso, SDL_Surface *terrain, SDL_Rect selecNiveau){
     if (pposperso->x < selecNiveau.x + 6){
         return 1;
     }
-    if(pposperso->y < 1)
+    if(pposperso->y < 6)
         return 1;
     return 0;
 }
