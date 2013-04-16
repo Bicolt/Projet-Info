@@ -64,7 +64,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 
     SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_SetColorKey(surfSelec, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
-    SDL_BlitSurface(surfPerso, NULL, surfNiveau, &pos);
+    SDL_SetColorKey(surfLigne, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_BlitSurface(surfLigne, NULL, surfNiveau, NULL);
     afficherTexte(surfPause, "ariblk.ttf", 60, "II", 0, 0);
     SDL_BlitSurface(surfPause, NULL, surfNiveau, &pospause);
@@ -318,6 +318,7 @@ void decouperColler(SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Re
     posRelative.h = posSelection.h;
 
     collage = SDL_CreateRGBSurface(SDL_HWSURFACE , posSelection.w, posSelection.h, 32, 0, 0, 0, 0);
+    SDL_SetColorKey(collage, SDL_SRCCOLORKEY, SDL_MapRGB(collage->format,255,255,255));
     cairo_surface_t *surfCollage = cairo_image_surface_create_for_data (collage->pixels,
                                                       CAIRO_FORMAT_ARGB32,
                                                       collage->w,
@@ -343,10 +344,12 @@ void decouperColler(SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Re
 void recollementContinu(SDL_Surface *surfLigne, SDL_Rect posSelection, SDL_Rect *posDestination){
     int decallage = 0, trouve = 1, compteur = 0, rel_compteur, continuer = 1;
     while(continuer && (compteur < (min(posSelection.h, posDestination->h) - 16))){
-        if(getpixel(surfLigne,posSelection.x, posSelection.y + compteur ) == 4278190080LL){
+        long unsigned int pix = getpixel(surfLigne,posSelection.x, posSelection.y + compteur );
+        if((pix == 0LL)||(pix == 4278190080LL)){
             rel_compteur = max((compteur - 15),0);
             while((rel_compteur < compteur + 15)&&trouve){
-                if(getpixel(surfLigne, posDestination->x-1, posDestination->y + rel_compteur ) == 4278190080LL){
+                long unsigned int pix_int = getpixel(surfLigne, posDestination->x-1, posDestination->y + rel_compteur);
+                if((pix_int == 0LL) || (pix_int == 4278190080LL)){
                     continuer = 0;
                     trouve = 0;
                     decallage = (rel_compteur - compteur);

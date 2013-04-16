@@ -457,7 +457,6 @@ int choixNiveau (SDL_Surface *ecran) {
 
 int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau chargé pour le recharger dans recommencer
 
-    fprintf(stdout,"bouh\n");
     TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
