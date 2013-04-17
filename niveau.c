@@ -15,7 +15,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 
 
     int continuer = 1, select = 0;
-    int enSelection = 0, dejaSelectionne = 0, collagePossible = 0, enDrag = 0, chute = 0;
+    int enSelection = 0, dejaSelectionne = 0, collagePossible = 0, enDrag = 0, chute = 0, enRotation = 0;
     Uint32 temps_precedent = SDL_GetTicks(), temps_actuel = SDL_GetTicks();
     int xSouris = 0, ySouris = 0;
     int xSourisButton = 0, ySourisButton = 0;
@@ -67,15 +67,15 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     SDL_SetColorKey(surfLigne, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_BlitSurface(surfLigne, NULL, surfNiveau, NULL);
     afficherTexte(surfPause, "ariblk.ttf", 60, "II", 0, 0);
-    SDL_BlitSurface(surfPause, NULL, surfNiveau, &pospause);
     SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
     SDL_BlitSurface(rect, NULL, surfNiveau, &posrec);
     SDL_BlitSurface(surfNiveau, &selecNiveau, ecran, NULL);
     SDL_BlitSurface(surfSelec, NULL, ecran, NULL);
     SDL_Flip(ecran);
+    SDL_EnableKeyRepeat(0,0);
     while(continuer!=0){
         temps_actuel = SDL_GetTicks();
-        SDL_Delay(max(60 - (temps_actuel-temps_precedent),0));
+        //SDL_Delay(max(60 - (temps_actuel-temps_precedent),0));
         temps_precedent = temps_actuel;
         SDL_FillRect(surfSelec, NULL, SDL_MapRGB(surfNiveau->format, 255, 255, 255));
         continuer = avancer(&pospersoNiveau, surfNiveau, selecNiveau);
@@ -104,7 +104,6 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
         else if(dejaSelectionne){
             pointilleSelection(surfSelec, selecNiveau, posSelection, -1, -1);
         }
-        SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(surfNiveau->format, 255, 255, 255));
         SDL_BlitSurface(surfLigne, NULL, surfNiveau, NULL);
         SDL_BlitSurface(surfNiveau, &selecNiveau, ecran, NULL);
         SDL_BlitSurface(surfPause, NULL, ecran, &pospause);
@@ -200,6 +199,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                     }
                 }
                 if(event.button.button == SDL_BUTTON_RIGHT){
+                    enRotation  = 0;
                     xSourisButton = xSourisButton + selecNiveau.x;
                     ySourisButton = ySourisButton + selecNiveau.y;
                     if(enDrag){
@@ -231,6 +231,19 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                             default:
                                 break;
                             }
+                        break;
+                    case SDLK_r:
+                        if(enDrag)
+                            enRotation = 1;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case SDL_KEYUP:
+                switch(event.key.keysym.sym){
+                    case SDLK_r:
+                        enRotation = 0;
                         break;
                     default:
                         break;
