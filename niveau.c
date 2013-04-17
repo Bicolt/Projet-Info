@@ -43,12 +43,12 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     cairo_surface_t *surfaceFond;
     rect = selection(60, 60, surfNiveau->format);
     SDL_Event event;
+    SDL_FillRect(ecran, NULL,SDL_MapRGB(ecran->format, 255, 255, 255));
     SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     SDL_FillRect(surfSelec, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     SDL_FillRect(surfPause, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     SDL_FillRect(surfPerso, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     SDL_FillRect(surfLigne, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-    SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
 
     // Création d'une surface cairo ayant pour format d'affichage celui d'une surface SDL
     surfaceFond = cairo_image_surface_create_for_data (surfLigne->pixels,
@@ -318,6 +318,7 @@ void decouperColler(SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Re
     posRelative.h = posSelection.h;
 
     collage = SDL_CreateRGBSurface(SDL_HWSURFACE , posSelection.w, posSelection.h, 32, 0, 0, 0, 0);
+    SDL_FillRect(collage, NULL, SDL_MapRGB(collage->format,255,255,255));
     SDL_SetColorKey(collage, SDL_SRCCOLORKEY, SDL_MapRGB(collage->format,255,255,255));
     cairo_surface_t *surfCollage = cairo_image_surface_create_for_data (collage->pixels,
                                                       CAIRO_FORMAT_ARGB32,
@@ -328,8 +329,11 @@ void decouperColler(SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Re
     recollementContinu(surfLigne, posSelection, &posDestination);
 
 	cairo_t *enSelect = cairo_create(surfCollage);
-	double scale_x = 1, scale_y = 1; //scale_x = (posDestination.w/posSelection.w), scale_y = (posDestination.h/posSelection.h);
+	double scale_x = 1, scale_y = 1, long_centre =0; //scale_x = (posDestination.w/posSelection.w), scale_y = (posDestination.h/posSelection.h);
     cairo_scale(enSelect, scale_x, scale_y);
+    cairo_rotate(enSelect,M_PI_4);
+    long_centre = sqrt((collage->w*(collage->w)*0.25)+(collage->h*(collage->h)*0.25));
+    cairo_translate(enSelect, long_centre-(long_centre*cos(M_PI_4)), -long_centre*sin(M_PI_4));
     cairo_set_source_surface (enSelect, surfaceFond,  (posRelative.x/scale_x) - posSelection.x, (posRelative.y/scale_y) - posSelection.y); //remplit cr avec le chemin présent
     //dans surfaceFond en commancant en 0,0 dans cr => 0, 280 dans surfaceFond
     //cairo_set_source_surface (enSelect, source, x_dest*scale_x-x_source, y_dest*scale_y-y_source);

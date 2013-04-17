@@ -539,14 +539,14 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
                     case SDLK_UP:
                         select = (select + 2)%3;
                         if(select == 2)
-                            posrec.y = posrec.y + ecran->h*6/16;
-                        else posrec.y = posrec.y - ecran->h*6/16;
+                            posrec.y = posrec.y + 2*ecran->h*3/16;
+                        else posrec.y = posrec.y - ecran->h*3/16;
                         break;
                     case SDLK_DOWN:
                         select = (select + 1)%3;
                         if(select == 0)
-                            posrec.y = posrec.y - ecran->h*6/16;
-                        else posrec.y = posrec.y + ecran->h*6/16;
+                            posrec.y = posrec.y - 2*ecran->h*3/16;
+                        else posrec.y = posrec.y + ecran->h*3/16;
                         break;
                     case SDLK_ESCAPE:
                             return SORTIE;
