@@ -38,6 +38,8 @@ int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Rect selecNiveau) {
         else {
             descendre(pposperso, terrain);
         }
+        if (monter(pposperso, terrain) == -1)
+            return 0; // game over
     }
     return 1; // avancer
 }
@@ -51,6 +53,10 @@ int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     for(i=0 ; i<= 20 ; i++) {
         if ( getpixel(terrain, pposperso->x + 64, pposperso->y + 5*i - 5) == 0LL )
             return 0;
+    }
+    for(i=0 ; i<= 20 ; i++) {
+        if ( getpixel(terrain, pposperso->x + 64, pposperso->y + 5*i - 5) == 16711680LL )
+            return -1;
     }
     //Si on a survécu aux deux boucles, on peut monter (meme si on est sur du plat). Du coup on s'en prive pas.
     pposperso->x += 4;
