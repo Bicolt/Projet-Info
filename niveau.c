@@ -5,11 +5,14 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <math.h>
+#include "main.h"
 #include "niveau.h"
 #include "interface.h"
 #include "affichage.h"
 #include "deplacement.h"
 #include "terrains.h"
+
+
 
 int niveau(SDL_Surface *ecran, int choixTerrain){
 
@@ -23,8 +26,8 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 
 
     SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
-    surfNiveau = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ecran->w, ecran->h, 32, 0, 0, 0, 0);
-    surfSelec = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
+    surfNiveau = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ew, eh, 32, 0, 0, 0, 0);
+    surfSelec = SDL_CreateRGBSurface(SDL_HWSURFACE, ew, eh, 32, 0, 0, 0, 0);
     surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, L_PERSO, H_PERSO, 32, 0, 0, 0, 0);
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, surfNiveau->w, surfNiveau->h, 32, 0, 0, 0, 0);
     surfPause = SDL_CreateRGBSurface(SDL_HWSURFACE, 70, 70, 32, 0, 0, 0, 0);
@@ -32,16 +35,16 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     SDL_Rect pos, posligne, pospersoNiveau, pospause, posrec, selecNiveau, posSelection, posDestination, posAppercu, posPersoEcran;
     pos.x = selecNiveau.x = posligne.x = posSelection.x = posDestination.x = posAppercu.x = 0;
     pos.y = selecNiveau.y = posligne.y = posSelection.y = posDestination.y = posAppercu.y = 0;
-    selecNiveau.h = ecran -> h;
-    selecNiveau.w = ecran -> w;
-    pospause.x = ecran->w - 70;
+    selecNiveau.h = eh;
+    selecNiveau.w = ew;
+    pospause.x = ew - 70*eh/768;
     pospause.y = 0;
-    pospersoNiveau.x = ecran->w/6;
-    pospersoNiveau.y = 300;
+    pospersoNiveau.x = ew/6;
+    pospersoNiveau.y = eh/3;
     posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
     posPersoEcran.y = pospersoNiveau.y;
     cairo_surface_t *surfaceFond;
-    rect = selection(60, 60, surfNiveau->format);
+    rect = selection(60*eh/768, 60*eh/768, surfNiveau->format);
     SDL_Event event;
     SDL_FillRect(ecran, NULL,SDL_MapRGB(ecran->format, 255, 255, 255));
     SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
@@ -66,7 +69,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     SDL_SetColorKey(surfSelec, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_SetColorKey(surfLigne, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
     SDL_BlitSurface(surfLigne, NULL, surfNiveau, NULL);
-    afficherTexte(surfPause, "ariblk.ttf", 60, "II", 0, 0);
+    afficherTexte(surfPause, "ariblk.ttf", 60*eh/768, "II", 0, 0);
     SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
     SDL_BlitSurface(rect, NULL, surfNiveau, &posrec);
     SDL_BlitSurface(surfNiveau, &selecNiveau, ecran, NULL);
@@ -108,8 +111,8 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
         SDL_BlitSurface(surfNiveau, &selecNiveau, ecran, NULL);
         SDL_BlitSurface(surfPause, NULL, ecran, &pospause);
         if(enDrag){
-            posAppercu.x =  min(xSouris - xRinit, ecran->w - posSelection.w);
-            posAppercu.y =  min(ySouris - yRinit, ecran->h - posSelection.h);
+            posAppercu.x =  min(xSouris - xRinit, ew - posSelection.w);
+            posAppercu.y =  min(ySouris - yRinit, eh - posSelection.h);
             SDL_BlitSurface(surfLigne, &posSelection, ecran, &posAppercu);
         }
         posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
@@ -123,11 +126,11 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
             case SDL_MOUSEMOTION:
                 xSouris = event.button.x;
                 ySouris = event.button.y;
-                if(((ecran->w - 77) <= xSouris) && (ySouris < 76)){
+                if(((ew - 77*eh/768) <= xSouris) && (ySouris < 76*eh/768)){
                     SDL_SetAlpha(rect, SDL_SRCALPHA, 120);
                     select = 0;
-                    posrec.x=ecran->w - 77;
-                    posrec.y=14;
+                    posrec.x=ew - 77*eh/768;
+                    posrec.y=14*eh/768;
                 }
                 else { SDL_SetAlpha(rect, SDL_SRCALPHA, 0);}
                 break;
@@ -163,7 +166,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                 xSourisButton = event.button.x;
                 ySourisButton = event.button.y;
                 if(event.button.button == SDL_BUTTON_LEFT){
-                    if(((ecran->w - 77) <= xSourisButton) && (ySourisButton < 76)){
+                    if(((ew - 77*eh/768) <= xSourisButton) && (ySourisButton < 76*eh/768)){
                         switch (pause(ecran)){
                             case SORTIE:
                                 return SORTIE;
@@ -232,7 +235,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                                 break;
                             }
                         break;
-                    case SDLK_r:
+                        case SDLK_r:
                         if(enDrag)
                             enRotation = 1;
                         break;
@@ -344,9 +347,9 @@ void decouperColler(SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Re
 	cairo_t *enSelect = cairo_create(surfCollage);
 	double scale_x = 1, scale_y = 1, long_centre =0; //scale_x = (posDestination.w/posSelection.w), scale_y = (posDestination.h/posSelection.h);
     cairo_scale(enSelect, scale_x, scale_y);
-    cairo_rotate(enSelect,M_PI_4);
+    //cairo_rotate(enSelect,M_PI_4);
     long_centre = sqrt((collage->w*(collage->w)*0.25)+(collage->h*(collage->h)*0.25));
-    cairo_translate(enSelect, long_centre-(long_centre*cos(M_PI_4)), -long_centre*sin(M_PI_4));
+    //cairo_translate(enSelect, long_centre-(long_centre*cos(M_PI_4)), -long_centre*sin(M_PI_4));
     cairo_set_source_surface (enSelect, surfaceFond,  (posRelative.x/scale_x) - posSelection.x, (posRelative.y/scale_y) - posSelection.y); //remplit cr avec le chemin présent
     //dans surfaceFond en commancant en 0,0 dans cr => 0, 280 dans surfaceFond
     //cairo_set_source_surface (enSelect, source, x_dest*scale_x-x_source, y_dest*scale_y-y_source);

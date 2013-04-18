@@ -4,6 +4,7 @@
 #define L_PERSO 60
 #define X_FIN 3400
 
+
 int min(int a, int b);
 int max(int a, int b);
 void pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect pos, int xSouris, int ySouris);

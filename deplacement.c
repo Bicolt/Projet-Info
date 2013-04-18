@@ -7,6 +7,7 @@
 #include <math.h>
 #include "niveau.h"
 #include "interface.h"
+#include "main.h"
 #include "affichage.h"
 #include "deplacement.h"
 

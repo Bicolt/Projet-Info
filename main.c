@@ -4,10 +4,12 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include "main.h"
 #include "affichage.h"
 #include "interface.h"
 #include "niveau.h"
 
+int ew, eh;
 
 int main(int argc, char *argv[]){
 
@@ -24,13 +26,15 @@ int main(int argc, char *argv[]){
 
     SDL_WM_SetIcon(icone, NULL);
     ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+    eh = ecran->h;
+    ew = ecran->w;
     if (ecran == NULL){  // Si l'ouverture a échoué, on le note et on arrête
         fprintf(stderr, "Impossible de charger le mode vidéo : %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
     SDL_WM_SetCaption("essai de menu", NULL);
 
-    police = TTF_OpenFont("VirtualVectorVortex.ttf", 85);
+    police = TTF_OpenFont("VirtualVectorVortex.ttf", 85*eh/768);
 
     while(continuer){
         enNiveau=1;
