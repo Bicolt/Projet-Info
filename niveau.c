@@ -21,16 +21,16 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     int xSouris = 0, ySouris = 0;
     int xSourisButton = 0, ySourisButton = 0;
     int xRinit = 0, yRinit = 0;
-    double longueur = 0., longueur_proj = 0., angle = 0.;
+    double longueur = 0., longueur_proj = 0., angle = 0., angleTotal = 0.;
 
 
-    SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
-    surfNiveau = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ew, eh, 32, 0, 0, 0, 0);
+    SDL_Surface *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
+    surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ew, eh, 32, 0, 0, 0, 0);
     surfSelec = SDL_CreateRGBSurface(SDL_HWSURFACE, ew, eh, 32, 0, 0, 0, 0);
     surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, L_PERSO, H_PERSO, 32, 0, 0, 0, 0);
     surfPause = SDL_CreateRGBSurface(SDL_HWSURFACE, 70, 70, 32, 0, 0, 0, 0);
 
-    SDL_Rect pos, posligne, pospersoNiveau, pospause, posrec, selecNiveau, posSelection, posDestination, posAppercu, posPersoEcran;
+    SDL_Rect posPointille, pos, posligne, pospersoNiveau, pospause, posrec, selecNiveau, posSelection, posDestination, posAppercu, posPersoEcran;
     pos.x = selecNiveau.x = posligne.x = posSelection.x = posDestination.x = posAppercu.x = 0;
     pos.y = selecNiveau.y = posligne.y = posSelection.y = posDestination.y = posAppercu.y = 0;
     selecNiveau.h = eh;
@@ -49,7 +49,6 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     SDL_FillRect(surfPause, NULL, Blanc);
     SDL_FillRect(surfPerso, NULL, Blanc);
     SDL_FillRect(surfLigne, NULL, Blanc);
-
     // Création d'une surface cairo ayant pour format d'affichage celui d'une surface SDL
     surfaceFond = cairo_image_surface_create_for_data (surfLigne->pixels,
                                                       CAIRO_FORMAT_ARGB32,
@@ -68,7 +67,6 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     SDL_Flip(ecran);
     while(continuer!=0){
         SDL_FillRect(surfSelec, NULL, Blanc);
-        posVision.x = selecNiveau.x;
         continuer = avancer(&pospersoNiveau, surfLigne, selecNiveau);
 		if(continuer == 0)
 			return (-1); //gameOver
@@ -105,15 +103,17 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                     angle = acos(longueur_proj/longueur);
                 else angle = -acos(longueur_proj/longueur);
             }
-            decouperColler(1, ecran, surfaceFond, posSelection, posAppercu, angle);
+            angleTotal=+angle;
+            decouperColler(1, ecran, surfaceFond, posSelection, posAppercu, angleTotal);
         }
         if(collagePossible){
-            decouperColler(0, surfLigne, surfaceFond, posSelection, posDestination, angle);
+            decouperColler(0, surfLigne, surfaceFond, posSelection, posDestination, angleTotal);
             collagePossible = 0;
             enSelection = 0;
             dejaSelectionne = 0;
             enDrag = 0;
             angle = 0;
+            angleTotal = 0;
         }
         posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
         posPersoEcran.y = pospersoNiveau.y;
@@ -121,7 +121,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
         SDL_BlitSurface(rect, NULL, ecran, &posrec);
         SDL_Flip(ecran);
         temps_actuel = SDL_GetTicks();
-        SDL_Delay(max(35 - (temps_actuel-temps_precedent),0));
+        SDL_Delay(max(45 - (temps_actuel-temps_precedent),0));
         temps_precedent = temps_actuel;
         SDL_PollEvent(&event);
         switch(event.type){
@@ -181,8 +181,10 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                                 SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
                                 collagePossible = 0;
                                 enSelection = 0;
-                                enDrag = 0;
                                 dejaSelectionne = 0;
+                                enDrag = 0;
+                                angle = 0;
+                                angleTotal = 0;
                                 break;
                             default:
                                 break;
@@ -229,8 +231,12 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                                 return MENU;
                                 break;
                             case 0:
-                            /*cairo_surface_destroy(surfaceFond);
-                            SDL_FreeSurface(surfNiveau);*/
+                                collagePossible = 0;
+                                enSelection = 0;
+                                dejaSelectionne = 0;
+                                enDrag = 0;
+                                angle = 0;
+                                angleTotal = 0;
                                 event.key.keysym.sym = SDLK_a;
                                 break;
                             default:
