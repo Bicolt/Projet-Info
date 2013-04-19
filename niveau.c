@@ -254,7 +254,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                 switch(event.key.keysym.sym){
                     case SDLK_r:
                         if(enRotation){
-                            angleTotal = mod_d(angleTotal + angle, M_PI);
+                            angleTotal = angle;
                         }
                         enRotation = 0;
                         break;
