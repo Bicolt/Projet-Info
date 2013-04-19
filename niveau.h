@@ -9,6 +9,7 @@ int min(int a, int b);
 int max(int a, int b);
 double min_d(double a, double b);
 double max_d(double a, double b);
+double mod_d(double a, double b);
 SDL_Rect pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect pos, int xSouris, int ySouris);
 void recollementContinu(SDL_Surface *surfLigne, SDL_Rect posSelection, SDL_Rect *posDestination);
 void decouperColler(int enAppercu, SDL_Surface * surfLigne, cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination, double angle);
