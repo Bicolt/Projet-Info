@@ -265,7 +265,6 @@ int choixNiveau (SDL_Surface *ecran) {
 
     TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 55);
     SDL_Surface *fond = NULL;
-	SDL_Color Black = {0, 0, 0};
     SDL_Event event;
     SDL_Rect pos;
     int xSouris, ySouris;

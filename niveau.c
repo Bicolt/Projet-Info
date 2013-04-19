@@ -13,27 +13,29 @@
 
 int niveau(SDL_Surface *ecran, int choixTerrain){
 
-
+    Uint32 Blanc = 0xFFFFFFFF;
     int continuer = 1, select = 0;
     int enSelection = 0, dejaSelectionne = 0, collagePossible = 0, enDrag = 0, chute = 0, enRotation = 0;
     Uint32 temps_precedent = SDL_GetTicks(), temps_actuel = SDL_GetTicks();
     int xSouris = 0, ySouris = 0;
     int xSourisButton = 0, ySourisButton = 0;
     int xRinit = 0, yRinit = 0;
+    double longueur = 0., longueur_proj = 0., angle = 0.;
 
 
-    SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
-    surfNiveau = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ecran->w, ecran->h, 32, 0, 0, 0, 0);
+    SDL_Surface *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
+    surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, 3*ecran->w, ecran->h, 32, 0, 0, 0, 0);
     surfSelec = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
     surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, L_PERSO, H_PERSO, 32, 0, 0, 0, 0);
-    surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, surfNiveau->w, surfNiveau->h, 32, 0, 0, 0, 0);
     surfPause = SDL_CreateRGBSurface(SDL_HWSURFACE, 70, 70, 32, 0, 0, 0, 0);
+    rect = selection(60, 60, surfLigne->format);
 
-    SDL_Rect pos, posligne, pospersoNiveau, pospause, posrec, selecNiveau, posSelection, posDestination, posAppercu, posPersoEcran;
-    pos.x = selecNiveau.x = posligne.x = posSelection.x = posDestination.x = posAppercu.x = 0;
-    pos.y = selecNiveau.y = posligne.y = posSelection.y = posDestination.y = posAppercu.y = 0;
-    selecNiveau.h = ecran -> h;
+    SDL_Rect posPointille, pos, posVision, posligne, pospersoNiveau, pospause, posrec, selecNiveau, posSelection, posDestination, posAppercu, posPersoEcran;
+    pos.x = selecNiveau.x = posligne.x = posSelection.x = posDestination.x = posAppercu.x = posVision.x = 0;
+    pos.y = selecNiveau.y = posligne.y = posSelection.y = posDestination.y = posAppercu.y = posVision.y = 0;
+    selecNiveau.h = posVision.h = ecran -> h;
     selecNiveau.w = ecran -> w;
+    posVision.w = ecran -> w + 4;
     pospause.x = ecran->w - 70;
     pospause.y = 0;
     pospersoNiveau.x = ecran->w/6;
@@ -41,14 +43,12 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
     posPersoEcran.y = pospersoNiveau.y;
     cairo_surface_t *surfaceFond;
-    rect = selection(60, 60, surfNiveau->format);
     SDL_Event event;
-    SDL_FillRect(ecran, NULL,SDL_MapRGB(ecran->format, 255, 255, 255));
-    SDL_FillRect(surfNiveau, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-    SDL_FillRect(surfSelec, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-    SDL_FillRect(surfPause, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-    SDL_FillRect(surfPerso, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-    SDL_FillRect(surfLigne, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
+    SDL_FillRect(ecran, NULL, Blanc);
+    SDL_FillRect(surfSelec, NULL, Blanc);
+    SDL_FillRect(surfPause, NULL, Blanc);
+    SDL_FillRect(surfPerso, NULL, Blanc);
+    SDL_FillRect(surfLigne, NULL, Blanc);
 
     // Création d'une surface cairo ayant pour format d'affichage celui d'une surface SDL
     surfaceFond = cairo_image_surface_create_for_data (surfLigne->pixels,
@@ -60,25 +60,15 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 
 
     chargerTerrain(ecran, surfaceFond, choixTerrain);
-	cairo_t *personnage = pperso(surfNiveau, surfPerso);
-
-    SDL_SetColorKey(surfPerso, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
-    SDL_SetColorKey(surfSelec, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
-    SDL_SetColorKey(surfLigne, SDL_SRCCOLORKEY, SDL_MapRGB(surfPerso->format,255,255,255));
-    SDL_BlitSurface(surfLigne, NULL, surfNiveau, NULL);
+    cairo_t *perso = pperso(ecran, surfPerso);
     afficherTexte(surfPause, "ariblk.ttf", 60, "II", 0, 0);
     SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
-    SDL_BlitSurface(rect, NULL, surfNiveau, &posrec);
-    SDL_BlitSurface(surfNiveau, &selecNiveau, ecran, NULL);
-    SDL_BlitSurface(surfSelec, NULL, ecran, NULL);
-    SDL_Flip(ecran);
     SDL_EnableKeyRepeat(0,0);
+    SDL_Flip(ecran);
     while(continuer!=0){
-        temps_actuel = SDL_GetTicks();
-        //SDL_Delay(max(60 - (temps_actuel-temps_precedent),0));
-        temps_precedent = temps_actuel;
-        SDL_FillRect(surfSelec, NULL, SDL_MapRGB(surfNiveau->format, 255, 255, 255));
-        continuer = avancer(&pospersoNiveau, surfNiveau, selecNiveau);
+        SDL_FillRect(surfSelec, NULL, Blanc);
+        posVision.x = selecNiveau.x;
+        continuer = avancer(&pospersoNiveau, surfLigne, selecNiveau);
 		if(continuer == 0)
 			return (-1); //gameOver
         if (continuer == -1)
@@ -91,33 +81,47 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 			selecNiveau.x = selecNiveau.x + 4;
 			}
             else {chute +=5;}
+        if(enSelection){
+            posPointille = pointilleSelection(surfSelec, selecNiveau, posSelection, xSouris, ySouris);
+        }
+        else if(dejaSelectionne){
+            posPointille = pointilleSelection(surfSelec, selecNiveau, posSelection, -1, -1);
+        }
+        SDL_BlitSurface(surfLigne, &selecNiveau, ecran, NULL);
+        if(posPointille.x >= 0){
+            insererSurface(surfSelec, NULL, ecran, NULL);
+        }
+        SDL_BlitSurface(surfPause, NULL, ecran, &pospause);
+        if(enDrag){
+            if(!enRotation){
+                posAppercu.x =  min(xSouris - xRinit, ecran->w - posSelection.w);
+                posAppercu.y =  min(ySouris - yRinit, ecran->h - posSelection.h);
+            }
+            else{
+                longueur_proj = (posAppercu.y + posAppercu.h) - ySouris;
+                longueur = sqrt((longueur_proj*longueur_proj) + ((xSouris-posAppercu.x)*(xSouris-posAppercu.x)));
+                if(xSouris > posAppercu.x)
+                    angle = acos(longueur_proj/longueur);
+                else angle = -acos(longueur_proj/longueur);
+            }
+            decouperColler(1, ecran, surfaceFond, posSelection, posAppercu, angle);
+        }
         if(collagePossible){
-            decouperColler(surfLigne, surfaceFond, posSelection, posDestination);
+            decouperColler(0, surfLigne, surfaceFond, posSelection, posDestination, angle);
             collagePossible = 0;
             enSelection = 0;
             dejaSelectionne = 0;
             enDrag = 0;
-        }
-        if(enSelection){
-            pointilleSelection(surfSelec, selecNiveau, posSelection, xSouris, ySouris);
-        }
-        else if(dejaSelectionne){
-            pointilleSelection(surfSelec, selecNiveau, posSelection, -1, -1);
-        }
-        SDL_BlitSurface(surfLigne, NULL, surfNiveau, NULL);
-        SDL_BlitSurface(surfNiveau, &selecNiveau, ecran, NULL);
-        SDL_BlitSurface(surfPause, NULL, ecran, &pospause);
-        if(enDrag){
-            posAppercu.x =  min(xSouris - xRinit, ecran->w - posSelection.w);
-            posAppercu.y =  min(ySouris - yRinit, ecran->h - posSelection.h);
-            SDL_BlitSurface(surfLigne, &posSelection, ecran, &posAppercu);
+            angle = 0;
         }
         posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
         posPersoEcran.y = pospersoNiveau.y;
-        SDL_BlitSurface(surfPerso, NULL, ecran, &posPersoEcran);
+        insererSurface(surfPerso, NULL, ecran, &posPersoEcran);
         SDL_BlitSurface(rect, NULL, ecran, &posrec);
-        SDL_BlitSurface(surfSelec, NULL, ecran, NULL);
         SDL_Flip(ecran);
+        temps_actuel = SDL_GetTicks();
+        SDL_Delay(max(35 - (temps_actuel-temps_precedent),0));
+        temps_precedent = temps_actuel;
         SDL_PollEvent(&event);
         switch(event.type){
             case SDL_MOUSEMOTION:
@@ -321,41 +325,60 @@ int max(int a, int b){
     return a;
 }
 
-void decouperColler(SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination){
+double min_d(double a, double b){
+    if(a <= b)
+        return a;
+    return b;
+}
+double max_d(double a, double b){
+    if(a <= b)
+        return b;
+    return a;
+}
 
+void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination, double angle){
+
+
+    Uint32 Blanc = 0xFFFFFFFF;
     SDL_Surface *collage = NULL;
     SDL_Rect posRelative;
     posRelative.x = 0;
     posRelative.y = 0;
     posRelative.w = posSelection.w;
     posRelative.h = posSelection.h;
+    double diagonale = sqrt((posSelection.w*(posSelection.w))+(posSelection.h*(posSelection.h)));
 
-    collage = SDL_CreateRGBSurface(SDL_HWSURFACE , posSelection.w, posSelection.h, 32, 0, 0, 0, 0);
-    SDL_FillRect(collage, NULL, SDL_MapRGB(collage->format,255,255,255));
-    SDL_SetColorKey(collage, SDL_SRCCOLORKEY, SDL_MapRGB(collage->format,255,255,255));
+    collage = SDL_CreateRGBSurface(SDL_HWSURFACE , diagonale, diagonale, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
+    SDL_FillRect(collage, NULL, Blanc);
     cairo_surface_t *surfCollage = cairo_image_surface_create_for_data (collage->pixels,
-                                                      CAIRO_FORMAT_ARGB32,
+                                                      CAIRO_FORMAT_RGB24,
                                                       collage->w,
                                                       collage->h,
                                                       collage->pitch);
 
-    recollementContinu(surfLigne, posSelection, &posDestination);
+    if((angle == 0)&&(!enAppercu))
+        recollementContinu(surfLigne, posSelection, &posDestination);
 
 	cairo_t *enSelect = cairo_create(surfCollage);
 	double scale_x = 1, scale_y = 1, long_centre =0; //scale_x = (posDestination.w/posSelection.w), scale_y = (posDestination.h/posSelection.h);
     cairo_scale(enSelect, scale_x, scale_y);
-    cairo_rotate(enSelect,M_PI_4);
-    long_centre = sqrt((collage->w*(collage->w)*0.25)+(collage->h*(collage->h)*0.25));
-    cairo_translate(enSelect, long_centre-(long_centre*cos(M_PI_4)), -long_centre*sin(M_PI_4));
-    cairo_set_source_surface (enSelect, surfaceFond,  (posRelative.x/scale_x) - posSelection.x, (posRelative.y/scale_y) - posSelection.y); //remplit cr avec le chemin présent
+    //cairo_translate(enSelect, long_centre-(long_centre*cos(M_PI_4)), -long_centre*sin(M_PI_4));
+    if((angle <= M_PI_2)&&(angle >= -M_PI_2))
+        cairo_translate(enSelect, max_d((posSelection.h)*sin(angle), 0.), -min_d((posSelection.w)*sin(angle), 0));
+   else if(angle > M_PI_2)
+        cairo_translate(enSelect, (posSelection.w)*cos(M_PI-angle)+(posSelection.h)*cos(angle-M_PI_2), (posSelection.h)*sin(angle - M_PI_2));
+    else
+        cairo_translate(enSelect,(posSelection.w)*(cos(angle-M_PI)), (posSelection.h)*cos(angle + M_PI) + (posSelection.w)*cos(angle + M_PI_2));
+    cairo_rotate(enSelect,angle);
+    cairo_set_source_surface (enSelect, surfaceFond,  0 - posSelection.x, 0 - posSelection.y); //remplit cr avec le chemin présent
     //dans surfaceFond en commancant en 0,0 dans cr => 0, 280 dans surfaceFond
     //cairo_set_source_surface (enSelect, source, x_dest*scale_x-x_source, y_dest*scale_y-y_source);
     //cairo_paint(enSelect); //recouvre tout surfaceFond avec cr
-    cairo_rectangle (enSelect, posRelative.x/scale_x, posRelative.y/scale_y, min(posDestination.w/scale_x,posSelection.w), min(posDestination.h/scale_y,posSelection.h)); //cairo_rectangle (enSelect, x_dest*scale_x, y_dest*scale_y, width, heigh);
-    cairo_fill (enSelect); // ne recouvre surfaceFond que
+    cairo_rectangle (enSelect, 0, 0, min(posDestination.w,posSelection.w), min(posDestination.h,posSelection.h)); //cairo_rectangle (enSelect, x_dest*scale_x, y_dest*scale_y, width, heigh);
+    cairo_fill(enSelect); // ne recouvre surfaceFond que
     //dans le carrée dont le coin supérieur gauche est en 0,0 et de largeur 100
-    SDL_BlitSurface(collage, NULL, surfLigne, &posDestination);
-
+    posDestination.w = posDestination.h = diagonale;
+    insererSurface(collage, NULL, surfLigne, &posDestination);
 }
 
 void recollementContinu(SDL_Surface *surfLigne, SDL_Rect posSelection, SDL_Rect *posDestination){
@@ -379,9 +402,12 @@ void recollementContinu(SDL_Surface *surfLigne, SDL_Rect posSelection, SDL_Rect 
     posDestination->y=max(posDestination->y+decallage, 0);
 }
 
-void pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect pos, int xSouris, int ySouris){
+SDL_Rect pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect pos, int xSouris, int ySouris){
 
     cairo_surface_t *surfaceFond;
+    SDL_Rect retour, retour_erreur;
+    retour_erreur.x = -1;
+    retour_erreur.y = -1;
     int x_rel = 0, coinHG_x = 0, coinHG_y = 0, coinHD_x = 0, coinBD_y = 0, coinBG_x = 0, largeur = 0;
     x_rel = pos.x - selecNiveau.x;
     if((xSouris == -1) && (ySouris == -1)){
@@ -390,7 +416,6 @@ void pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect p
         coinHD_x = coinHG_x + pos.w;
         coinBD_y = pos.y + pos.h;
         largeur = pos.w;
-
     }
     else{
         coinHG_x = coinBG_x = min(x_rel,xSouris);
@@ -400,6 +425,10 @@ void pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect p
         largeur = coinHD_x - coinHG_x;
     }
     if(largeur > 0) {
+        retour.x = max(coinHG_x - 5, 0);
+        retour.y = max(coinHG_y -5, 0);
+        retour.h = min(coinBD_y - coinHG_y + 5, selecNiveau.h - coinHG_y);
+        retour.w = min(largeur + 10, selecNiveau.w/NOMBRE_ECRANS - coinHG_x);
         surfaceFond = cairo_image_surface_create_for_data (surfSelec->pixels,
                                                               CAIRO_FORMAT_ARGB32,
                                                               surfSelec->w,
@@ -422,6 +451,41 @@ void pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect p
         cairo_stroke(ligne);
         cairo_destroy(ligne);
         cairo_surface_destroy(surfaceFond);
+        return retour;
+    }
+    return retour_erreur;
+}
+
+void insererSurface(SDL_Surface *collage, SDL_Rect *posSelection, SDL_Surface *surfLigne, SDL_Rect *posDestination){
+
+    int i, j;
+    int h, w, x_init_S, y_init_S, x_init_D, y_init_D;
+    long unsigned int pixel, p_ligne = surfLigne->pitch/4;
+    if(posSelection == NULL){
+            x_init_S = y_init_S = 0;
+            h = collage -> h;
+            w = collage -> w;
+    }
+    else {
+        h = posSelection->h;
+        w = posSelection->w;
+        x_init_S = posSelection->x;
+        y_init_S = posSelection->y;
+    }
+    if(posDestination == NULL){
+        x_init_D = y_init_D = 0;
+    }
+    else{
+        x_init_D = posDestination->x;
+        y_init_D = posDestination->y;
+    }
+    for(j=0; j<h; j++){
+        for(i=0; i<w; i++){
+            pixel = getpixel(collage, i + x_init_S, j + y_init_S);
+            if(pixel != 0xFFFFFFFF){
+                ((long unsigned int*)surfLigne->pixels)[(j + y_init_D)*p_ligne + i + x_init_D] = pixel;
+            }
+        }
     }
 }
 
