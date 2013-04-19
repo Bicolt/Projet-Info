@@ -363,7 +363,6 @@ void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surf
     posRelative.w = posSelection.w;
     posRelative.h = posSelection.h;
     double diagonale = sqrt((posSelection.w*(posSelection.w))+(posSelection.h*(posSelection.h)));
-
     collage = SDL_CreateRGBSurface(SDL_HWSURFACE , diagonale, diagonale, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
     SDL_FillRect(collage, NULL, Blanc);
     cairo_surface_t *surfCollage = cairo_image_surface_create_for_data (collage->pixels,
@@ -381,7 +380,7 @@ void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surf
     //cairo_translate(enSelect, long_centre-(long_centre*cos(M_PI_4)), -long_centre*sin(M_PI_4));
     if((angle <= M_PI_2)&&(angle >= -M_PI_2))
         cairo_translate(enSelect, max_d((posSelection.h)*sin(angle), 0.), -min_d((posSelection.w)*sin(angle), 0));
-   else if(angle > M_PI_2)
+    else if(angle > M_PI_2)
         cairo_translate(enSelect, (posSelection.w)*cos(M_PI-angle)+(posSelection.h)*cos(angle-M_PI_2), (posSelection.h)*sin(angle - M_PI_2));
     else
         cairo_translate(enSelect,(posSelection.w)*(cos(angle-M_PI)), (posSelection.h)*cos(angle + M_PI) + (posSelection.w)*cos(angle + M_PI_2));
@@ -477,23 +476,23 @@ void insererSurface(SDL_Surface *collage, SDL_Rect *posSelection, SDL_Surface *s
     int i, j;
     int h, w, x_init_S, y_init_S, x_init_D, y_init_D;
     long unsigned int pixel, p_ligne = surfLigne->pitch/4;
-    if(posSelection == NULL){
-            x_init_S = y_init_S = 0;
-            h = collage -> h;
-            w = collage -> w;
-    }
-    else {
-        h = posSelection->h;
-        w = posSelection->w;
-        x_init_S = posSelection->x;
-        y_init_S = posSelection->y;
-    }
     if(posDestination == NULL){
         x_init_D = y_init_D = 0;
     }
     else{
         x_init_D = posDestination->x;
         y_init_D = posDestination->y;
+    }
+    if(posSelection == NULL){
+            x_init_S = y_init_S = 0;
+            h = min(collage -> h, surfLigne -> h - y_init_D);
+            w = min(collage -> w, surfLigne -> w - x_init_D);
+    }
+    else {
+        x_init_S = posSelection->x;
+        y_init_S = posSelection->y;
+        h = min(posSelection->h, surfLigne -> h - y_init_D);
+        w = min(posSelection->w, surfLigne -> w - x_init_D);
     }
     for(j=0; j<h; j++){
         for(i=0; i<w; i++){
