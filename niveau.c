@@ -5,6 +5,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <math.h>
+#include "main.h"
 #include "niveau.h"
 #include "interface.h"
 #include "affichage.h"
@@ -23,26 +24,25 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     double longueur = 0., longueur_proj = 0., angle = 0.;
 
 
-    SDL_Surface *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
-    surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, 3*ecran->w, ecran->h, 32, 0, 0, 0, 0);
-    surfSelec = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
+    SDL_Surface *surfNiveau, *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
+    surfNiveau = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ew, eh, 32, 0, 0, 0, 0);
+    surfSelec = SDL_CreateRGBSurface(SDL_HWSURFACE, ew, eh, 32, 0, 0, 0, 0);
     surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, L_PERSO, H_PERSO, 32, 0, 0, 0, 0);
     surfPause = SDL_CreateRGBSurface(SDL_HWSURFACE, 70, 70, 32, 0, 0, 0, 0);
-    rect = selection(60, 60, surfLigne->format);
 
-    SDL_Rect posPointille, pos, posVision, posligne, pospersoNiveau, pospause, posrec, selecNiveau, posSelection, posDestination, posAppercu, posPersoEcran;
-    pos.x = selecNiveau.x = posligne.x = posSelection.x = posDestination.x = posAppercu.x = posVision.x = 0;
-    pos.y = selecNiveau.y = posligne.y = posSelection.y = posDestination.y = posAppercu.y = posVision.y = 0;
-    selecNiveau.h = posVision.h = ecran -> h;
-    selecNiveau.w = ecran -> w;
-    posVision.w = ecran -> w + 4;
-    pospause.x = ecran->w - 70;
+    SDL_Rect pos, posligne, pospersoNiveau, pospause, posrec, selecNiveau, posSelection, posDestination, posAppercu, posPersoEcran;
+    pos.x = selecNiveau.x = posligne.x = posSelection.x = posDestination.x = posAppercu.x = 0;
+    pos.y = selecNiveau.y = posligne.y = posSelection.y = posDestination.y = posAppercu.y = 0;
+    selecNiveau.h = eh;
+    selecNiveau.w = ew;
+    pospause.x = ew - 70*eh/768;
     pospause.y = 0;
-    pospersoNiveau.x = ecran->w/6;
-    pospersoNiveau.y = 300;
+    pospersoNiveau.x = ew/6;
+    pospersoNiveau.y = eh/3;
     posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
     posPersoEcran.y = pospersoNiveau.y;
     cairo_surface_t *surfaceFond;
+    rect = selection(60*eh/768, 60*eh/768, surfLigne->format);
     SDL_Event event;
     SDL_FillRect(ecran, NULL, Blanc);
     SDL_FillRect(surfSelec, NULL, Blanc);
@@ -61,7 +61,8 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 
     chargerTerrain(ecran, surfaceFond, choixTerrain);
     cairo_t *perso = pperso(ecran, surfPerso);
-    afficherTexte(surfPause, "ariblk.ttf", 60, "II", 0, 0);
+
+    afficherTexte(surfPause, "ariblk.ttf", 60*eh/768, "II", 0, 0);
     SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
     SDL_EnableKeyRepeat(0,0);
     SDL_Flip(ecran);
@@ -127,11 +128,11 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
             case SDL_MOUSEMOTION:
                 xSouris = event.button.x;
                 ySouris = event.button.y;
-                if(((ecran->w - 77) <= xSouris) && (ySouris < 76)){
+                if(((ew - 77*eh/768) <= xSouris) && (ySouris < 76*eh/768)){
                     SDL_SetAlpha(rect, SDL_SRCALPHA, 120);
                     select = 0;
-                    posrec.x=ecran->w - 77;
-                    posrec.y=14;
+                    posrec.x=ew - 77*eh/768;
+                    posrec.y=14*eh/768;
                 }
                 else { SDL_SetAlpha(rect, SDL_SRCALPHA, 0);}
                 break;
@@ -167,7 +168,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                 xSourisButton = event.button.x;
                 ySourisButton = event.button.y;
                 if(event.button.button == SDL_BUTTON_LEFT){
-                    if(((ecran->w - 77) <= xSourisButton) && (ySourisButton < 76)){
+                    if(((ew - 77*eh/768) <= xSourisButton) && (ySourisButton < 76*eh/768)){
                         switch (pause(ecran)){
                             case SORTIE:
                                 return SORTIE;
@@ -236,7 +237,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                                 break;
                             }
                         break;
-                    case SDLK_r:
+                        case SDLK_r:
                         if(enDrag)
                             enRotation = 1;
                         break;

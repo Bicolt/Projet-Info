@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include "main.h"
 #include "niveau.h"
 #include "affichage.h"
 #include "interface.h"
@@ -33,23 +34,23 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
 
     pos.x = 0; pos.y = 0;
 
-    rect = selection(ecran->w, ecran->h/8, ecran->format);
+    rect = selection(ew, eh/8, ecran->format);
     titre = TTF_RenderText_Shaded(police, "Super Scalable Land", Black, White);
     texte1 = TTF_RenderText_Shaded(police, "Jouer", Black, White);
 	texte2 = TTF_RenderText_Shaded(police, "Options", Black, White);
     texte3 = TTF_RenderText_Shaded(police, "Quitter", Black, White);
-	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ew, eh, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
 
-    positiontitre.x = ((ecran->w - titre->w)/2);
-    positiontitre.y = (ecran->h/8);
-    positiontexte1.x = ((ecran->w - texte1->w)/2);
-    positiontexte2.x = ((ecran->w - texte2->w)/2);
-	positiontexte3.x = ((ecran->w - texte3->w)/2);
-    positiontexte1.y = (ecran->h*6/16);
-	positiontexte2.y = (ecran->h*9/16);
-    positiontexte3.y = (ecran->h*12/16);
+    positiontitre.x = ((ew - titre->w)/2);
+    positiontitre.y = (eh/8);
+    positiontexte1.x = ((ew - texte1->w)/2);
+    positiontexte2.x = ((ew - texte2->w)/2);
+	positiontexte3.x = ((ew - texte3->w)/2);
+    positiontexte1.y = (eh*6/16);
+	positiontexte2.y = (eh*9/16);
+    positiontexte3.y = (eh*12/16);
     posrec.x = 0;
     posrec.y = positiontexte1.y;
 
@@ -70,30 +71,30 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
             case SDL_MOUSEMOTION:
                 xSouris = event.button.x;
                 ySouris = event.button.y;
-                if(((ecran->h*6/16) <= ySouris) && (ySouris < (ecran->h*9/16))){
+                if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
                     select = 0;
-                    posrec.y=ecran->h*6/16;
+                    posrec.y=eh*6/16;
                 }
-                else if(((ecran->h*9/16) <= ySouris) && (ySouris < (ecran->h*12/16))){
+                else if(((eh*9/16) <= ySouris) && (ySouris < (eh*12/16))){
                     select = 1;
-                    posrec.y=ecran->h*9/16;
+                    posrec.y=eh*9/16;
                 }
-                else if(((ecran->h*12/16) <= ySouris) && (ySouris < (ecran->h*14/16))){
+                else if(((eh*12/16) <= ySouris) && (ySouris < (eh*14/16))){
                     select = 2;
-                    posrec.y=ecran->h*12/16;
+                    posrec.y=eh*12/16;
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
                 if(event.button.button == SDL_BUTTON_LEFT){
                     xSouris = event.button.x;
                     ySouris = event.button.y;
-                    if(((ecran->h*6/16) <= ySouris) && (ySouris < (ecran->h*9/16))){
+                    if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
                         return 0;
                     }
-                    else if(((ecran->h*9/16) <= ySouris) && (ySouris < (ecran->h*12/16))){
+                    else if(((eh*9/16) <= ySouris) && (ySouris < (eh*12/16))){
                         return 1;
                     }
-                    else if(((ecran->h*12/16) <= ySouris) && (ySouris < (ecran->h*14/16))){
+                    else if(((eh*12/16) <= ySouris) && (ySouris < (eh*14/16))){
                         return SORTIE;
                     }
                 }
@@ -104,14 +105,14 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
                     case SDLK_UP:
                         select = (select + 2)%3;
                         if(select == 2)
-                            posrec.y = posrec.y + ecran->h*6/16;
-                        else posrec.y = posrec.y - ecran->h*3/16;
+                            posrec.y = posrec.y + eh*6/16;
+                        else posrec.y = posrec.y - eh*3/16;
                         break;
                     case SDLK_DOWN:
                         select = (select + 1)%3;
                         if(select == 0)
-                            posrec.y = posrec.y - ecran->h*6/16;
-                        else posrec.y = posrec.y + ecran->h*3/16;
+                            posrec.y = posrec.y - eh*6/16;
+                        else posrec.y = posrec.y + eh*3/16;
                         break;
                     case SDLK_ESCAPE:
                             return SORTIE;
@@ -150,7 +151,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
 
 int pause(SDL_Surface* ecran){
 
-    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85);
+    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85*eh/768);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
 	SDL_Color White = {255, 255, 255};
@@ -161,20 +162,20 @@ int pause(SDL_Surface* ecran){
 
     pos.x = 0; pos.y = 0;
 
-    rect = selection(ecran->w, ecran->h/8, ecran->format);
+    rect = selection(ew, eh/8, ecran->format);
     titre = TTF_RenderText_Shaded(police, "Pause", Black, White);
     texte1 = TTF_RenderText_Shaded(police, "Reprendre", Black, White);
     texte3 = TTF_RenderText_Shaded(police, "Quitter", Black, White);
-	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ew, eh, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
 
-    positiontitre.x = ((ecran->w - titre->w)/2);
-    positiontitre.y = (ecran->h/8);
-    positiontexte1.x = ((ecran->w - texte1->w)/2);
-	positiontexte3.x = ((ecran->w - texte3->w)/2);
-    positiontexte1.y = (ecran->h*6/16);
-    positiontexte3.y = (ecran->h*12/16);
+    positiontitre.x = ((ew - titre->w)/2);
+    positiontitre.y = (eh/8);
+    positiontexte1.x = ((ew - texte1->w)/2);
+	positiontexte3.x = ((ew - texte3->w)/2);
+    positiontexte1.y = (eh*6/16);
+    positiontexte3.y = (eh*12/16);
     posrec.x = 0;
     posrec.y = positiontexte1.y;
 
@@ -194,23 +195,23 @@ int pause(SDL_Surface* ecran){
             case SDL_MOUSEMOTION:
                 xSouris = event.button.x;
                 ySouris = event.button.y;
-                if((ySouris < (ecran->h*9/16))){
+                if((ySouris < (eh*9/16))){
                     select = 0;
-                    posrec.y=ecran->h*6/16;
+                    posrec.y=eh*6/16;
                 }
-                else if(((ecran->h*12/16) <= ySouris)){
+                else if(((eh*12/16) <= ySouris)){
                     select = 2;
-                    posrec.y=ecran->h*12/16;
+                    posrec.y=eh*12/16;
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
                 if(event.button.button == SDL_BUTTON_LEFT){
                     xSouris = event.button.x;
                     ySouris = event.button.y;
-                    if((ySouris < (ecran->h*9/16))){
+                    if((ySouris < (eh*9/16))){
                         return 0;
                     }
-                    else if(((ecran->h*12/16) <= ySouris)){
+                    else if(((eh*12/16) <= ySouris)){
                         return MENU;
                     }
                 }
@@ -221,14 +222,14 @@ int pause(SDL_Surface* ecran){
                     case SDLK_UP:
                         select = (select + 1)%2;
                         if(select == 1)
-                            posrec.y = posrec.y + ecran->h*6/16;
-                        else posrec.y = posrec.y - ecran->h*6/16;
+                            posrec.y = posrec.y + eh*6/16;
+                        else posrec.y = posrec.y - eh*6/16;
                         break;
                     case SDLK_DOWN:
                         select = (select + 1)%2;
                         if(select == 0)
-                            posrec.y = posrec.y - ecran->h*6/16;
-                        else posrec.y = posrec.y + ecran->h*6/16;
+                            posrec.y = posrec.y - eh*6/16;
+                        else posrec.y = posrec.y + eh*6/16;
                         break;
                     case SDLK_ESCAPE:
                             return 0;
@@ -263,34 +264,34 @@ int pause(SDL_Surface* ecran){
 
 int choixNiveau (SDL_Surface *ecran) {
 
-    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 55);
+    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 55*eh/768);
     SDL_Surface *fond = NULL;
     SDL_Event event;
     SDL_Rect pos;
     int xSouris, ySouris;
 
     int continuer = 1, select = 0;
-    int centrex = ecran->w/2;
-    int posyTitre = ecran->h/6, posy0 = 2*ecran->h/6, posyl1 = 3*ecran->h/6, posyl2 = 4*ecran->h/6, posyMenu = 5*ecran->h/6;
-    int posx = centrex, posy = posy0, largeur = ecran->w, hauteur = ecran->h/7;
+    int centrex = ew/2;
+    int posyTitre = eh/6, posy0 = 2*eh/6, posyl1 = 3*eh/6, posyl2 = 4*eh/6, posyMenu = 5*eh/6;
+    int posx = centrex, posy = posy0, largeur = ew, hauteur = eh/7;
 
     pos.x = 0; pos.y = 0;
 
-	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ew, eh, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
 
 
     SDL_BlitSurface(fond, NULL, ecran, &pos);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "Choix du niveau", centrex, posyTitre);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "Menu principal", centrex, posyMenu);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "Tutoriel", centrex, posy0);
-    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "1", centrex - ecran->w/7, posyl1);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "2", centrex, posyl1);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "3", centrex + ecran->w/7, posyl1);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "4", centrex - ecran->w/7, posyl2);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "5", centrex, posyl2);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "6", centrex + ecran->w/7, posyl2);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Choix du niveau", centrex, posyTitre);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Menu principal", centrex, posyMenu);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Tutoriel", centrex, posy0);
+    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "1", centrex - ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "2", centrex, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "3", centrex + ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "4", centrex - ew/7, posyl2);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "5", centrex, posyl2);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "6", centrex + ew/7, posyl2);
 
     afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
     SDL_Flip(ecran);
@@ -305,31 +306,31 @@ int choixNiveau (SDL_Surface *ecran) {
             case SDL_MOUSEMOTION:
                 xSouris = event.button.x;
                 ySouris = event.button.y;
-                    if (ySouris < posy0 + ecran->h/12)
+                    if (ySouris < posy0 + eh/12)
                         select = 0;
-                    if ((ySouris < posyl1 + ecran->h/12)&&(ySouris > posyl1 - ecran->h/12)){
-                        if ((xSouris > centrex - 3*ecran->w/14)&&(xSouris < centrex + 3*ecran->w/14)){
-                            if (xSouris < centrex - ecran->w/14)
+                    if ((ySouris < posyl1 + eh/12)&&(ySouris > posyl1 - eh/12)){
+                        if ((xSouris > centrex - 3*ew/14)&&(xSouris < centrex + 3*ew/14)){
+                            if (xSouris < centrex - ew/14)
                                 select = 1;
-                            else if (xSouris > centrex + ecran->w/14)
+                            else if (xSouris > centrex + ew/14)
                                 select = 3;
                             else
                                 select = 2;
                         }
                         largeur = hauteur;
                     }
-                    else if  ((ySouris < posyl2 + ecran->h/12)&&(ySouris > posyl2 - ecran->h/12)){
-                        if ((xSouris > centrex - 3*ecran->w/14)&&(xSouris < centrex + 3*ecran->w/14)){
-                            if (xSouris < centrex - ecran->w/14)
+                    else if  ((ySouris < posyl2 + eh/12)&&(ySouris > posyl2 - eh/12)){
+                        if ((xSouris > centrex - 3*ew/14)&&(xSouris < centrex + 3*ew/14)){
+                            if (xSouris < centrex - ew/14)
                                 select = 4;
-                            else if (xSouris > centrex + ecran->w/14)
+                            else if (xSouris > centrex + ew/14)
                                 select = 6;
                             else
                                 select = 5;
                         }
                         largeur = hauteur;
                     }
-                    else if (ySouris > posyMenu - ecran->h/12)
+                    else if (ySouris > posyMenu - eh/12)
                         select = 7;
                 break;
             case SDL_MOUSEBUTTONUP:
@@ -416,11 +417,11 @@ int choixNiveau (SDL_Surface *ecran) {
         case 0:
             posx = centrex;
             posy = posy0;
-            largeur = ecran->w;
+            largeur = ew;
             break;
         case 1:
         case 4:
-            posx = centrex - ecran->w/7;
+            posx = centrex - ew/7;
             break;
         case 2:
         case 5:
@@ -428,26 +429,26 @@ int choixNiveau (SDL_Surface *ecran) {
             break;
         case 3:
         case 6:
-            posx = centrex + ecran->w/7;
+            posx = centrex + ew/7;
             break;
         case 7:
             posy = posyMenu;
             posx = centrex;
-            largeur = ecran->w;
+            largeur = ew;
             break;
         default:
             break;
     }
     SDL_BlitSurface(fond, NULL, ecran, &pos);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "Choix du niveau", centrex, posyTitre);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "Menu principal", centrex, posyMenu);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "Tutoriel", centrex, posy0);
-    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "1", centrex - ecran->w/7, posyl1);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "2", centrex, posyl1);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "3", centrex + ecran->w/7, posyl1);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "4", centrex - ecran->w/7, posyl2);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "5", centrex, posyl2);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85, "6", centrex + ecran->w/7, posyl2);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Choix du niveau", centrex, posyTitre);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Menu principal", centrex, posyMenu);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Tutoriel", centrex, posy0);
+    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "1", centrex - ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "2", centrex, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "3", centrex + ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "4", centrex - ew/7, posyl2);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "5", centrex, posyl2);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "6", centrex + ew/7, posyl2);
 	afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
     SDL_Flip(ecran);
     }
@@ -456,7 +457,7 @@ int choixNiveau (SDL_Surface *ecran) {
 
 int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau chargé pour le recharger dans recommencer
 
-    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85);
+    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85*eh/768);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
 	SDL_Color White = {255, 255, 255};
@@ -467,23 +468,23 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
 
     pos.x = 0; pos.y = 0;
 
-    rect = selection(ecran->w, ecran->h/8, ecran->format);
+    rect = selection(ew, eh/8, ecran->format);
     titre = TTF_RenderText_Shaded(police, "GAME OVER", Black, White);
     texte1 = TTF_RenderText_Shaded(police, "Recommencer", Black, White);
     texte2 = TTF_RenderText_Shaded(police, "Menu principal", Black, White);
     texte3 = TTF_RenderText_Shaded(police, "Quitter", Black, White);
-	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ew, eh, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
 
-    positiontitre.x = ((ecran->w - titre->w)/2);
-    positiontitre.y = (ecran->h/8);
-    positiontexte1.x = ((ecran->w - texte1->w)/2);
-    positiontexte2.x = ((ecran->w - texte2->w)/2);
-	positiontexte3.x = ((ecran->w - texte3->w)/2);
-    positiontexte1.y = (ecran->h*6/16);
-    positiontexte2.y = (ecran->h*9/16);
-    positiontexte3.y = (ecran->h*12/16);
+    positiontitre.x = ((ew - titre->w)/2);
+    positiontitre.y = (eh/8);
+    positiontexte1.x = ((ew - texte1->w)/2);
+    positiontexte2.x = ((ew - texte2->w)/2);
+	positiontexte3.x = ((ew - texte3->w)/2);
+    positiontexte1.y = (eh*6/16);
+    positiontexte2.y = (eh*9/16);
+    positiontexte3.y = (eh*12/16);
     posrec.x = 0;
     posrec.y = positiontexte1.y;
 
@@ -504,30 +505,30 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
             case SDL_MOUSEMOTION:
                 xSouris = event.button.x;
                 ySouris = event.button.y;
-                if(((ecran->h*6/16) <= ySouris) && (ySouris < (ecran->h*9/16))){
+                if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
                     select = 0;
-                    posrec.y=ecran->h*6/16;
+                    posrec.y=eh*6/16;
                 }
-                else if(((ecran->h*9/16) <= ySouris) && (ySouris < (ecran->h*12/16))){
+                else if(((eh*9/16) <= ySouris) && (ySouris < (eh*12/16))){
                     select = 1;
-                    posrec.y=ecran->h*9/16;
+                    posrec.y=eh*9/16;
                 }
-                else if(((ecran->h*12/16) <= ySouris) && (ySouris < (ecran->h*14/16))){
+                else if(((eh*12/16) <= ySouris) && (ySouris < (eh*14/16))){
                     select = 2;
-                    posrec.y=ecran->h*12/16;
+                    posrec.y=eh*12/16;
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
                 if(event.button.button == SDL_BUTTON_LEFT){
                     xSouris = event.button.x;
                     ySouris = event.button.y;
-                    if(((ecran->h*6/16) <= ySouris) && (ySouris < (ecran->h*9/16))){
+                    if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
 						return 0;
                     }
-                    else if(((ecran->h*9/16) <= ySouris) && (ySouris < (ecran->h*12/16))){
+                    else if(((eh*9/16) <= ySouris) && (ySouris < (eh*12/16))){
                         return MENU;
                     }
-                    else if(((ecran->h*12/16) <= ySouris) && (ySouris < (ecran->h*14/16))){
+                    else if(((eh*12/16) <= ySouris) && (ySouris < (eh*14/16))){
 						return SORTIE;
                     }
                 }
@@ -538,14 +539,14 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
                     case SDLK_UP:
                         select = (select + 2)%3;
                         if(select == 2)
-                            posrec.y = posrec.y + 2*ecran->h*3/16;
-                        else posrec.y = posrec.y - ecran->h*3/16;
+                            posrec.y = posrec.y + 2*eh*3/16;
+                        else posrec.y = posrec.y - eh*3/16;
                         break;
                     case SDLK_DOWN:
                         select = (select + 1)%3;
                         if(select == 0)
-                            posrec.y = posrec.y - 2*ecran->h*3/16;
-                        else posrec.y = posrec.y + ecran->h*3/16;
+                            posrec.y = posrec.y - 2*eh*3/16;
+                        else posrec.y = posrec.y + eh*3/16;
                         break;
                     case SDLK_ESCAPE:
                             return SORTIE;
@@ -583,7 +584,7 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
 
 int victoire(SDL_Surface *ecran){
 
-    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85);
+    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85*eh/768);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
 	SDL_Color White = {255, 255, 255};
@@ -594,23 +595,23 @@ int victoire(SDL_Surface *ecran){
 
     pos.x = 0; pos.y = 0;
 
-    rect = selection(ecran->w, ecran->h/8, ecran->format);
+    rect = selection(ew, eh/8, ecran->format);
     titre = TTF_RenderText_Shaded(police, "VICTOIRE !", Black, White);
     texte1 = TTF_RenderText_Shaded(police, "Niveau suivant", Black, White);
     texte2 = TTF_RenderText_Shaded(police, "Menu principal", Black, White);
     texte3 = TTF_RenderText_Shaded(police, "Quitter", Black, White);
-	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ecran->w, ecran->h, 32, 0, 0, 0, 0);
+	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ew, eh, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
     // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
 
-    positiontitre.x = ((ecran->w - titre->w)/2);
-    positiontitre.y = (ecran->h/8);
-    positiontexte1.x = ((ecran->w - texte1->w)/2);
-    positiontexte2.x = ((ecran->w - texte2->w)/2);
-	positiontexte3.x = ((ecran->w - texte3->w)/2);
-    positiontexte1.y = (ecran->h*6/16);
-    positiontexte2.y = (ecran->h*9/16);
-    positiontexte3.y = (ecran->h*12/16);
+    positiontitre.x = ((ew - titre->w)/2);
+    positiontitre.y = (eh/8);
+    positiontexte1.x = ((ew - texte1->w)/2);
+    positiontexte2.x = ((ew - texte2->w)/2);
+	positiontexte3.x = ((ew - texte3->w)/2);
+    positiontexte1.y = (eh*6/16);
+    positiontexte2.y = (eh*9/16);
+    positiontexte3.y = (eh*12/16);
     posrec.x = 0;
     posrec.y = positiontexte1.y;
 
@@ -631,30 +632,30 @@ int victoire(SDL_Surface *ecran){
             case SDL_MOUSEMOTION:
                 xSouris = event.button.x;
                 ySouris = event.button.y;
-                if(((ecran->h*6/16) <= ySouris) && (ySouris < (ecran->h*9/16))){
+                if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
                     select = 0;
-                    posrec.y=ecran->h*6/16;
+                    posrec.y=eh*6/16;
                 }
-                else if(((ecran->h*9/16) <= ySouris) && (ySouris < (ecran->h*12/16))){
+                else if(((eh*9/16) <= ySouris) && (ySouris < (eh*12/16))){
                     select = 1;
-                    posrec.y=ecran->h*9/16;
+                    posrec.y=eh*9/16;
                 }
-                else if(((ecran->h*12/16) <= ySouris) && (ySouris < (ecran->h*14/16))){
+                else if(((eh*12/16) <= ySouris) && (ySouris < (eh*14/16))){
                     select = 2;
-                    posrec.y=ecran->h*12/16;
+                    posrec.y=eh*12/16;
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
                 if(event.button.button == SDL_BUTTON_LEFT){
                     xSouris = event.button.x;
                     ySouris = event.button.y;
-                    if(((ecran->h*6/16) <= ySouris) && (ySouris < (ecran->h*9/16))){
+                    if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
 						return 0;
                     }
-                    else if(((ecran->h*9/16) <= ySouris) && (ySouris < (ecran->h*12/16))){
+                    else if(((eh*9/16) <= ySouris) && (ySouris < (eh*12/16))){
                         return MENU;
                     }
-                    else if(((ecran->h*12/16) <= ySouris) && (ySouris < (ecran->h*14/16))){
+                    else if(((eh*12/16) <= ySouris) && (ySouris < (eh*14/16))){
 						return SORTIE;
                     }
                 }
@@ -665,14 +666,14 @@ int victoire(SDL_Surface *ecran){
                     case SDLK_UP:
                         select = (select + 2)%3;
                         if(select == 2)
-                            posrec.y = posrec.y + ecran->h*6/16;
-                        else posrec.y = posrec.y - ecran->h*6/16;
+                            posrec.y = posrec.y + eh*6/16;
+                        else posrec.y = posrec.y - eh*6/16;
                         break;
                     case SDLK_DOWN:
                         select = (select + 1)%3;
                         if(select == 0)
-                            posrec.y = posrec.y - ecran->h*6/16;
-                        else posrec.y = posrec.y + ecran->h*6/16;
+                            posrec.y = posrec.y - eh*6/16;
+                        else posrec.y = posrec.y + eh*6/16;
                         break;
                     case SDLK_ESCAPE:
                             return SORTIE;

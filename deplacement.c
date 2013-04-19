@@ -7,6 +7,7 @@
 #include <math.h>
 #include "niveau.h"
 #include "interface.h"
+#include "main.h"
 #include "affichage.h"
 #include "deplacement.h"
 
@@ -38,6 +39,8 @@ int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Rect selecNiveau) {
         else {
             descendre(pposperso, terrain);
         }
+        if (monter(pposperso, terrain) == -1)
+            return 0; // game over
     }
     return 1; // avancer
 }
@@ -45,15 +48,19 @@ int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Rect selecNiveau) {
 int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
     long unsigned int pixelou = 0;
-    for(i=0 ; i<= 10 ; i++) {
+    for(i=0 ; i<=L_PERSO/5 ; i++) {
         pixelou = getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y - 5);
         if ( pixelou == 0LL || pixelou == 4278190080LL ) //noir
             return 0;
     }
-    for(i=0 ; i<= 20 ; i++) {
+    for(i=0 ; i<=H_PERSO/5 - 2 ; i++) {
         pixelou = getpixel(terrain, pposperso->x + 64, pposperso->y + 5*i - 5);
         if ( pixelou == 0LL || pixelou == 4278190080LL )
             return 0;
+    }
+    for(i=0 ; i<= H_PERSO/5 - 2; i++) {
+        if ( getpixel(terrain, pposperso->x + (L_PERSO + 4), pposperso->y + 5*i - 5) == 0xFFFF0000L )
+            return -1;
     }
     //Si on a survécu aux deux boucles, on peut monter (meme si on est sur du plat). Du coup on s'en prive pas.
     pposperso->x += 4;
@@ -64,12 +71,12 @@ int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
 int descendre( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
     long unsigned int pixelou = 0;
-    for(i=0 ; i<= 10 ; i++) {
+    for(i=0 ; i<= L_PERSO/5 ; i++) {
         pixelou = getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y + (H_PERSO + 5));
         if ( pixelou == 0LL || pixelou == 4278190080LL )
             return 0;
     }
-    for(i=0 ; i<= 20 ; i++) {
+    for(i=0 ; i<= H_PERSO/5 ; i++) {
         pixelou =  getpixel(terrain, pposperso->x + (L_PERSO + 4) , pposperso->y + 5 + 5*i) ;
         if ( pixelou == 0LL || pixelou == 4278190080LL )
             return 0;
@@ -83,7 +90,7 @@ int descendre( SDL_Rect* pposperso, SDL_Surface* terrain ) {
 int plater( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
     long unsigned int pixelou = 0;
-    for(i=0 ; i< 20 ; i++) {
+    for(i=0 ; i< H_PERSO/5; i++) {
         pixelou = getpixel(terrain, pposperso->x + (L_PERSO + 4) , pposperso->y + 5*i);
         if ( pixelou == 0LL || pixelou == 4278190080LL )
             return 0;
@@ -98,7 +105,7 @@ int plater( SDL_Rect* pposperso, SDL_Surface* terrain ) {
 int solsouspieds ( SDL_Rect* pposperso, SDL_Surface* terrain) {
     int i;
     long unsigned int pixelou = 0;
-    for(i=0 ; i<= 10 ; i++) {
+    for(i=0 ; i<= L_PERSO/5 ; i++) {
         pixelou =  getpixel(terrain, pposperso->x - 5*i + L_PERSO, pposperso->y + H_PERSO);
         if (pixelou == 0LL || pixelou == 4278190080LL)
             return 1;

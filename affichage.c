@@ -4,6 +4,8 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include "affichage.h"
+#include "main.h"
+
 
 void afficherTexte (SDL_Surface *ecran, char *font, int size, char *txt, int x, int y) {
     TTF_Font *police = TTF_OpenFont(font, size);
