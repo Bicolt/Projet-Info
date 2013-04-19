@@ -100,11 +100,10 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                 longueur_proj = (posAppercu.y + posAppercu.h) - ySouris;
                 longueur = sqrt((longueur_proj*longueur_proj) + ((xSouris-posAppercu.x)*(xSouris-posAppercu.x)));
                 if(xSouris > posAppercu.x)
-                    angle = acos(longueur_proj/longueur);
-                else angle = -acos(longueur_proj/longueur);
+                    angle = mod_d(angleTotal + acos(longueur_proj/longueur), M_PI);
+                else angle = mod_d(angleTotal - acos(longueur_proj/longueur), M_PI);
             }
-            angleTotal=+angle;
-            decouperColler(1, ecran, surfaceFond, posSelection, posAppercu, angleTotal);
+            decouperColler(1, ecran, surfaceFond, posSelection, posAppercu, angle);
         }
         if(collagePossible){
             decouperColler(0, surfLigne, surfaceFond, posSelection, posDestination, angleTotal);
@@ -254,6 +253,9 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
             case SDL_KEYUP:
                 switch(event.key.keysym.sym){
                     case SDLK_r:
+                        if(enRotation){
+                            angleTotal = mod_d(angleTotal + angle, M_PI);
+                        }
                         enRotation = 0;
                         break;
                     default:
@@ -341,6 +343,13 @@ double max_d(double a, double b){
     if(a <= b)
         return b;
     return a;
+}
+
+double mod_d(double a, double b){
+
+    int q = (int)(a/b);
+
+    return (a - q*b);
 }
 
 void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination, double angle){
