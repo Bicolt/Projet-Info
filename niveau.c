@@ -93,8 +93,8 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
         SDL_BlitSurface(surfPause, NULL, ecran, &pospause);
         if(enDrag){
             if(!enRotation){
-                posAppercu.x =  min(xSouris - xRinit, ecran->w - posSelection.w);
-                posAppercu.y =  min(ySouris - yRinit, ecran->h - posSelection.h);
+                posAppercu.x =  xSouris - xRinit;
+                posAppercu.y =  ySouris - yRinit;
             }
             else{
                 longueur_proj = (posAppercu.y + posAppercu.h) - ySouris;
@@ -398,11 +398,11 @@ void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surf
 
 void recollementContinu(SDL_Surface *surfLigne, SDL_Rect posSelection, SDL_Rect *posDestination){
     int decallage = 0, trouve = 1, compteur = 0, rel_compteur, continuer = 1;
-    while(continuer && (compteur < (min(posSelection.h, posDestination->h) - 16))){
+    while(continuer && (compteur < (min(posSelection.h, posDestination->h) - 16)) && (posDestination->y + compteur < eh)){
         long unsigned int pix = getpixel(surfLigne,posSelection.x, posSelection.y + compteur );
         if((pix == 0LL)||(pix == 4278190080LL)){
             rel_compteur = max((compteur - 15),0);
-            while((rel_compteur < compteur + 15)&&trouve){
+            while((rel_compteur < compteur + 15)&&trouve&&(posDestination->y + rel_compteur < eh)){
                 long unsigned int pix_int = getpixel(surfLigne, posDestination->x-1, posDestination->y + rel_compteur);
                 if((pix_int == 0LL) || (pix_int == 4278190080LL)){
                     continuer = 0;
