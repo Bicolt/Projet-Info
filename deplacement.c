@@ -47,16 +47,16 @@ int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Rect selecNiveau) {
 
 int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
-    for(i=0 ; i<= 10 ; i++) {
+    for(i=0 ; i<= L_PERSO/5 ; i++) {
         if ( getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y - 5) == 0LL ) //noir
             return 0;
     }
-    for(i=0 ; i<= 20 ; i++) {
-        if ( getpixel(terrain, pposperso->x + 64, pposperso->y + 5*i - 5) == 0LL )
+    for(i=0 ; i<= H_PERSO/5 - 2 ; i++) {
+        if ( getpixel(terrain, pposperso->x + (L_PERSO + 4), pposperso->y + 5*i - 5) == 0LL )
             return 0;
     }
-    for(i=0 ; i<= 20 ; i++) {
-        if ( getpixel(terrain, pposperso->x + 64, pposperso->y + 5*i - 5) == 16711680LL )
+    for(i=0 ; i<= H_PERSO/5 - 2; i++) {
+        if ( getpixel(terrain, pposperso->x + (L_PERSO + 4), pposperso->y + 5*i - 5) == 16711680LL )
             return -1;
     }
     //Si on a survécu aux deux boucles, on peut monter (meme si on est sur du plat). Du coup on s'en prive pas.
@@ -67,11 +67,11 @@ int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
 
 int descendre( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
-    for(i=0 ; i<= 10 ; i++) {
+    for(i=0 ; i<= L_PERSO/5 ; i++) {
         if ( getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y + (H_PERSO + 5)) == 0LL )
             return 0;
     }
-    for(i=0 ; i<= 20 ; i++) {
+    for(i=0 ; i<= H_PERSO/5 ; i++) {
         if ( getpixel(terrain, pposperso->x + (L_PERSO + 4) , pposperso->y + 5 + 5*i) == 0LL )
             return 0;
     }
@@ -83,7 +83,7 @@ int descendre( SDL_Rect* pposperso, SDL_Surface* terrain ) {
 
 int plater( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
-    for(i=0 ; i< 20 ; i++) {
+    for(i=0 ; i< H_PERSO/5 ; i++) {
         if ( getpixel(terrain, pposperso->x + (L_PERSO + 4) , pposperso->y + 5*i) == 0LL )
             return 0;
     }
@@ -95,7 +95,7 @@ int plater( SDL_Rect* pposperso, SDL_Surface* terrain ) {
 
 int solsouspieds ( SDL_Rect* pposperso, SDL_Surface* terrain) {
     int i;
-    for(i=0 ; i<= 10 ; i++) {
+    for(i=0 ; i<= L_PERSO/5 ; i++) {
         if ( getpixel(terrain, pposperso->x - 5*i + L_PERSO, pposperso->y + H_PERSO) == 0LL )
             return 1;
         else if ( getpixel(terrain, pposperso->x - 5*i + L_PERSO, pposperso->y + H_PERSO) == 16711680LL ) // zone rouge
