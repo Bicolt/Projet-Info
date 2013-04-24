@@ -12,6 +12,8 @@
 #include "deplacement.h"
 #include "terrains.h"
 
+int H_PERSO, L_PERSO, EPAISSEUR_TRAIT;
+
 int niveau(SDL_Surface *ecran, int choixTerrain){
 
     Uint32 Blanc = 0xFFFFFFFF;
@@ -22,6 +24,9 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     int xSourisButton = 0, ySourisButton = 0;
     int xRinit = 0, yRinit = 0;
     double longueur = 0., longueur_proj = 0., angle = 0., angleTotal = 0.;
+    H_PERSO = 110*eh/768;
+    L_PERSO = 55*eh/768;
+    EPAISSEUR_TRAIT = 7*eh/768;
 
 
     SDL_Surface *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
@@ -281,43 +286,35 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso)
                                                       surfPerso->h,
                                                       surfPerso->pitch);
 
-    cairo_t *perso = cairo_create(surface);
+      cairo_t *perso = cairo_create(surface);
     cairo_set_line_width(perso, EPAISSEUR_TRAIT);
     cairo_set_source_rgba (perso, 0, 0, 0, 1);
-    cairo_arc(perso, 31, 19, 13, 0, 2*M_PI);
+    cairo_arc(perso, 31*eh/768, 19*eh/768, 10*eh/768, 0, 2*M_PI);
     cairo_fill_preserve(perso);
     cairo_set_line_cap(perso, CAIRO_LINE_CAP_ROUND);
     //Corps
-    cairo_move_to(perso, 28, 27);
-    cairo_line_to(perso, 26, 72);
+    cairo_move_to(perso, 28*eh/768, 28*eh/768);
+    cairo_line_to(perso, 26*eh/768, 68*eh/768);
     cairo_stroke_preserve(perso);
     //Bras 1
-    cairo_move_to(perso, 28, 29);
-    cairo_line_to(perso, 15, 43);
-    cairo_stroke_preserve(perso);
-    cairo_move_to(perso, 14, 44);
-    cairo_line_to(perso, 11, 65);
+    cairo_move_to(perso, 28*eh/768, 30*eh/768);
+    cairo_line_to(perso, 15*eh/768, 45*eh/768);
+    cairo_line_to(perso, 12*eh/768, 60*eh/768);
     cairo_stroke_preserve(perso);
     //Bras 2
-    cairo_move_to(perso, 32, 32);
-    cairo_line_to(perso, 37, 48);
-    cairo_stroke_preserve(perso);
-    cairo_move_to(perso, 38, 49);
-    cairo_line_to(perso, 52, 63);
+    cairo_move_to(perso, 32*eh/768, 32*eh/768);
+    cairo_line_to(perso, 36*eh/768, 46*eh/768);
+    cairo_line_to(perso, 48*eh/768, 60*eh/768);
     cairo_stroke_preserve(perso);
     //Jambe 1
-    cairo_move_to(perso, 25, 74);
-    cairo_line_to(perso, 17, 94);
-    cairo_stroke_preserve(perso);
-    cairo_move_to(perso, 17, 95);
-    cairo_line_to(perso, 5, 133);
+    cairo_move_to(perso, 25*eh/768, 70*eh/768);
+    cairo_line_to(perso, 17*eh/768, 94*eh/768);
+    cairo_line_to(perso, 3*eh/768, 133*eh/768);
     cairo_stroke_preserve(perso);
     //Jambe 2
-    cairo_move_to(perso, 27, 76);
-    cairo_line_to(perso, 40, 96);
-    cairo_stroke_preserve(perso);
-    cairo_move_to(perso, 41, 97);
-    cairo_line_to(perso, 52, 128);
+    cairo_move_to(perso, 27*eh/768, 72*eh/768);
+    cairo_line_to(perso, 40*eh/768, 96*eh/768);
+    cairo_line_to(perso, 55*eh/768, 135*eh/768);
     cairo_stroke_preserve(perso);
     return perso;
 }

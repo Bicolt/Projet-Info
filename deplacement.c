@@ -53,7 +53,7 @@ int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
         if ( pixelou == 0LL || pixelou == 4278190080LL ) //noir
             return 0;
     }
-    for(i=0 ; i<=H_PERSO/5 - 2 ; i++) {
+    for(i=0 ; i<=H_PERSO/5 - 3 ; i++) {
         pixelou = getpixel(terrain, pposperso->x + 64, pposperso->y + 5*i - 5);
         if ( pixelou == 0LL || pixelou == 4278190080LL )
             return 0;
