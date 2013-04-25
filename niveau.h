@@ -1,7 +1,4 @@
-#define NOMBRE_ECRANS 8
-#define X_FIN 3400
-
-extern int H_PERSO, L_PERSO, EPAISSEUR_TRAIT;
+extern int H_PERSO, L_PERSO, EPAISSEUR_TRAIT, X_FIN, NOMBRE_ECRANS;
 int min(int a, int b);
 int max(int a, int b);
 double min_d(double a, double b);

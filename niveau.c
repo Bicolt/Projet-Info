@@ -12,7 +12,7 @@
 #include "deplacement.h"
 #include "terrains.h"
 
-int H_PERSO, L_PERSO, EPAISSEUR_TRAIT;
+int H_PERSO, L_PERSO, EPAISSEUR_TRAIT, X_FIN, NOMBRE_ECRANS;
 
 int niveau(SDL_Surface *ecran, int choixTerrain){
 
@@ -27,7 +27,8 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     H_PERSO = 110*eh/768;
     L_PERSO = 55*eh/768;
     EPAISSEUR_TRAIT = 7*eh/768;
-
+    NOMBRE_ECRANS = 8;
+    X_FIN = NOMBRE_ECRANS*ew - ew/5;
 
     SDL_Surface *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ew, eh, 32, 0, 0, 0, 0);
@@ -43,7 +44,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     pospause.x = ew - 70*eh/768;
     pospause.y = 0;
     pospersoNiveau.x = ew/6;
-    pospersoNiveau.y = eh/3;
+    pospersoNiveau.y = 0.7*eh - 2*H_PERSO;
     posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
     posPersoEcran.y = pospersoNiveau.y;
     cairo_surface_t *surfaceFond;

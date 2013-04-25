@@ -49,17 +49,17 @@ int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
     long unsigned int pixelou = 0;
     for(i=0 ; i<=L_PERSO/5 ; i++) {
-        pixelou = getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y - 5);
+        pixelou = getpixel(terrain, pposperso->x + 5*i, pposperso->y);
         if ( pixelou == 0LL || pixelou == 4278190080LL ) //noir
             return 0;
     }
-    for(i=0 ; i<=H_PERSO/5 - 3 ; i++) {
-        pixelou = getpixel(terrain, pposperso->x + 64, pposperso->y + 5*i - 5);
+    for(i=0 ; i<=H_PERSO/5 -1 ; i++) {
+        pixelou = getpixel(terrain, pposperso->x + L_PERSO, pposperso->y + 5*i);
         if ( pixelou == 0LL || pixelou == 4278190080LL )
             return 0;
     }
-    for(i=0 ; i<= H_PERSO/5 - 2; i++) {
-        if ( getpixel(terrain, pposperso->x + (L_PERSO + 4), pposperso->y + 5*i - 5) == 0xFFFF0000L )
+    for(i=0 ; i<= H_PERSO/5 - 1; i++) {
+        if ( getpixel(terrain, pposperso->x + L_PERSO, pposperso->y + 5*i) == 0xFFFF0000L )
             return -1;
     }
     //Si on a survécu aux deux boucles, on peut monter (meme si on est sur du plat). Du coup on s'en prive pas.
@@ -72,12 +72,12 @@ int descendre( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
     long unsigned int pixelou = 0;
     for(i=0 ; i<= L_PERSO/5 ; i++) {
-        pixelou = getpixel(terrain, pposperso->x + 5*i + 4, pposperso->y + (H_PERSO + 5));
+        pixelou = getpixel(terrain, pposperso->x + 5*i, pposperso->y + (H_PERSO + EPAISSEUR_TRAIT/2));
         if ( pixelou == 0LL || pixelou == 4278190080LL )
             return 0;
     }
     for(i=0 ; i<= H_PERSO/5 ; i++) {
-        pixelou =  getpixel(terrain, pposperso->x + (L_PERSO + 4) , pposperso->y + 5 + 5*i) ;
+        pixelou =  getpixel(terrain, pposperso->x + L_PERSO , pposperso->y + EPAISSEUR_TRAIT/2 + 5*i) ;
         if ( pixelou == 0LL || pixelou == 4278190080LL )
             return 0;
     }
@@ -91,11 +91,11 @@ int plater( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
     long unsigned int pixelou = 0;
     for(i=0 ; i< H_PERSO/5; i++) {
-        pixelou = getpixel(terrain, pposperso->x + (L_PERSO + 4) , pposperso->y + 5*i);
+        pixelou = getpixel(terrain, pposperso->x + L_PERSO , pposperso->y + 5*i);
         if ( pixelou == 0LL || pixelou == 4278190080LL )
             return 0;
     }
-    pixelou = getpixel(terrain, pposperso->x + (L_PERSO + 4) , pposperso->y + (H_PERSO - 1));
+    pixelou = getpixel(terrain, pposperso->x + L_PERSO , pposperso->y + H_PERSO - 1);
     if ( pixelou == 0LL || pixelou == 4278190080LL ) //On teste le pixel tout en bas à par, pour le réhausser d'un pixel.
         return 0;
     pposperso->x += 4;
@@ -138,7 +138,7 @@ int sortir (SDL_Rect *pposperso, SDL_Surface *terrain, SDL_Rect selecNiveau){
 }
 
 int finir (SDL_Rect *pposperso){
-    if ((pposperso->x >= X_FIN) && (pposperso->x <= X_FIN + 200))
+    if ((pposperso->x >= X_FIN) && (pposperso->x <= X_FIN + ew/5))
         return -1;
     return 0;
 }
