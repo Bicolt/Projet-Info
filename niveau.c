@@ -83,7 +83,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 				return -1;
             }
 				else {chute = 0;}
-			selecNiveau.x = selecNiveau.x + 4;
+			selecNiveau.x = selecNiveau.x + EPAISSEUR_TRAIT/2;
 			}
             else {chute +=5;}
         if(enSelection){

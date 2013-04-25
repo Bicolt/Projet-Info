@@ -63,7 +63,7 @@ int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
             return -1;
     }
     //Si on a survécu aux deux boucles, on peut monter (meme si on est sur du plat). Du coup on s'en prive pas.
-    pposperso->x += 4;
+    pposperso->x += EPAISSEUR_TRAIT/2;
     pposperso->y -= 5;
     return 1;
 }
