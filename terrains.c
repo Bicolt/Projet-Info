@@ -21,11 +21,55 @@ void tterrain0(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
                                CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size (droite, 90.0);
 
-    cairo_move_to (droite, 10.5, 135.5);
-    cairo_show_text (droite, "Hello");
+    cairo_move_to (droite, 0.3*ew, 0.1*eh);
+    cairo_show_text (droite, "Bienvenue !");
 
-    cairo_move_to(droite, 0, 500.5);
-    cairo_line_to(droite, X_FIN+200.5, 500.5);
+    cairo_set_font_size (droite, 45.0);
+    cairo_move_to (droite, 0.3*ew, 0.2*eh);
+    cairo_show_text (droite, "le but est d arriver a la fin");
+    cairo_move_to (droite, 0.3*ew , 0.275*eh);
+    cairo_show_text (droite, "du niveau le plus vite possible");
+    cairo_move_to (droite, 0.3*ew , 0.35*eh);
+    cairo_show_text (droite, "en evitant les obstacles");
+
+    cairo_move_to (droite, 0.8*ew, 0.75*eh);
+    cairo_show_text (droite, "pour cela il est possible de");
+    cairo_move_to (droite, 0.8*ew, 0.825*eh);
+    cairo_show_text (droite, "selectionner une zone de l ecran");
+    cairo_move_to (droite, 0.8*ew, 0.9*eh);
+    cairo_show_text (droite, "a l aide du clique gauche puis");
+
+    cairo_move_to (droite, 1.3*ew, 0.2*eh);
+    cairo_show_text (droite, "de la deplacer en maintenant le clique droit");
+    cairo_move_to (droite, 1.3*ew, 0.275*eh);
+    cairo_show_text (droite, "enfonce et de la coller en le relachant");
+    cairo_move_to (droite, 1.3*ew, 0.35*eh);
+    cairo_show_text (droite, "");
+
+    cairo_move_to (droite, 1.8*ew, 0.75*eh);
+    cairo_show_text (droite, "Il est aussi possible de tourner une piece en ");
+    cairo_move_to (droite, 1.8*ew, 0.825*eh);
+    cairo_show_text (droite, "cours de translation, en maintenant la touche r");
+    cairo_move_to (droite, 1.8*ew, 0.9*eh);
+    cairo_show_text (droite, "et en bougeant la souris pour determiner l angle");
+
+    cairo_move_to(droite, 0, 0.6*eh);
+    cairo_line_to(droite, 2.3*ew, 0.6*eh);
+    cairo_curve_to(droite, 2.4*ew, 0.4*eh, 2.5*ew, 0.3*eh, 2.6*ew, 0.6*eh);
+    cairo_move_to(droite, 2.8*ew,0.6*eh);
+    cairo_line_to(droite, 2.8*ew, 0.5*eh);
+    cairo_move_to(droite, 2.8*ew, 0.6*eh);
+    cairo_line_to(droite, 3.1*ew, 0.6*eh);
+    cairo_stroke(droite);
+
+    cairo_set_source_rgba(droite, 1, 0, 0, 1);
+    cairo_move_to(droite, 3.1*ew, 0.6*eh);
+    cairo_line_to(droite, 3.2*ew, 0.6*eh);
+    cairo_stroke(droite);
+
+    cairo_set_source_rgba(droite, 0, 0, 0, 1);
+    cairo_move_to(droite, 3.2*ew, 0.6*eh);
+    cairo_line_to(droite, X_FIN+200.5, 0.6*eh);
     //cairo_curve_to(droite, ew, 400., ew, 400., ew, 400.);
     //cairo_line_to(droite, ew-200., 550.);
     cairo_stroke(droite);
