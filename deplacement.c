@@ -63,8 +63,8 @@ int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
             return -1;
     }
     //Si on a survécu aux deux boucles, on peut monter (meme si on est sur du plat). Du coup on s'en prive pas.
-    pposperso->x += EPAISSEUR_TRAIT/2;
-    pposperso->y -= EPAISSEUR_TRAIT/2;
+    pposperso->x += 4;
+    pposperso->y -= 5;
     return 1;
 }
 
@@ -82,8 +82,8 @@ int descendre( SDL_Rect* pposperso, SDL_Surface* terrain ) {
             return 0;
     }
     //Si on a survécu aux deux boucles, on peut avancer. Du coup on s'en prive pas.
-    pposperso->x += EPAISSEUR_TRAIT/2;
-    pposperso->y += EPAISSEUR_TRAIT/2;
+    pposperso->x += 4;
+    pposperso->y += 5;
     return 1;
 }
 
@@ -98,7 +98,7 @@ int plater( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     pixelou = getpixel(terrain, pposperso->x + L_PERSO , pposperso->y + H_PERSO - 1);
     if ( pixelou == 0LL || pixelou == 4278190080LL ) //On teste le pixel tout en bas à par, pour le réhausser d'un pixel.
         return 0;
-    pposperso->x += EPAISSEUR_TRAIT/2;
+    pposperso->x += 4;
     return 1;
 }
 
