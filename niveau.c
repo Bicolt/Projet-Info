@@ -28,7 +28,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     L_PERSO = 55*eh/768;
     EPAISSEUR_TRAIT = 7*eh/768;
     NOMBRE_ECRANS = 8;
-    X_FIN = NOMBRE_ECRANS*ew - ew/5;
+    X_FIN = (NOMBRE_ECRANS - 4)*ew - ew/5;
 
     SDL_Surface *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ew, eh, 32, 0, 0, 0, 0);
@@ -126,7 +126,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
         SDL_BlitSurface(rect, NULL, ecran, &posrec);
         SDL_Flip(ecran);
         temps_actuel = SDL_GetTicks();
-        SDL_Delay(max(45 - (temps_actuel-temps_precedent),0));
+        SDL_Delay(max(40 - (temps_actuel-temps_precedent),0));
         temps_precedent = temps_actuel;
         SDL_PollEvent(&event);
         switch(event.type){
