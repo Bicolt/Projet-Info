@@ -281,6 +281,66 @@ void tterrain5(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
     cairo_destroy(droite);
 }
 
+int scanner(FILE *fichier, int* x1, int* y1, int* x2, int* y2, int* x3, int* y3) {
+    int result;
+    fscanf(fichier, "%d %d ", x1, y1);
+    if (*x1>=0) {
+        fscanf(fichier, "%d %d ", x2, y2);
+        if (*x2>=0) {
+            fscanf(fichier, "%d %d ", x3, y3);
+            if (*x3>=0)
+                return 1;
+            else    result = *x3;
+        }
+        else    result = *x2;
+    }
+    else    result = *x1;
+    return result;
+}
+
+void tterrain6(SDL_Surface *ecran, cairo_surface_t * surfaceFond) {
+    FILE *fichier = fopen("save.txt", "r");
+    int x1, y1, x2, y2, x3, y3;
+
+    int result;
+    int continuer = 1;
+
+    cairo_t *droite = cairo_create(surfaceFond);
+    cairo_set_line_width(droite,EPAISSEUR_TRAIT);
+    cairo_set_source_rgba (droite, 0, 0, 0, 1);
+
+    fscanf(fichier, "%d %d %d %d ", &x1, &y2, &x2, &y2); // Ca vaut tout simplement -1 -1 -2 -2.
+
+    fscanf(fichier, "%d %d", &x1, &y1);
+    cairo_move_to(droite, x1, y1);
+    while (continuer==1) {
+        result = scanner(fichier, &x1, &y1, &x2, &y2, &x3, &y3);
+        switch(result) {
+            case 1:
+                cairo_curve_to(droite, x1, y1, x3, y3, x2, y2);
+                break;
+            case -1:
+                fscanf(fichier, "%d %d ", &x2, &y2);
+                cairo_move_to(droite, x2, y2);
+                break;
+            case -2:
+                cairo_stroke(droite);
+                cairo_set_source_rgba (droite, 1, 0, 0, 1);
+                break;
+            case -3:
+                cairo_stroke(droite);
+                cairo_destroy(droite);
+                continuer = 0;
+                break;
+        }
+    }
+}
+
+
+
+
+
+/*
 void tterrain6(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
 
     cairo_t *droite = cairo_create(surfaceFond);
@@ -323,3 +383,4 @@ void tterrain6(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
     cairo_stroke(droite);
     cairo_destroy(droite);
 }
+*/
