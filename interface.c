@@ -33,7 +33,6 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
     int continuer = 1, select=0;
 
     pos.x = 0; pos.y = 0;
-
     rect = selection(ew, eh/8, ecran->format);
     titre = TTF_RenderText_Shaded(police, "Super Scalable Land", Black, White);
     texte1 = TTF_RenderText_Shaded(police, "Jouer", Black, White);

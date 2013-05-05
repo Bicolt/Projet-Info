@@ -18,14 +18,13 @@ int main(int argc, char *argv[]){
         exit(EXIT_FAILURE); // On quitte le programme
     }
     TTF_Init();
-
     SDL_Surface *ecran = NULL, *icone = SDL_LoadBMP("sdl_icone.bmp");
     TTF_Font *police = NULL;
     int retourMenu = 0, retourChoixNiveau = 0, retourNiveau = 0, retourGO = 0, retourVict = 0;
     int continuer = 1, enNiveau = 1;
 
     SDL_WM_SetIcon(icone, NULL);
-    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN );
+    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
     eh = ecran->h;
     ew = ecran->w;
     if (ecran == NULL){  // Si l'ouverture a échoué, on le note et on arrête
@@ -35,6 +34,8 @@ int main(int argc, char *argv[]){
     SDL_WM_SetCaption("essai de menu", NULL);
 
     police = TTF_OpenFont("VirtualVectorVortex.ttf", 85*eh/768);
+    if (police==NULL)
+        printf("La police VirtualVectorVortex.ttf n'est pas dans le bon repertoire.\n");
 
     while(continuer){
         enNiveau=1;

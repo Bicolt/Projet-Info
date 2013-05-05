@@ -397,11 +397,11 @@ void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surf
 void recollementContinu(SDL_Surface *surfLigne, SDL_Rect posSelection, SDL_Rect *posDestination){
     int decallage = 0, trouve = 1, compteur = 0, rel_compteur, continuer = 1;
     while(continuer && (compteur < (min(posSelection.h, posDestination->h) - 16)) && (posDestination->y + compteur < eh)){
-        long unsigned int pix = getpixel(surfLigne,posSelection.x, posSelection.y + compteur );
+        unsigned int pix = getpixel(surfLigne,posSelection.x, posSelection.y + compteur );
         if((pix == 0LL)||(pix == 4278190080LL)){
             rel_compteur = max((compteur - 15),0);
             while((rel_compteur < compteur + 15)&&trouve&&(posDestination->y + rel_compteur < eh)){
-                long unsigned int pix_int = getpixel(surfLigne, posDestination->x-1, posDestination->y + rel_compteur);
+                unsigned int pix_int = getpixel(surfLigne, posDestination->x-1, posDestination->y + rel_compteur);
                 if((pix_int == 0LL) || (pix_int == 4278190080LL)){
                     continuer = 0;
                     trouve = 0;
@@ -473,7 +473,7 @@ void insererSurface(SDL_Surface *collage, SDL_Rect *posSelection, SDL_Surface *s
 
     int i, j;
     int h, w, x_init_S, y_init_S, x_init_D, y_init_D;
-    long unsigned int pixel, p_ligne = surfLigne->pitch/4;
+    unsigned int pixel, p_ligne = surfLigne->pitch/4;
     if(posDestination == NULL){
         x_init_D = y_init_D = 0;
     }
@@ -496,7 +496,7 @@ void insererSurface(SDL_Surface *collage, SDL_Rect *posSelection, SDL_Surface *s
         for(i=0; i<w; i++){
             pixel = getpixel(collage, i + x_init_S, j + y_init_S);
             if(pixel != 0xFFFFFFFF){
-                ((long unsigned int*)surfLigne->pixels)[(j + y_init_D)*p_ligne + i + x_init_D] = pixel;
+                ((unsigned int*)surfLigne->pixels)[(j + y_init_D)*p_ligne + i + x_init_D] = pixel;
             }
         }
     }

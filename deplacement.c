@@ -12,9 +12,9 @@
 #include "deplacement.h"
 
 
-long unsigned int getpixel(SDL_Surface *s, int x, int y) {
+unsigned int getpixel(SDL_Surface *s, int x, int y) {
    // if(y*(s->pitch/sizeof(unsigned int))+x>=(s->w)*(s->h))
-    return ((long unsigned int*)s->pixels)[y*(s->pitch/sizeof(long unsigned int)) + x];
+    return ((unsigned int*)s->pixels)[y*(s->pitch/sizeof(unsigned int)) + x];
 }
 
 int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Rect selecNiveau) {
@@ -47,7 +47,7 @@ int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Rect selecNiveau) {
 
 int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
-    long unsigned int pixelou = 0;
+    unsigned int pixelou = 0;
     for(i=0 ; i<=L_PERSO/5 ; i++) {
         pixelou = getpixel(terrain, pposperso->x + 5*i, pposperso->y);
         if ( pixelou == 0LL || pixelou == 4278190080LL ) //noir
@@ -70,7 +70,7 @@ int monter( SDL_Rect* pposperso, SDL_Surface* terrain ) {
 
 int descendre( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
-    long unsigned int pixelou = 0;
+    unsigned int pixelou = 0;
     for(i=0 ; i<= L_PERSO/5 ; i++) {
         pixelou = getpixel(terrain, pposperso->x + 5*i, pposperso->y + (H_PERSO + EPAISSEUR_TRAIT/2));
         if ( pixelou == 0LL || pixelou == 4278190080LL )
@@ -89,7 +89,7 @@ int descendre( SDL_Rect* pposperso, SDL_Surface* terrain ) {
 
 int plater( SDL_Rect* pposperso, SDL_Surface* terrain ) {
     int i;
-    long unsigned int pixelou = 0;
+    unsigned int pixelou = 0;
     for(i=0 ; i< H_PERSO/5; i++) {
         pixelou = getpixel(terrain, pposperso->x + L_PERSO , pposperso->y + 5*i);
         if ( pixelou == 0LL || pixelou == 4278190080LL )
@@ -104,7 +104,7 @@ int plater( SDL_Rect* pposperso, SDL_Surface* terrain ) {
 
 int solsouspieds ( SDL_Rect* pposperso, SDL_Surface* terrain) {
     int i;
-    long unsigned int pixelou = 0;
+    unsigned int pixelou = 0;
     for(i=0 ; i<= L_PERSO/5 ; i++) {
         pixelou =  getpixel(terrain, pposperso->x - 5*i + L_PERSO, pposperso->y + H_PERSO);
         if (pixelou == 0LL || pixelou == 4278190080LL)

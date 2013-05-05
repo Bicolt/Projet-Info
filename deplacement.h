@@ -1,4 +1,4 @@
-long unsigned int getpixel(SDL_Surface *s, int x, int y);
+unsigned int getpixel(SDL_Surface *s, int x, int y);
 int avancer ( SDL_Rect* pposperso, SDL_Surface* terrain, SDL_Rect selecNiveau);
 int solsouspieds ( SDL_Rect* pposperso, SDL_Surface* terrain);
 void tomber ( SDL_Rect* pposperso, SDL_Surface* terrain);
