@@ -64,76 +64,77 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
     SDL_EnableKeyRepeat(150, 10);
 
     while(continuer){
-        SDL_WaitEvent(&event);
-        switch(event.type)
-        {
-            case SDL_MOUSEMOTION:
-                xSouris = event.button.x;
-                ySouris = event.button.y;
-                if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
-                    select = 0;
-                    posrec.y=eh*6/16;
-                }
-                else if(((eh*9/16) <= ySouris) && (ySouris < (eh*12/16))){
-                    select = 1;
-                    posrec.y=eh*9/16;
-                }
-                else if(((eh*12/16) <= ySouris) && (ySouris < (eh*14/16))){
-                    select = 2;
-                    posrec.y=eh*12/16;
-                }
-                break;
-            case SDL_MOUSEBUTTONUP:
-                if(event.button.button == SDL_BUTTON_LEFT){
+        while (SDL_PollEvent(&event)) {
+            switch(event.type)
+            {
+                case SDL_MOUSEMOTION:
                     xSouris = event.button.x;
                     ySouris = event.button.y;
                     if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
-                        return 0;
+                        select = 0;
+                        posrec.y=eh*6/16;
                     }
                     else if(((eh*9/16) <= ySouris) && (ySouris < (eh*12/16))){
-                        return 1;
+                        select = 1;
+                        posrec.y=eh*9/16;
                     }
                     else if(((eh*12/16) <= ySouris) && (ySouris < (eh*14/16))){
-                        return SORTIE;
+                        select = 2;
+                        posrec.y=eh*12/16;
                     }
-                }
-            break;
-            case SDL_KEYDOWN:
-                switch (event.key.keysym.sym)
-                {
-                    case SDLK_UP:
-                        select = (select + 2)%3;
-                        if(select == 2)
-                            posrec.y = posrec.y + eh*6/16;
-                        else posrec.y = posrec.y - eh*3/16;
-                        break;
-                    case SDLK_DOWN:
-                        select = (select + 1)%3;
-                        if(select == 0)
-                            posrec.y = posrec.y - eh*6/16;
-                        else posrec.y = posrec.y + eh*3/16;
-                        break;
-                    case SDLK_ESCAPE:
-                            return SORTIE;
-                        break;
-                    case SDLK_RETURN:
-                        if(select == 2){
-                            return SORTIE;
-                        }
-                        else if(select == 1){
-                            return 1;
-                        }
-                        else{
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                    if(event.button.button == SDL_BUTTON_LEFT){
+                        xSouris = event.button.x;
+                        ySouris = event.button.y;
+                        if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
                             return 0;
                         }
-                        break;
-                    default:
-                        break;
-                }
+                        else if(((eh*9/16) <= ySouris) && (ySouris < (eh*12/16))){
+                            return 1;
+                        }
+                        else if(((eh*12/16) <= ySouris) && (ySouris < (eh*14/16))){
+                            return SORTIE;
+                        }
+                    }
                 break;
-            case SDL_QUIT:
-                    return SORTIE;
-                break;
+                case SDL_KEYDOWN:
+                    switch (event.key.keysym.sym)
+                    {
+                        case SDLK_UP:
+                            select = (select + 2)%3;
+                            if(select == 2)
+                                posrec.y = posrec.y + eh*6/16;
+                            else posrec.y = posrec.y - eh*3/16;
+                            break;
+                        case SDLK_DOWN:
+                            select = (select + 1)%3;
+                            if(select == 0)
+                                posrec.y = posrec.y - eh*6/16;
+                            else posrec.y = posrec.y + eh*3/16;
+                            break;
+                        case SDLK_ESCAPE:
+                                return SORTIE;
+                            break;
+                        case SDLK_RETURN:
+                            if(select == 2){
+                                return SORTIE;
+                            }
+                            else if(select == 1){
+                                return 1;
+                            }
+                            else{
+                                return 0;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case SDL_QUIT:
+                        return SORTIE;
+                    break;
+            }
         }
     //SDL_Delay(30);
 
@@ -188,66 +189,67 @@ int pause(SDL_Surface* ecran){
     SDL_EnableKeyRepeat(150, 10);
 
     while(continuer){
-        SDL_WaitEvent(&event);
-        switch(event.type)
-        {
-            case SDL_MOUSEMOTION:
-                xSouris = event.button.x;
-                ySouris = event.button.y;
-                if((ySouris < (eh*9/16))){
-                    select = 0;
-                    posrec.y=eh*6/16;
-                }
-                else if(((eh*12/16) <= ySouris)){
-                    select = 2;
-                    posrec.y=eh*12/16;
-                }
-                break;
-            case SDL_MOUSEBUTTONUP:
-                if(event.button.button == SDL_BUTTON_LEFT){
+        while(SDL_PollEvent(&event)) {
+            switch(event.type)
+            {
+                case SDL_MOUSEMOTION:
                     xSouris = event.button.x;
                     ySouris = event.button.y;
                     if((ySouris < (eh*9/16))){
-                        return 0;
+                        select = 0;
+                        posrec.y=eh*6/16;
                     }
                     else if(((eh*12/16) <= ySouris)){
-                        return MENU;
+                        select = 2;
+                        posrec.y=eh*12/16;
                     }
-                }
-            break;
-            case SDL_KEYDOWN:
-                switch (event.key.keysym.sym)
-                {
-                    case SDLK_UP:
-                        select = (select + 1)%2;
-                        if(select == 1)
-                            posrec.y = posrec.y + eh*6/16;
-                        else posrec.y = posrec.y - eh*6/16;
-                        break;
-                    case SDLK_DOWN:
-                        select = (select + 1)%2;
-                        if(select == 0)
-                            posrec.y = posrec.y - eh*6/16;
-                        else posrec.y = posrec.y + eh*6/16;
-                        break;
-                    case SDLK_ESCAPE:
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                    if(event.button.button == SDL_BUTTON_LEFT){
+                        xSouris = event.button.x;
+                        ySouris = event.button.y;
+                        if((ySouris < (eh*9/16))){
                             return 0;
-                        break;
-                    case SDLK_RETURN:
-                        if(select == 1){
+                        }
+                        else if(((eh*12/16) <= ySouris)){
                             return MENU;
                         }
-                        else{
-                            return 0;
-                        }
-                        break;
-                    default:
-                        break;
-                }
+                    }
                 break;
-            case SDL_QUIT:
-                    return SORTIE;
-                break;
+                case SDL_KEYDOWN:
+                    switch (event.key.keysym.sym)
+                    {
+                        case SDLK_UP:
+                            select = (select + 1)%2;
+                            if(select == 1)
+                                posrec.y = posrec.y + eh*6/16;
+                            else posrec.y = posrec.y - eh*6/16;
+                            break;
+                        case SDLK_DOWN:
+                            select = (select + 1)%2;
+                            if(select == 0)
+                                posrec.y = posrec.y - eh*6/16;
+                            else posrec.y = posrec.y + eh*6/16;
+                            break;
+                        case SDLK_ESCAPE:
+                                return 0;
+                            break;
+                        case SDLK_RETURN:
+                            if(select == 1){
+                                return MENU;
+                            }
+                            else{
+                                return 0;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case SDL_QUIT:
+                        return SORTIE;
+                    break;
+            }
         }
     //SDL_Delay(30);
     SDL_BlitSurface(fond, NULL, ecran, &pos);

@@ -128,157 +128,158 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
         posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
         posPersoEcran.y = pospersoNiveau.y;
         perso = pperso(ecran, surfPerso, k);
-        SDL_PollEvent(&event);
         insererSurface(surfPerso, NULL, ecran, &posPersoEcran);
         SDL_BlitSurface(rect, NULL, ecran, &posrec);
         SDL_Flip(ecran);
         temps_actuel = SDL_GetTicks();
         SDL_Delay(max(40 - (temps_actuel-temps_precedent),0));
         temps_precedent = temps_actuel;
-        switch(event.type){
-            case SDL_MOUSEMOTION:
-                xSouris = event.button.x;
-                ySouris = event.button.y;
-                if(((ew - 77*eh/768) <= xSouris) && (ySouris < 76*eh/768)){
-                    SDL_SetAlpha(rect, SDL_SRCALPHA, 120);
-                    select = 0;
-                    posrec.x=ew - 77*eh/768;
-                    posrec.y=14*eh/768;
-                }
-                else { SDL_SetAlpha(rect, SDL_SRCALPHA, 0);}
-                break;
-            case SDL_MOUSEBUTTONDOWN:
-                xSourisButton = event.button.x;
-                ySourisButton = event.button.y;
-                if(event.button.button == SDL_BUTTON_LEFT){
-                    xSourisButton = xSourisButton + selecNiveau.x;
-                    ySourisButton = ySourisButton + selecNiveau.y;
-                    if(enSelection == 0){
-                        enDrag = 0;
-                        dejaSelectionne = 0;
-                        enSelection = 1;
-                        posSelection.x = xSourisButton;
-                        posSelection.y = ySourisButton;
-
+        while (SDL_PollEvent(&event)) {
+            switch(event.type){
+                case SDL_MOUSEMOTION:
+                    xSouris = event.button.x;
+                    ySouris = event.button.y;
+                    if(((ew - 77*eh/768) <= xSouris) && (ySouris < 76*eh/768)){
+                        SDL_SetAlpha(rect, SDL_SRCALPHA, 120);
+                        select = 0;
+                        posrec.x=ew - 77*eh/768;
+                        posrec.y=14*eh/768;
                     }
-                }
-                else if(event.button.button == SDL_BUTTON_RIGHT){
-                    if(!enDrag){
-                        xRinit = xSourisButton - xSouris;
-                        yRinit = ySourisButton - ySouris;
-                        if(dejaSelectionne){
-                            enDrag=1;
-                            posAppercu = posSelection;
-                            posAppercu.x = posSelection.x - selecNiveau.x;
-                            posAppercu.y = posSelection.y - selecNiveau.y;
-                        }
-                    }
-                }
-                break;
-            case SDL_MOUSEBUTTONUP:
-                xSourisButton = event.button.x;
-                ySourisButton = event.button.y;
-                if(event.button.button == SDL_BUTTON_LEFT){
-                    if(((ew - 77*eh/768) <= xSourisButton) && (ySourisButton < 76*eh/768)){
-                        switch (pause(ecran)){
-                            case SORTIE:
-                                return SORTIE;
-                                break;
-                            case MENU:
-                                return MENU;
-                                break;
-                            case 0:
-                                event.button.button=SDL_BUTTON_MIDDLE;
-                                SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
-                                collagePossible = 0;
-                                enSelection = 0;
-                                dejaSelectionne = 0;
-                                enDrag = 0;
-                                angle = 0;
-                                angleTotal = 0;
-                                break;
-                            default:
-                                break;
-                            }
-                    }
-                    else{
+                    else { SDL_SetAlpha(rect, SDL_SRCALPHA, 0);}
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                    xSourisButton = event.button.x;
+                    ySourisButton = event.button.y;
+                    if(event.button.button == SDL_BUTTON_LEFT){
                         xSourisButton = xSourisButton + selecNiveau.x;
                         ySourisButton = ySourisButton + selecNiveau.y;
-                        if(collagePossible == 0){
-                            if(enSelection){
-                                posSelection.w = abs(posSelection.x-xSourisButton);
-                                posSelection.h = abs(posSelection.y-ySourisButton);
-                                posSelection.x = min(posSelection.x, xSourisButton);
-                                posSelection.y = min(posSelection.y, ySourisButton);
-                                enSelection = 0;
-                                dejaSelectionne = 1;
+                        if(enSelection == 0){
+                            enDrag = 0;
+                            dejaSelectionne = 0;
+                            enSelection = 1;
+                            posSelection.x = xSourisButton;
+                            posSelection.y = ySourisButton;
+
+                        }
+                    }
+                    else if(event.button.button == SDL_BUTTON_RIGHT){
+                        if(!enDrag){
+                            xRinit = xSourisButton - xSouris;
+                            yRinit = ySourisButton - ySouris;
+                            if(dejaSelectionne){
+                                enDrag=1;
+                                posAppercu = posSelection;
+                                posAppercu.x = posSelection.x - selecNiveau.x;
+                                posAppercu.y = posSelection.y - selecNiveau.y;
                             }
                         }
                     }
-                }
-                if(event.button.button == SDL_BUTTON_RIGHT){
-                    enRotation  = 0;
-                    xSourisButton = xSourisButton + selecNiveau.x;
-                    ySourisButton = ySourisButton + selecNiveau.y;
-                    if(enDrag){
-                        enDrag=0;
-                        if(dejaSelectionne){
-                            collagePossible = 1;
-                            posDestination = posAppercu;
-                            posDestination.x = posAppercu.x + selecNiveau.x;
-                            posDestination.y = posAppercu.y + selecNiveau.y;
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                    xSourisButton = event.button.x;
+                    ySourisButton = event.button.y;
+                    if(event.button.button == SDL_BUTTON_LEFT){
+                        if(((ew - 77*eh/768) <= xSourisButton) && (ySourisButton < 76*eh/768)){
+                            switch (pause(ecran)){
+                                case SORTIE:
+                                    return SORTIE;
+                                    break;
+                                case MENU:
+                                    return MENU;
+                                    break;
+                                case 0:
+                                    event.button.button=SDL_BUTTON_MIDDLE;
+                                    SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
+                                    collagePossible = 0;
+                                    enSelection = 0;
+                                    dejaSelectionne = 0;
+                                    enDrag = 0;
+                                    angle = 0;
+                                    angleTotal = 0;
+                                    break;
+                                default:
+                                    break;
+                                }
+                        }
+                        else{
+                            xSourisButton = xSourisButton + selecNiveau.x;
+                            ySourisButton = ySourisButton + selecNiveau.y;
+                            if(collagePossible == 0){
+                                if(enSelection){
+                                    posSelection.w = abs(posSelection.x-xSourisButton);
+                                    posSelection.h = abs(posSelection.y-ySourisButton);
+                                    posSelection.x = min(posSelection.x, xSourisButton);
+                                    posSelection.y = min(posSelection.y, ySourisButton);
+                                    enSelection = 0;
+                                    dejaSelectionne = 1;
+                                }
+                            }
                         }
                     }
-                }
-                break;
-            case SDL_KEYDOWN:
-                switch(event.key.keysym.sym){
-                    case SDLK_ESCAPE:
-                        switch (pause(ecran)){
-                            case SORTIE:
-                                return SORTIE;
-                                break;
-                            case MENU:
-                                return MENU;
-                                break;
-                            case 0:
-                                collagePossible = 0;
-                                enSelection = 0;
-                                dejaSelectionne = 0;
-                                enDrag = 0;
-                                angle = 0;
-                                angleTotal = 0;
-                                event.key.keysym.sym = SDLK_a;
-                                break;
-                            default:
-                                break;
+                    if(event.button.button == SDL_BUTTON_RIGHT){
+                        enRotation  = 0;
+                        xSourisButton = xSourisButton + selecNiveau.x;
+                        ySourisButton = ySourisButton + selecNiveau.y;
+                        if(enDrag){
+                            enDrag=0;
+                            if(dejaSelectionne){
+                                collagePossible = 1;
+                                posDestination = posAppercu;
+                                posDestination.x = posAppercu.x + selecNiveau.x;
+                                posDestination.y = posAppercu.y + selecNiveau.y;
                             }
-                        break;
+                        }
+                    }
+                    break;
+                case SDL_KEYDOWN:
+                    switch(event.key.keysym.sym){
+                        case SDLK_ESCAPE:
+                            switch (pause(ecran)){
+                                case SORTIE:
+                                    return SORTIE;
+                                    break;
+                                case MENU:
+                                    return MENU;
+                                    break;
+                                case 0:
+                                    collagePossible = 0;
+                                    enSelection = 0;
+                                    dejaSelectionne = 0;
+                                    enDrag = 0;
+                                    angle = 0;
+                                    angleTotal = 0;
+                                    event.key.keysym.sym = SDLK_a;
+                                    break;
+                                default:
+                                    break;
+                                }
+                            break;
+                            case SDLK_r:
+                            if(enDrag)
+                                enRotation = 1;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case SDL_KEYUP:
+                    switch(event.key.keysym.sym){
                         case SDLK_r:
-                        if(enDrag)
-                            enRotation = 1;
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            case SDL_KEYUP:
-                switch(event.key.keysym.sym){
-                    case SDLK_r:
-                        if(enRotation){
-                            angleTotal = angle;
-                        }
-                        enRotation = 0;
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            case SDL_QUIT:
-                return SORTIE;
-                break;
-            default:
-                break;
+                            if(enRotation){
+                                angleTotal = angle;
+                            }
+                            enRotation = 0;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case SDL_QUIT:
+                    return SORTIE;
+                    break;
+                default:
+                    break;
+            }
         }
     }
     return MENU;
