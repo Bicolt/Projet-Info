@@ -1,5 +1,6 @@
 #define SORTIE 502713
 #define MENU 7
+#define NIVEAUPERSO 1337
 
 SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf);
 int gameover(SDL_Surface *ecran);
