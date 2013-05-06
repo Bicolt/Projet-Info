@@ -287,12 +287,13 @@ int choixNiveau (SDL_Surface *ecran) {
 	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Choix du niveau", centrex, posyTitre);
 	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Menu principal", centrex, posyMenu);
 	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Tutoriel", centrex, posy0);
-    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "1", centrex - ew/7, posyl1);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "2", centrex, posyl1);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "3", centrex + ew/7, posyl1);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "4", centrex - ew/7, posyl2);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "5", centrex, posyl2);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "6", centrex + ew/7, posyl2);
+    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "1", ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "2", 2*ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "3", 3*ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "4", 4*ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "5", 5*ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "6", 6*ew/7, posyl1);
+    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Niveau personnalisé", centrex, posyl2);
 
     afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
     SDL_Flip(ecran);
@@ -310,7 +311,7 @@ int choixNiveau (SDL_Surface *ecran) {
                     if (ySouris < posy0 + eh/12)
                         select = 0;
                     if ((ySouris < posyl1 + eh/12)&&(ySouris > posyl1 - eh/12)){
-                        if ((xSouris > centrex - 3*ew/14)&&(xSouris < centrex + 3*ew/14)){
+                      /*  if ((xSouris > centrex - 3*ew/14)&&(xSouris < centrex + 3*ew/14)){
                             if (xSouris < centrex - ew/14)
                                 select = 1;
                             else if (xSouris > centrex + ew/14)
@@ -318,21 +319,15 @@ int choixNiveau (SDL_Surface *ecran) {
                             else
                                 select = 2;
                         }
+                        largeur = hauteur; */
+                        select = (xSouris+ew/14)/(ew/7);
                         largeur = hauteur;
                     }
                     else if  ((ySouris < posyl2 + eh/12)&&(ySouris > posyl2 - eh/12)){
-                        if ((xSouris > centrex - 3*ew/14)&&(xSouris < centrex + 3*ew/14)){
-                            if (xSouris < centrex - ew/14)
-                                select = 4;
-                            else if (xSouris > centrex + ew/14)
-                                select = 6;
-                            else
-                                select = 5;
-                        }
-                        largeur = hauteur;
+                        select = NIVEAUPERSO;
                     }
                     else if (ySouris > posyMenu - eh/12)
-                        select = 7;
+                        select = MENU;
                 break;
             case SDL_MOUSEBUTTONUP:
                 if(event.button.button == SDL_BUTTON_LEFT)
@@ -349,15 +344,16 @@ int choixNiveau (SDL_Surface *ecran) {
                             case 1:
                             case 2:
                             case 3:
-                                select = 0;
-                                break;
                             case 4:
                             case 5:
                             case 6:
-                                select = select - 3;
+                                select = 0;
                                 break;
-                            case 7:
-                                select = 5;
+                            case NIVEAUPERSO:
+                                select = 6;
+                                break;
+                            case MENU:
+                                select = NIVEAUPERSO;
                                 break;
                             default:
                                 break;
@@ -367,17 +363,18 @@ int choixNiveau (SDL_Surface *ecran) {
                     case SDLK_DOWN:
                         switch (select) {
                             case 0:
-                                select = 2;
+                                select = 1;
                                 break;
                             case 1:
                             case 2:
                             case 3:
-                                select = select + 3;
-                                break;
                             case 4:
                             case 5:
                             case 6:
-                                select = 7;
+                                select = NIVEAUPERSO;
+                                break;
+                            case NIVEAUPERSO:
+                                select = MENU;
                                 break;
                             case 7:
                                 select = 0;
@@ -387,13 +384,19 @@ int choixNiveau (SDL_Surface *ecran) {
                         }
                         break;
                     case SDLK_RIGHT:
-                        select = (select + 1)%8;
+                        if ((select > 0) && (select < 6))
+                            select = (select + 1)%7;
+                        else if (select == 6)
+                            select = 1;
                         break;
                     case SDLK_LEFT:
-                        select = (select + 7)%8;
+                        if ((select > 1) && (select < 7))
+                            select = (select + 6)%7;
+                        else if (select == 1)
+                            select = 6;
                         break;
                     case SDLK_ESCAPE:
-                        return 7;
+                        return MENU;
                         break;
                     case SDLK_RETURN:
                         return select;
@@ -408,11 +411,9 @@ int choixNiveau (SDL_Surface *ecran) {
         }
     //SDL_Delay(30);
     if ((select > 0) && (select < 7)){
-        if (select < 4 )
-            posy = posyl1;
-        else
-            posy = posyl2;
+        posy = posyl1;
         largeur = hauteur;
+        posx = select*ew/7;
     }
     switch (select){
         case 0:
@@ -420,17 +421,10 @@ int choixNiveau (SDL_Surface *ecran) {
             posy = posy0;
             largeur = ew;
             break;
-        case 1:
-        case 4:
-            posx = centrex - ew/7;
-            break;
-        case 2:
-        case 5:
+        case NIVEAUPERSO:
             posx = centrex;
-            break;
-        case 3:
-        case 6:
-            posx = centrex + ew/7;
+            posy = posyl2;
+            largeur = ew;
             break;
         case 7:
             posy = posyMenu;
@@ -444,12 +438,13 @@ int choixNiveau (SDL_Surface *ecran) {
 	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Choix du niveau", centrex, posyTitre);
 	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Menu principal", centrex, posyMenu);
 	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Tutoriel", centrex, posy0);
-    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "1", centrex - ew/7, posyl1);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "2", centrex, posyl1);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "3", centrex + ew/7, posyl1);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "4", centrex - ew/7, posyl2);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "5", centrex, posyl2);
-	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "6", centrex + ew/7, posyl2);
+    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "1", ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "2", 2*ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "3", 3*ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "4", 4*ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "5", 5*ew/7, posyl1);
+	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "6", 6*ew/7, posyl1);
+    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Niveau personnalisé", centrex, posyl2);
 	afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
     SDL_Flip(ecran);
     }
