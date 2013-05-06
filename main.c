@@ -8,6 +8,7 @@
 #include "affichage.h"
 #include "interface.h"
 #include "niveau.h"
+#include "fmod.h"
 
 int ew, eh;
 
@@ -22,6 +23,55 @@ int main(int argc, char *argv[]){
     TTF_Font *police = NULL;
     int retourMenu = 0, retourChoixNiveau = 0, retourNiveau = 0, retourGO = 0, retourVict = 0;
     int continuer = 1, enNiveau = 1;
+
+    FMOD_SYSTEM *system;
+    FMOD_SOUND *lose, *win, *mort, *menumus, *gamemus;
+    FMOD_CHANNELGROUP *channelgroup;
+    FMOD_RESULT resultat;
+    /* Création et initialisation d'un objet système */
+    FMOD_System_Create(&system);
+    FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, NULL);
+    /* Chargement du son et vérification du chargement */
+    resultat = FMOD_System_CreateSound(system, "OST-Lose.wav", FMOD_CREATESAMPLE, 0, &lose);
+    if (resultat != FMOD_OK)
+    {
+        fprintf(stderr, "Impossible de lire le fichier\n");
+        exit(EXIT_FAILURE);
+    }
+    resultat = FMOD_System_CreateSound(system, "OST-Win.wav", FMOD_CREATESAMPLE, 0, &win);
+    if (resultat != FMOD_OK)
+    {
+        fprintf(stderr, "Impossible de lire le fichier\n");
+        exit(EXIT_FAILURE);
+    }
+    resultat = FMOD_System_CreateSound(system, "OST-Lose.wav", FMOD_CREATESAMPLE, 0, &mort);
+    if (resultat != FMOD_OK)
+    {
+        fprintf(stderr, "Impossible de lire le fichier\n");
+        exit(EXIT_FAILURE);
+    }
+    resultat = FMOD_System_CreateSound(system, "menumus.mp3", FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM, 0, &menumus);
+    if (resultat != FMOD_OK)
+    {
+        fprintf(stderr, "Impossible de lire le fichier mp3\n");
+        exit(EXIT_FAILURE);
+    }
+    resultat = FMOD_System_CreateSound(system, "gamemus.mp3", FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM, 0, &gamemus);
+    if (resultat != FMOD_OK)
+    {
+        fprintf(stderr, "Impossible de lire le fichier mp3\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* On active la répétition de la musique à l'infini */
+    FMOD_Sound_SetLoopCount(menumus, -1);
+    FMOD_Sound_SetLoopCount(gamemus, -1);
+
+    FMOD_System_GetMasterChannelGroup(system, &channelgroup);
+
+    /* On joue la musique */
+    FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
+
 
     SDL_WM_SetIcon(icone, NULL);
     ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
@@ -44,9 +94,15 @@ int main(int argc, char *argv[]){
             retourChoixNiveau = choixNiveau(ecran);
             if((0<=retourChoixNiveau) && (retourChoixNiveau<=6)){
                 while(enNiveau){
+                        FMOD_ChannelGroup_Stop(channelgroup);
+                        FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, gamemus, 0, NULL);
                     retourNiveau = niveau(ecran, retourChoixNiveau);
                     switch(retourNiveau){
                         case -1:
+                            FMOD_ChannelGroup_Stop(channelgroup);
+                             FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
+                             FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, mort, 0, NULL);
+                             FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, lose, 0, NULL);
                             retourGO = gameover(ecran);
                             switch(retourGO){
                                 case 0:
@@ -61,6 +117,9 @@ int main(int argc, char *argv[]){
                             }
                             break;
                         case 0: //victoire
+                            FMOD_ChannelGroup_Stop(channelgroup);
+                             FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
+                            FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, win, 0, NULL);
                             retourVict = victoire(ecran);
                             switch(retourVict){
                                 case 0:
@@ -78,6 +137,8 @@ int main(int argc, char *argv[]){
                             }
                             break;
                         case MENU:
+                            FMOD_ChannelGroup_Stop(channelgroup);
+                             FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
                             enNiveau=0;
                             break;
                         case SORTIE:
@@ -104,6 +165,14 @@ int main(int argc, char *argv[]){
     TTF_CloseFont(police);
     TTF_Quit();
     SDL_Quit();
+    /* On libère le son et on ferme et libère l'objet système */
+    FMOD_Sound_Release(menumus);
+    FMOD_Sound_Release(gamemus);
+    FMOD_Sound_Release(lose);
+    FMOD_Sound_Release(mort);
+    FMOD_Sound_Release(win);
+    FMOD_System_Close(system);
+    FMOD_System_Release(system);
     return EXIT_SUCCESS;
 }
 
