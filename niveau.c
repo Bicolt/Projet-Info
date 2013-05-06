@@ -29,6 +29,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     EPAISSEUR_TRAIT = 7*eh/768;
     NOMBRE_ECRANS = 8;
     X_FIN = (NOMBRE_ECRANS - 4)*ew - ew/5;
+    int k = 0, k1 = 0;
 
     SDL_Surface *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ew, eh, 32, 0, 0, 0, 0);
@@ -65,8 +66,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 
 
     chargerTerrain(ecran, surfaceFond, choixTerrain);
-    cairo_t *perso = pperso(ecran, surfPerso);
-
+    cairo_t *perso = pperso(ecran, surfPerso, k);
     afficherTexte(surfPause, "ariblk.ttf", 60*eh/768, "II", 0, 0);
     SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
     SDL_EnableKeyRepeat(0,0);
@@ -83,6 +83,11 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 				return -1;
             }
 				else {chute = 0;}
+			k1++;
+			k1 = k1%3;
+			if (k1==2){
+            k++;
+            k = k%10;}
 			selecNiveau.x = selecNiveau.x + 4;
 			}
             else {chute +=5;}
@@ -122,13 +127,14 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
         }
         posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
         posPersoEcran.y = pospersoNiveau.y;
+        perso = pperso(ecran, surfPerso, k);
+        SDL_PollEvent(&event);
         insererSurface(surfPerso, NULL, ecran, &posPersoEcran);
         SDL_BlitSurface(rect, NULL, ecran, &posrec);
         SDL_Flip(ecran);
         temps_actuel = SDL_GetTicks();
         SDL_Delay(max(40 - (temps_actuel-temps_precedent),0));
         temps_precedent = temps_actuel;
-        SDL_PollEvent(&event);
         switch(event.type){
             case SDL_MOUSEMOTION:
                 xSouris = event.button.x;
@@ -278,7 +284,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     return MENU;
 }
 
-cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso)
+cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
 {
     cairo_surface_t *surface = NULL;
     surface = cairo_image_surface_create_for_data (surfPerso->pixels,
@@ -289,35 +295,313 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso)
 
       cairo_t *perso = cairo_create(surface);
     cairo_set_line_width(perso, EPAISSEUR_TRAIT);
+    cairo_set_source_rgb(perso, 1, 1, 1);
+    cairo_rectangle(perso, 0, 0, L_PERSO, H_PERSO);
+    cairo_fill(perso);
     cairo_set_source_rgba (perso, 0, 0, 0, 1);
-    cairo_arc(perso, 31*eh/768, 19*eh/768, 10*eh/768, 0, 2*M_PI);
-    cairo_fill_preserve(perso);
-    cairo_set_line_cap(perso, CAIRO_LINE_CAP_ROUND);
-    //Corps
-    cairo_move_to(perso, 28*eh/768, 28*eh/768);
-    cairo_line_to(perso, 26*eh/768, 68*eh/768);
-    cairo_stroke_preserve(perso);
-    //Bras 1
-    cairo_move_to(perso, 28*eh/768, 30*eh/768);
-    cairo_line_to(perso, 15*eh/768, 45*eh/768);
-    cairo_line_to(perso, 12*eh/768, 60*eh/768);
-    cairo_stroke_preserve(perso);
-    //Bras 2
-    cairo_move_to(perso, 32*eh/768, 32*eh/768);
-    cairo_line_to(perso, 36*eh/768, 46*eh/768);
-    cairo_line_to(perso, 48*eh/768, 60*eh/768);
-    cairo_stroke_preserve(perso);
-    //Jambe 1
-    cairo_move_to(perso, 25*eh/768, 70*eh/768);
-    cairo_line_to(perso, 17*eh/768, 94*eh/768);
-    cairo_line_to(perso, 3*eh/768, 133*eh/768);
-    cairo_stroke_preserve(perso);
-    //Jambe 2
-    cairo_move_to(perso, 27*eh/768, 72*eh/768);
-    cairo_line_to(perso, 40*eh/768, 96*eh/768);
-    cairo_line_to(perso, 55*eh/768, 135*eh/768);
-    cairo_stroke_preserve(perso);
-    return perso;
+    switch (k){
+        case 0:
+            cairo_arc(perso, 31*eh/768, 19*eh/768, 10*eh/768, 0, 2*M_PI);
+            cairo_fill_preserve(perso);
+            cairo_set_line_cap(perso, CAIRO_LINE_CAP_ROUND);
+            //Corps
+            cairo_move_to(perso, 28*eh/768, 28*eh/768);
+            cairo_line_to(perso, 26*eh/768, 68*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 1
+            cairo_move_to(perso, 28*eh/768, 30*eh/768);
+            cairo_line_to(perso, 15*eh/768, 45*eh/768);
+            cairo_line_to(perso, 12*eh/768, 60*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 2
+            cairo_move_to(perso, 32*eh/768, 32*eh/768);
+            cairo_line_to(perso, 36*eh/768, 46*eh/768);
+            cairo_line_to(perso, 48*eh/768, 60*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 1
+            cairo_move_to(perso, 25*eh/768, 70*eh/768);
+            cairo_line_to(perso, 17*eh/768, 90*eh/768);
+            cairo_line_to(perso, 3*eh/768, 133*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 2
+            cairo_move_to(perso, 27*eh/768, 72*eh/768);
+            cairo_line_to(perso, 38*eh/768, 92*eh/768);
+            cairo_line_to(perso, 55*eh/768, 135*eh/768);
+            cairo_stroke_preserve(perso);
+            return perso;
+        break;
+        case 1:
+           cairo_arc(perso, (31+1)*eh/768, 19*eh/768, 10*eh/768, 0, 2*M_PI);
+            cairo_fill_preserve(perso);
+            cairo_set_line_cap(perso, CAIRO_LINE_CAP_ROUND);
+            //Corps
+            cairo_move_to(perso, 28*eh/768, 28*eh/768);
+            cairo_line_to(perso, 26*eh/768, 68*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 1
+            cairo_move_to(perso, 28*eh/768, 30*eh/768);
+            cairo_line_to(perso, (15+2)*eh/768, (45+1)*eh/768);
+            cairo_line_to(perso, (12+7)*eh/768, (60+1)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 2
+            cairo_move_to(perso, 32*eh/768, 32*eh/768);
+            cairo_line_to(perso, (36-2)*eh/768, (46-1)*eh/768);
+            cairo_line_to(perso, (48-3)*eh/768, (60-1)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 1
+            cairo_move_to(perso, (25+1)*eh/768, (70+1)*eh/768);
+            cairo_line_to(perso, (17+3)*eh/768, (90+1)*eh/768);
+            cairo_line_to(perso, (3+5)*eh/768, (133-8)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 2
+            cairo_move_to(perso, (27-1)*eh/768, (72-1)*eh/768);
+            cairo_line_to(perso, (38-3)*eh/768, (92-1)*eh/768);
+            cairo_line_to(perso, (55-7)*eh/768, (135-2)*eh/768);
+            cairo_stroke_preserve(perso);
+            return perso;
+    break;
+    case 2:
+           cairo_arc(perso, (31+1)*eh/768, (19-1)*eh/768, 10*eh/768, 0, 2*M_PI);
+            cairo_fill_preserve(perso);
+            cairo_set_line_cap(perso, CAIRO_LINE_CAP_ROUND);
+            //Corps
+            cairo_move_to(perso, (28+1)*eh/768, 28*eh/768);
+            cairo_line_to(perso, 26*eh/768, 68*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 1
+            cairo_move_to(perso, (28+1)*eh/768, 30*eh/768);
+            cairo_line_to(perso, (15+4)*eh/768, (45+2)*eh/768);
+            cairo_line_to(perso, (12+14)*eh/768, 60*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 2
+            cairo_move_to(perso, (32-1)*eh/768, 32*eh/768);
+            cairo_line_to(perso, (36-4)*eh/768, (46-2)*eh/768);
+            cairo_line_to(perso, (48-5)*eh/768, (60-2)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 1
+            cairo_move_to(perso, (25+1)*eh/768, (70+1)*eh/768);
+            cairo_line_to(perso, (17+8)*eh/768, (90+1)*eh/768);
+            cairo_line_to(perso, (3+17)*eh/768, (133-12)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 2
+            cairo_move_to(perso, (27-1)*eh/768, (72-1)*eh/768);
+            cairo_line_to(perso, (38-8)*eh/768, (92-1)*eh/768);
+            cairo_line_to(perso, (55-17)*eh/768, (135+2)*eh/768);
+            cairo_stroke_preserve(perso);
+            return perso;
+    break;
+     case 3:
+           cairo_arc(perso, (31+2)*eh/768, (19-1)*eh/768, 10*eh/768, 0, 2*M_PI);
+            cairo_fill_preserve(perso);
+            cairo_set_line_cap(perso, CAIRO_LINE_CAP_ROUND);
+            //Corps
+            cairo_move_to(perso, (28+1)*eh/768, (28+1)*eh/768);
+            cairo_line_to(perso, 26*eh/768, 68*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 1
+            cairo_move_to(perso, (28+1)*eh/768, (30+1)*eh/768);
+            cairo_line_to(perso, (15+6)*eh/768, (45+3)*eh/768);
+            cairo_line_to(perso, (12+20)*eh/768, (60-1)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 2
+            cairo_move_to(perso, (32-1)*eh/768, (32-1)*eh/768);
+            cairo_line_to(perso, (36-6)*eh/768, (46-3)*eh/768);
+            cairo_line_to(perso, (48-11)*eh/768, (60-1)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 1
+            cairo_move_to(perso, (25+2)*eh/768, (70+2)*eh/768);
+            cairo_line_to(perso, (17+15)*eh/768, (90+2)*eh/768);
+            cairo_line_to(perso, (3+32)*eh/768, (133-12)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 2
+            cairo_move_to(perso, (27-2)*eh/768, (72-2)*eh/768);
+            cairo_line_to(perso, (38-15)*eh/768, (92-2)*eh/768);
+            cairo_line_to(perso, (55-27)*eh/768, (135+4)*eh/768);
+            cairo_stroke_preserve(perso);
+            return perso;
+    break;
+    case 4:
+           cairo_arc(perso, (31+3)*eh/768, (19-1)*eh/768, 10*eh/768, 0, 2*M_PI);
+            cairo_fill_preserve(perso);
+            cairo_set_line_cap(perso, CAIRO_LINE_CAP_ROUND);
+            //Corps
+            cairo_move_to(perso, (28+2)*eh/768, (28+1)*eh/768);
+            cairo_line_to(perso, 26*eh/768, 68*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 1
+            cairo_move_to(perso, (28+2)*eh/768, (30+1)*eh/768);
+            cairo_line_to(perso, (15+8)*eh/768, (45+4)*eh/768);
+            cairo_line_to(perso, (12+25)*eh/768, (60-2)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 2
+            cairo_move_to(perso, (32-2)*eh/768, (32-1)*eh/768);
+            cairo_line_to(perso, (36-8)*eh/768, (46-4)*eh/768);
+            cairo_line_to(perso, (48-18)*eh/768, 60*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 1
+            cairo_move_to(perso, (25+2)*eh/768, (70+2)*eh/768);
+            cairo_line_to(perso, (17+20)*eh/768, (90+2)*eh/768);
+            cairo_line_to(perso, (3+52)*eh/768, (133-6)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 2
+            cairo_move_to(perso, (27-2)*eh/768, (72-2)*eh/768);
+            cairo_line_to(perso, (38-20)*eh/768, (92-2)*eh/768);
+            cairo_line_to(perso, (55-38)*eh/768, (135+6)*eh/768);
+            cairo_stroke_preserve(perso);
+            return perso;
+    break;
+    case 5:
+           cairo_arc(perso, (31+4)*eh/768, (19-2)*eh/768, 10*eh/768, 0, 2*M_PI);
+            cairo_fill_preserve(perso);
+            cairo_set_line_cap(perso, CAIRO_LINE_CAP_ROUND);
+            //Corps
+            cairo_move_to(perso, (28+2)*eh/768, (28+1)*eh/768);
+            cairo_line_to(perso, 26*eh/768, 68*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 1
+            cairo_move_to(perso, (28+3)*eh/768, (30+2)*eh/768);
+            cairo_line_to(perso, (15+10)*eh/768, (45+5)*eh/768);
+            cairo_line_to(perso, (12+18)*eh/768, 60*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 2
+            cairo_move_to(perso, (32-3)*eh/768, (32-2)*eh/768);
+            cairo_line_to(perso, (36-10)*eh/768, (46-5)*eh/768);
+            cairo_line_to(perso, (48-25)*eh/768, (60+2)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 1
+            cairo_move_to(perso, (25+2)*eh/768, (70+2)*eh/768);
+            cairo_line_to(perso, (17+20)*eh/768, (90+2)*eh/768);
+            cairo_line_to(perso, (3+38)*eh/768, (133-4)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 2
+            cairo_move_to(perso, (27-2)*eh/768, (72-2)*eh/768);
+            cairo_line_to(perso, (38-20)*eh/768, (92-2)*eh/768);
+            cairo_line_to(perso, (55-52)*eh/768, (135+12)*eh/768);
+            cairo_stroke_preserve(perso);
+            return perso;
+    break;
+    case 6:
+           cairo_arc(perso, (31+3)*eh/768, (19-2)*eh/768, 10*eh/768, 0, 2*M_PI);
+            cairo_fill_preserve(perso);
+            cairo_set_line_cap(perso, CAIRO_LINE_CAP_ROUND);
+            //Corps
+            cairo_move_to(perso, (28+1)*eh/768, (28+1)*eh/768);
+            cairo_line_to(perso, 26*eh/768, 68*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 1
+            cairo_move_to(perso, (28+2)*eh/768, (30+1)*eh/768);
+            cairo_line_to(perso, (15+8)*eh/768, (45+4)*eh/768);
+            cairo_line_to(perso, (12+11)*eh/768, (60+1)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 2
+            cairo_move_to(perso, (32-2)*eh/768, (32-1)*eh/768);
+            cairo_line_to(perso, (36-8)*eh/768, (46-4)*eh/768);
+            cairo_line_to(perso, (48-20)*eh/768, (60+1)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 1
+            cairo_move_to(perso, (25+2)*eh/768, (70+2)*eh/768);
+            cairo_line_to(perso, (17+15)*eh/768, (90+2)*eh/768);
+            cairo_line_to(perso, (3+27)*eh/768, (133-2)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 2
+            cairo_move_to(perso, (27-2)*eh/768, (72-2)*eh/768);
+            cairo_line_to(perso, (38-15)*eh/768, (92-2)*eh/768);
+            cairo_line_to(perso, (55-32)*eh/768, (135+12)*eh/768);
+            cairo_stroke_preserve(perso);
+            return perso;
+    break;
+    case 7:
+           cairo_arc(perso, (31+2)*eh/768, (19-2)*eh/768, 10*eh/768, 0, 2*M_PI);
+            cairo_fill_preserve(perso);
+            cairo_set_line_cap(perso, CAIRO_LINE_CAP_ROUND);
+            //Corps
+            cairo_move_to(perso, 28*eh/768, (28+1)*eh/768);
+            cairo_line_to(perso, 26*eh/768, 68*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 1
+            cairo_move_to(perso, (28+1)*eh/768, (30+1)*eh/768);
+            cairo_line_to(perso, (15+6)*eh/768, (45+3)*eh/768);
+            cairo_line_to(perso, (12+5)*eh/768, (60+2)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 2
+            cairo_move_to(perso, (32-1)*eh/768, (32-1)*eh/768);
+            cairo_line_to(perso, (36-6)*eh/768, (46-3)*eh/768);
+            cairo_line_to(perso, (48-14)*eh/768, 60*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 1
+            cairo_move_to(perso, (25+1)*eh/768, (70+1)*eh/768);
+            cairo_line_to(perso, (17+8)*eh/768, (90+1)*eh/768);
+            cairo_line_to(perso, (3+17)*eh/768, 133*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 2
+            cairo_move_to(perso, (27-1)*eh/768, (72-1)*eh/768);
+            cairo_line_to(perso, (38-8)*eh/768, (92-1)*eh/768);
+            cairo_line_to(perso, (55-17)*eh/768, (135+8)*eh/768);
+            cairo_stroke_preserve(perso);
+            return perso;
+    break;
+    case 8:
+           cairo_arc(perso, (31+2)*eh/768, (19-1)*eh/768, 10*eh/768, 0, 2*M_PI);
+            cairo_fill_preserve(perso);
+            cairo_set_line_cap(perso, CAIRO_LINE_CAP_ROUND);
+            //Corps
+            cairo_move_to(perso, 28*eh/768, (28+1)*eh/768);
+            cairo_line_to(perso, 26*eh/768, 68*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 1
+            cairo_move_to(perso, (28+1)*eh/768, 30*eh/768);
+            cairo_line_to(perso, (15+4)*eh/768, (45+2)*eh/768);
+            cairo_line_to(perso, (12+3)*eh/768, (60+1)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 2
+            cairo_move_to(perso, (32-1)*eh/768, 32*eh/768);
+            cairo_line_to(perso, (36-4)*eh/768, (46-2)*eh/768);
+            cairo_line_to(perso, (48-7)*eh/768, (60-1)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 1
+            cairo_move_to(perso, (25+1)*eh/768, (70+1)*eh/768);
+            cairo_line_to(perso, (17+3)*eh/768, (90+1)*eh/768);
+            cairo_line_to(perso, (3+7)*eh/768, (133+2)*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 2
+            cairo_move_to(perso, (27-1)*eh/768, (72-1)*eh/768);
+            cairo_line_to(perso, (38-3)*eh/768, (92-1)*eh/768);
+            cairo_line_to(perso, (55-5)*eh/768, 135*eh/768);
+            cairo_stroke_preserve(perso);
+            return perso;
+    break;
+    case 9:
+           cairo_arc(perso, (31+1)*eh/768, 19*eh/768, 10*eh/768, 0, 2*M_PI);
+            cairo_fill_preserve(perso);
+            cairo_set_line_cap(perso, CAIRO_LINE_CAP_ROUND);
+            //Corps
+            cairo_move_to(perso, 28*eh/768, 28*eh/768);
+            cairo_line_to(perso, 26*eh/768, 68*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 1
+            cairo_move_to(perso, 28*eh/768, 30*eh/768);
+            cairo_line_to(perso, (15+2)*eh/768, (45+1)*eh/768);
+            cairo_line_to(perso, 12*eh/768, 60*eh/768);
+            cairo_stroke_preserve(perso);
+            //Bras 2
+            cairo_move_to(perso, 32*eh/768, 32*eh/768);
+            cairo_line_to(perso, (36-2)*eh/768, (46-1)*eh/768);
+            cairo_line_to(perso, 48*eh/768, 60*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 1
+            cairo_move_to(perso, 25*eh/768, 70*eh/768);
+            cairo_line_to(perso, 17*eh/768, 90*eh/768);
+            cairo_line_to(perso, 3*eh/768, 133*eh/768);
+            cairo_stroke_preserve(perso);
+            //Jambe 2
+            cairo_move_to(perso, 27*eh/768, 72*eh/768);
+            cairo_line_to(perso, 38*eh/768, 92*eh/768);
+            cairo_line_to(perso, 55*eh/768, 135*eh/768);
+            cairo_stroke_preserve(perso);
+            return perso;
+    break;
+    }
+return perso;
 }
 
 int min(int a, int b){

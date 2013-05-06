@@ -24,7 +24,7 @@ int main(int argc, char *argv[]){
     int continuer = 1, enNiveau = 1;
 
     SDL_WM_SetIcon(icone, NULL);
-    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
     eh = ecran->h;
     ew = ecran->w;
     if (ecran == NULL){  // Si l'ouverture a échoué, on le note et on arrête
