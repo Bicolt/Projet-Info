@@ -84,11 +84,11 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
             }
 				else {chute = 0;}
 			k1++;
-			k1 = k1%3;
-			if (k1==2){
+			k1 = k1%4;
+			if (k1==3){
             k++;
-            k = k%10;}
-			selecNiveau.x = selecNiveau.x + 4;
+            k = k%9;}
+            selecNiveau.x = selecNiveau.x + 4;
 			}
             else {chute +=5;}
         if(enSelection){
@@ -412,12 +412,12 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
             //Jambe 1
             cairo_move_to(perso, (25+2)*eh/768, (70+2)*eh/768);
             cairo_line_to(perso, (17+15)*eh/768, (90+2)*eh/768);
-            cairo_line_to(perso, (3+32)*eh/768, (133-12)*eh/768);
+            cairo_line_to(perso, (3+26)*eh/768, (133-12)*eh/768);
             cairo_stroke_preserve(perso);
             //Jambe 2
             cairo_move_to(perso, (27-2)*eh/768, (72-2)*eh/768);
             cairo_line_to(perso, (38-15)*eh/768, (92-2)*eh/768);
-            cairo_line_to(perso, (55-27)*eh/768, (135+4)*eh/768);
+            cairo_line_to(perso, (55-29)*eh/768, (135+4)*eh/768);
             cairo_stroke_preserve(perso);
             return perso;
     break;
@@ -441,13 +441,13 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
             cairo_stroke_preserve(perso);
             //Jambe 1
             cairo_move_to(perso, (25+2)*eh/768, (70+2)*eh/768);
-            cairo_line_to(perso, (17+20)*eh/768, (90+2)*eh/768);
-            cairo_line_to(perso, (3+52)*eh/768, (133-6)*eh/768);
+            cairo_line_to(perso, (17+17)*eh/768, (90+2)*eh/768);
+            cairo_line_to(perso, (3+42)*eh/768, (133-6)*eh/768);
             cairo_stroke_preserve(perso);
             //Jambe 2
             cairo_move_to(perso, (27-2)*eh/768, (72-2)*eh/768);
-            cairo_line_to(perso, (38-20)*eh/768, (92-2)*eh/768);
-            cairo_line_to(perso, (55-38)*eh/768, (135+6)*eh/768);
+            cairo_line_to(perso, (38-17)*eh/768, (92-2)*eh/768);
+            cairo_line_to(perso, (55-42)*eh/768, (135+6)*eh/768);
             cairo_stroke_preserve(perso);
             return perso;
     break;
