@@ -8,6 +8,7 @@
 #include "niveau.h"
 #include "affichage.h"
 #include "interface.h"
+#include <SDL_mixer.h>
 
 // sélection sous forme de barre horizontale
 SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
@@ -28,11 +29,22 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
 	SDL_Color Black = {0, 0, 0};
 	SDL_Color White = {255, 255, 255};
     SDL_Event event;
-    SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos;
+    SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos, posmute;
     int xSouris, ySouris;
     int continuer = 1, select=0;
 
+    musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
+    if (!mute)
+        Mix_PlayMusic(musique, -1);
+
+    SDL_Surface *speaker;
+    speaker = SDL_LoadBMP("speaker.bmp");
+    if (mute)
+        SDL_SetAlpha(speaker, SDL_SRCALPHA, 100);
+    posmute.x = 0; posmute.y = 0;
+
     pos.x = 0; pos.y = 0;
+
     rect = selection(ew, eh/8, ecran->format);
     titre = TTF_RenderText_Shaded(police, "Super Scalable Land", Black, White);
     texte1 = TTF_RenderText_Shaded(police, "Jouer", Black, White);
@@ -59,6 +71,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
     SDL_BlitSurface(texte2, NULL, ecran, &positiontexte2);
 	SDL_BlitSurface(texte3, NULL, ecran, &positiontexte3);
     SDL_BlitSurface(rect, NULL, ecran, &posrec);
+    SDL_BlitSurface(speaker, NULL, ecran, &posmute);
     SDL_Flip(ecran);
 
     SDL_EnableKeyRepeat(150, 10);
@@ -87,7 +100,18 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
                     if(event.button.button == SDL_BUTTON_LEFT){
                         xSouris = event.button.x;
                         ySouris = event.button.y;
-                        if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
+                        if ((xSouris < speaker->w) && (ySouris < speaker->h)) {
+                            mute = (mute+1)%2;
+                            if (mute) {
+                                SDL_SetAlpha(speaker, SDL_SRCALPHA, 100);
+                                Mix_HaltMusic();
+                            }
+                            else {
+                                SDL_SetAlpha(speaker, SDL_SRCALPHA, 255);
+                                Mix_PlayMusic(musique, -1);
+                            }
+                        }
+                        else if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
                             return 0;
                         }
                         else if(((eh*9/16) <= ySouris) && (ySouris < (eh*12/16))){
@@ -143,6 +167,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
     SDL_BlitSurface(texte2, NULL, ecran, &positiontexte2);
 	SDL_BlitSurface(texte3, NULL, ecran, &positiontexte3);
+    SDL_BlitSurface(speaker, NULL, ecran, &posmute);
     SDL_BlitSurface(rect, NULL, ecran, &posrec);
     SDL_Flip(ecran);
     }
@@ -156,9 +181,15 @@ int pause(SDL_Surface* ecran){
 	SDL_Color Black = {0, 0, 0};
 	SDL_Color White = {255, 255, 255};
     SDL_Event event;
-    SDL_Rect positiontitre, positiontexte1, positiontexte3, posrec, pos;
+    SDL_Rect positiontitre, positiontexte1, positiontexte3, posrec, pos, posmute;
     int xSouris, ySouris;
     int continuer = 1, select=0;
+
+    SDL_Surface *speaker;
+    speaker = SDL_LoadBMP("speaker.bmp");
+    if (mute)
+        SDL_SetAlpha(speaker, SDL_SRCALPHA, 100);
+    posmute.x = 0; posmute.y = 0;
 
     pos.x = 0; pos.y = 0;
 
@@ -183,6 +214,7 @@ int pause(SDL_Surface* ecran){
     SDL_BlitSurface(titre, NULL, ecran, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
 	SDL_BlitSurface(texte3, NULL, ecran, &positiontexte3);
+    SDL_BlitSurface(speaker, NULL, ecran, &posmute);
     SDL_BlitSurface(rect, NULL, ecran, &posrec);
     SDL_Flip(ecran);
 
@@ -208,7 +240,18 @@ int pause(SDL_Surface* ecran){
                     if(event.button.button == SDL_BUTTON_LEFT){
                         xSouris = event.button.x;
                         ySouris = event.button.y;
-                        if((ySouris < (eh*9/16))){
+                        if ((xSouris < speaker->w) && (ySouris < speaker->h)) {
+                            mute = (mute+1)%2;
+                            if (mute) {
+                                SDL_SetAlpha(speaker, SDL_SRCALPHA, 100);
+                                Mix_HaltMusic();
+                            }
+                            else {
+                                SDL_SetAlpha(speaker, SDL_SRCALPHA, 255);
+                                Mix_PlayMusic(musique, -1);
+                            }
+                        }
+                        else if((ySouris < (eh*9/16))){
                             return 0;
                         }
                         else if(((eh*12/16) <= ySouris)){
@@ -251,11 +294,13 @@ int pause(SDL_Surface* ecran){
                     break;
             }
         }
+
     //SDL_Delay(30);
     SDL_BlitSurface(fond, NULL, ecran, &pos);
     SDL_BlitSurface(titre, NULL, ecran, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
 	SDL_BlitSurface(texte3, NULL, ecran, &positiontexte3);
+    SDL_BlitSurface(speaker, NULL, ecran, &posmute);
     SDL_BlitSurface(rect, NULL, ecran, &posrec);
     SDL_Flip(ecran);
     }

@@ -8,10 +8,12 @@
 #include "affichage.h"
 #include "interface.h"
 #include "niveau.h"
-//#include <fmodex/fmod.h>
+//afficher#include <fmodex/fmod.h>
 #include <SDL_mixer.h>
 
 int ew, eh;
+int mute = 0;
+Mix_Music *musique;
 
 int main(int argc, char *argv[]){
 
@@ -78,7 +80,6 @@ int main(int argc, char *argv[]){
         fprintf(stderr,"%s", Mix_GetError());
     }
 
-    Mix_Music *musique;
     Mix_AllocateChannels(2); // allocation de 2 canaux de son
     Mix_Chunk *sonWin;
     Mix_Chunk *sonLose;
@@ -88,7 +89,6 @@ int main(int argc, char *argv[]){
     sonMort = Mix_LoadWAV("GameSound/OST-Mort.wav"); //Chargement du son
 
     musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
-    Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
 
     SDL_WM_SetIcon(icone, NULL);
     ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
@@ -114,7 +114,9 @@ int main(int argc, char *argv[]){
                         /* FMOD_ChannelGroup_Stop(channelgroup);
                         FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, gamemus, 0, NULL); */
                         musique = Mix_LoadMUS("GameSound/gamemus.mp3"); //Chargement de la musique
-                        Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
+                        if (!mute) {
+                            Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
+                        }
                     retourNiveau = niveau(ecran, retourChoixNiveau);
                     switch(retourNiveau){
                         case -1:
@@ -122,10 +124,12 @@ int main(int argc, char *argv[]){
                              FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
                              FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, mort, 0, NULL);
                              FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, lose, 0, NULL); */
-                            Mix_PlayChannel(-1, sonMort, 0);
-                            Mix_PlayChannel(-1, sonLose, 0);
                             musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
-                            Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
+                            if (!mute) {
+                                Mix_PlayChannel(-1, sonMort, 0);
+                                Mix_PlayChannel(-1, sonLose, 0);
+                                Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
+                            }
                             retourGO = gameover(ecran);
                             switch(retourGO){
                                 case 0:
@@ -143,9 +147,11 @@ int main(int argc, char *argv[]){
                             /*FMOD_ChannelGroup_Stop(channelgroup);
                             FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
                             FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, win, 0, NULL); */
-                            Mix_PlayChannel(-1, sonWin, 0);
                             musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
-                            Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
+                            if (!mute) {
+                                Mix_PlayChannel(-1, sonWin, 0);
+                                Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
+                            }
 
                             retourVict = victoire(ecran);
                             switch(retourVict){
@@ -167,7 +173,9 @@ int main(int argc, char *argv[]){
                             //FMOD_ChannelGroup_Stop(channelgroup);
                             //FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
                             musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
-                            Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
+                            if (!mute) {
+                                Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
+                            }
                             enNiveau=0;
                             break;
                         case SORTIE:
