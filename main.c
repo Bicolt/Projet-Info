@@ -53,13 +53,13 @@ int main(int argc, char *argv[]){
         fprintf(stderr, "Impossible de lire le fichier\n");
         exit(EXIT_FAILURE);
     }
-    resultat = FMOD_System_CreateSound(system, "menumus.mp3", FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM, 0, &menumus);
+    resultat = FMOD_System_CreateSound(system, "OST-menu.wav", FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM, 0, &menumus);
     if (resultat != FMOD_OK)
     {
         fprintf(stderr, "Impossible de lire le fichier mp3\n");
         exit(EXIT_FAILURE);
     }
-    resultat = FMOD_System_CreateSound(system, "gamemus.mp3", FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM, 0, &gamemus);
+    resultat = FMOD_System_CreateSound(system, "OST-Game.wav", FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM, 0, &gamemus);
     if (resultat != FMOD_OK)
     {
         fprintf(stderr, "Impossible de lire le fichier mp3\n");
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
     sonLose = Mix_LoadWAV("GameSound/OST-Lose.wav"); //Chargement du son
     sonMort = Mix_LoadWAV("GameSound/OST-Mort.wav"); //Chargement du son
 
-    musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
+    musique = Mix_LoadMUS("GameSound/OST-menu.wav"); //Chargement de la musique
 
     SDL_WM_SetIcon(icone, NULL);
     ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]){
                 while(enNiveau){
                         /* FMOD_ChannelGroup_Stop(channelgroup);
                         FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, gamemus, 0, NULL); */
-                        musique = Mix_LoadMUS("GameSound/gamemus.mp3"); //Chargement de la musique
+                        musique = Mix_LoadMUS("GameSound/OST-Game.wav"); //Chargement de la musique
                         if (!mute) {
                             Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
                         }
@@ -124,7 +124,7 @@ int main(int argc, char *argv[]){
                              FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
                              FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, mort, 0, NULL);
                              FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, lose, 0, NULL); */
-                            musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
+                            musique = Mix_LoadMUS("GameSound/OST-menu.wav"); //Chargement de la musique
                             if (!mute) {
                                 Mix_PlayChannel(-1, sonMort, 0);
                                 Mix_PlayChannel(-1, sonLose, 0);
@@ -147,7 +147,7 @@ int main(int argc, char *argv[]){
                             /*FMOD_ChannelGroup_Stop(channelgroup);
                             FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
                             FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, win, 0, NULL); */
-                            musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
+                            musique = Mix_LoadMUS("GameSound/OST-menu.wav"); //Chargement de la musique
                             if (!mute) {
                                 Mix_PlayChannel(-1, sonWin, 0);
                                 Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
@@ -172,7 +172,7 @@ int main(int argc, char *argv[]){
                         case MENU:
                             //FMOD_ChannelGroup_Stop(channelgroup);
                             //FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
-                            musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
+                            musique = Mix_LoadMUS("GameSound/OST-menu.wav"); //Chargement de la musique
                             if (!mute) {
                                 Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
                             }

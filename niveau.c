@@ -23,13 +23,14 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     int xSouris = 0, ySouris = 0;
     int xSourisButton = 0, ySourisButton = 0;
     int xRinit = 0, yRinit = 0;
-    double longueur = 0., longueur_proj = 0., angle = 0., angleTotal = 0.;
+    double longueur = 0., longueur_proj = 0., angle = 0., angleTotal = 0., scale = 1.;
     H_PERSO = 110*eh/768;
     L_PERSO = 55*eh/768;
     EPAISSEUR_TRAIT = 7*eh/768;
     NOMBRE_ECRANS = 8;
     X_FIN = (NOMBRE_ECRANS - 4)*ew - ew/5;
     int k = 0, k1 = 0;
+
 
     SDL_Surface *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ew, eh, 32, 0, 0, 0, 0);
@@ -114,16 +115,17 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                     angle = mod_d(angleTotal + acos(longueur_proj/longueur), M_PI);
                 else angle = mod_d(angleTotal - acos(longueur_proj/longueur), M_PI);
             }
-            decouperColler(1, ecran, surfaceFond, posSelection, posAppercu, angle);
+            decouperColler(1, ecran, surfaceFond, posSelection, posAppercu, angle, scale);
         }
         if(collagePossible){
-            decouperColler(0, surfLigne, surfaceFond, posSelection, posDestination, angleTotal);
+            decouperColler(0, surfLigne, surfaceFond, posSelection, posDestination, angleTotal, scale);
             collagePossible = 0;
             enSelection = 0;
             dejaSelectionne = 0;
             enDrag = 0;
             angle = 0;
             angleTotal = 0;
+            scale = 1;
         }
         posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
         posPersoEcran.y = pospersoNiveau.y;
@@ -174,6 +176,18 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                             }
                         }
                     }
+                    else if(event.button.button == SDL_BUTTON_WHEELDOWN){
+                        if(enDrag){
+                            scale = scale - 0.1;
+                            scale = max_d(scale, 0.7);
+                        }
+                    }
+                    else if(event.button.button == SDL_BUTTON_WHEELUP){
+                        if(enDrag){
+                            scale = scale + 0.1;
+                            scale = min_d(scale, 1.6);
+                        }
+                    }
                     break;
                 case SDL_MOUSEBUTTONUP:
                     xSourisButton = event.button.x;
@@ -196,6 +210,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                                     enDrag = 0;
                                     angle = 0;
                                     angleTotal = 0;
+                                    scale = 1;
                                     break;
                                 default:
                                     break;
@@ -248,6 +263,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                                     enDrag = 0;
                                     angle = 0;
                                     angleTotal = 0;
+                                    scale = 1;
                                     event.key.keysym.sym = SDLK_a;
                                     break;
                                 default:
@@ -635,7 +651,7 @@ double mod_d(double a, double b){
     return (a - q*b);
 }
 
-void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination, double angle){
+void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination, double angle, double scale){
 
 
     Uint32 Blanc = 0xFFFFFFFF;
@@ -645,7 +661,7 @@ void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surf
     posRelative.y = 0;
     posRelative.w = posSelection.w;
     posRelative.h = posSelection.h;
-    double diagonale = sqrt((posSelection.w*(posSelection.w))+(posSelection.h*(posSelection.h)));
+    double diagonale = scale*sqrt((posSelection.w*(posSelection.w))+(posSelection.h*(posSelection.h)));
     collage = SDL_CreateRGBSurface(SDL_HWSURFACE , diagonale, diagonale, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
     SDL_FillRect(collage, NULL, Blanc);
     cairo_surface_t *surfCollage = cairo_image_surface_create_for_data (collage->pixels,
@@ -654,19 +670,19 @@ void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surf
                                                       collage->h,
                                                       collage->pitch);
 
-    if((angle == 0)&&(!enAppercu))
+    if((angle == 0) && (scale == 1) &&(!enAppercu))
         recollementContinu(surfLigne, posSelection, &posDestination);
 
 	cairo_t *enSelect = cairo_create(surfCollage);
-	double scale_x = 1, scale_y = 1, long_centre =0; //scale_x = (posDestination.w/posSelection.w), scale_y = (posDestination.h/posSelection.h);
-    cairo_scale(enSelect, scale_x, scale_y);
+	double long_centre =0; //scale_x = (posDestination.w/posSelection.w), scale_y = (posDestination.h/posSelection.h);
     //cairo_translate(enSelect, long_centre-(long_centre*cos(M_PI_4)), -long_centre*sin(M_PI_4));
     if((angle <= M_PI_2)&&(angle >= -M_PI_2))
-        cairo_translate(enSelect, max_d((posSelection.h)*sin(angle), 0.), -min_d((posSelection.w)*sin(angle), 0));
+        cairo_translate(enSelect, scale*max_d((posSelection.h)*sin(angle), 0.), -scale*min_d((posSelection.w)*sin(angle), 0));
     else if(angle > M_PI_2)
-        cairo_translate(enSelect, (posSelection.w)*cos(M_PI-angle)+(posSelection.h)*cos(angle-M_PI_2), (posSelection.h)*sin(angle - M_PI_2));
+        cairo_translate(enSelect, scale*(posSelection.w)*cos(M_PI-angle)+scale*(posSelection.h)*cos(angle-M_PI_2), scale*(posSelection.h)*sin(angle - M_PI_2));
     else
-        cairo_translate(enSelect,(posSelection.w)*(cos(angle-M_PI)), (posSelection.h)*cos(angle + M_PI) + (posSelection.w)*cos(angle + M_PI_2));
+        cairo_translate(enSelect,scale*(posSelection.w)*(cos(angle-M_PI)), scale*(posSelection.h)*cos(angle + M_PI) + scale*(posSelection.w)*cos(angle + M_PI_2));
+    cairo_scale(enSelect, scale, scale);
     cairo_rotate(enSelect,angle);
     cairo_set_source_surface (enSelect, surfaceFond,  0 - posSelection.x, 0 - posSelection.y); //remplit cr avec le chemin présent
     //dans surfaceFond en commancant en 0,0 dans cr => 0, 280 dans surfaceFond
@@ -677,6 +693,9 @@ void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surf
     //dans le carrée dont le coin supérieur gauche est en 0,0 et de largeur 100
     posDestination.w = posDestination.h = diagonale;
     insererSurface(collage, NULL, surfLigne, &posDestination);
+    cairo_destroy(enSelect);
+    cairo_surface_destroy(surfCollage);
+    SDL_FreeSurface(collage);
 }
 
 void recollementContinu(SDL_Surface *surfLigne, SDL_Rect posSelection, SDL_Rect *posDestination){
