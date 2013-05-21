@@ -178,14 +178,14 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                     }
                     else if(event.button.button == SDL_BUTTON_WHEELDOWN){
                         if(enDrag){
-                            scale = scale - 0.1;
-                            scale = max_d(scale, 0.7);
+                            scale = scale - 0.05;
+                            scale = max_d(scale, 0.5);
                         }
                     }
                     else if(event.button.button == SDL_BUTTON_WHEELUP){
                         if(enDrag){
-                            scale = scale + 0.1;
-                            scale = min_d(scale, 1.6);
+                            scale = scale + 0.05;
+                            scale = min_d(scale, 1.8);
                         }
                     }
                     break;
