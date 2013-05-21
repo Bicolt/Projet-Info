@@ -33,7 +33,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
     int xSouris, ySouris;
     int continuer = 1, select=0;
 
-    musique = Mix_LoadMUS("GameSound/OST-menu.wav"); //Chargement de la musique
+    musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
     if (!mute)
         Mix_PlayMusic(musique, -1);
 
