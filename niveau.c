@@ -12,6 +12,9 @@
 #include "deplacement.h"
 #include "terrains.h"
 
+#include "edit_main.h"
+#include "edit_affichage.h"
+
 int H_PERSO, L_PERSO, EPAISSEUR_TRAIT, X_FIN, NOMBRE_ECRANS;
 
 int niveau(SDL_Surface *ecran, int choixTerrain){
@@ -194,7 +197,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                     ySourisButton = event.button.y;
                     if(event.button.button == SDL_BUTTON_LEFT){
                         if(((ew - 77*eh/768) <= xSourisButton) && (ySourisButton < 76*eh/768)){
-                            switch (pause(ecran)){
+                            switch (jeupause(ecran)){
                                 case SORTIE:
                                     return SORTIE;
                                     break;
@@ -249,7 +252,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                 case SDL_KEYDOWN:
                     switch(event.key.keysym.sym){
                         case SDLK_ESCAPE:
-                            switch (pause(ecran)){
+                            switch (jeupause(ecran)){
                                 case SORTIE:
                                     return SORTIE;
                                     break;

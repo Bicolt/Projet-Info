@@ -11,6 +11,9 @@
 //afficher#include <fmodex/fmod.h>
 #include <SDL_mixer.h>
 
+#include "edit_main.h"
+#include "edit_affichage.h"
+
 int ew, eh;
 int mute = 0;
 Mix_Music *musique;
@@ -91,7 +94,7 @@ int main(int argc, char *argv[]){
     musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
 
     SDL_WM_SetIcon(icone, NULL);
-    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
+    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
     eh = ecran->h;
     ew = ecran->w;
     if (ecran == NULL){  // Si l'ouverture a échoué, on le note et on arrête
@@ -193,7 +196,9 @@ int main(int argc, char *argv[]){
                 continuer=0;
             }
         }
-        else if(retourMenu == 1){} //options
+        else if(retourMenu == 1){ //Editeur de terrain
+            edit_main(ecran);
+        }
         else if(retourMenu == SORTIE){
             continuer = 0;
         }

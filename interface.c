@@ -10,6 +10,10 @@
 #include "interface.h"
 #include <SDL_mixer.h>
 
+#include "edit_main.h"
+#include "edit_affichage.h"
+
+
 // sélection sous forme de barre horizontale
 SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
 
@@ -48,7 +52,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
     rect = selection(ew, eh/8, ecran->format);
     titre = TTF_RenderText_Shaded(police, "Super Scalable Land", Black, White);
     texte1 = TTF_RenderText_Shaded(police, "Jouer", Black, White);
-	texte2 = TTF_RenderText_Shaded(police, "Options", Black, White);
+	texte2 = TTF_RenderText_Shaded(police, "Editeur de terrain", Black, White);
     texte3 = TTF_RenderText_Shaded(police, "Quitter", Black, White);
 	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ew, eh, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
@@ -174,7 +178,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
     return SORTIE;
 }
 
-int pause(SDL_Surface* ecran){
+int jeupause(SDL_Surface* ecran){
 
     TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85*eh/768);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
@@ -310,7 +314,7 @@ int pause(SDL_Surface* ecran){
 
 int choixNiveau (SDL_Surface *ecran) {
 
-    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 55*eh/768);
+    /*TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85*eh/768);*/
     SDL_Surface *fond = NULL;
     SDL_Event event;
     SDL_Rect pos;
@@ -504,7 +508,7 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
 	SDL_Color White = {255, 255, 255};
     SDL_Event event;
     SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos;
-    int xSouris, ySouris;
+    int ySouris;
     int continuer = 1, select=0;
 
     pos.x = 0; pos.y = 0;
@@ -544,7 +548,6 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
         switch(event.type)
         {
             case SDL_MOUSEMOTION:
-                xSouris = event.button.x;
                 ySouris = event.button.y;
                 if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
                     select = 0;
@@ -561,7 +564,6 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
                 break;
             case SDL_MOUSEBUTTONUP:
                 if(event.button.button == SDL_BUTTON_LEFT){
-                    xSouris = event.button.x;
                     ySouris = event.button.y;
                     if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
 						return 0;
@@ -611,7 +613,7 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
                     return SORTIE;
                 break;
         }
-    SDL_Delay(30);
+    //SDL_Delay(30);
     SDL_BlitSurface(fond, NULL, ecran, &pos);
     SDL_BlitSurface(titre, NULL, ecran, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
@@ -631,7 +633,7 @@ int victoire(SDL_Surface *ecran){
 	SDL_Color White = {255, 255, 255};
     SDL_Event event;
     SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos;
-    int xSouris, ySouris;
+    int ySouris;
     int continuer = 1, select=0;
 
     pos.x = 0; pos.y = 0;
@@ -671,7 +673,6 @@ int victoire(SDL_Surface *ecran){
         switch(event.type)
         {
             case SDL_MOUSEMOTION:
-                xSouris = event.button.x;
                 ySouris = event.button.y;
                 if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
                     select = 0;
@@ -688,7 +689,6 @@ int victoire(SDL_Surface *ecran){
                 break;
             case SDL_MOUSEBUTTONUP:
                 if(event.button.button == SDL_BUTTON_LEFT){
-                    xSouris = event.button.x;
                     ySouris = event.button.y;
                     if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
 						return 0;
@@ -739,7 +739,7 @@ int victoire(SDL_Surface *ecran){
                     return SORTIE;
                 break;
         }
-    SDL_Delay(30);
+    //SDL_Delay(30);
     SDL_BlitSurface(fond, NULL, ecran, &pos);
     SDL_BlitSurface(titre, NULL, ecran, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);

@@ -12,6 +12,9 @@
 #include "main.h"
 #include "terrains.h"
 
+#include "edit_main.h"
+#include "edit_affichage.h"
+
 void tterrain0(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
 
     cairo_t *droite = cairo_create(surfaceFond);
