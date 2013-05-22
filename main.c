@@ -1,23 +1,46 @@
+/**
+ * \file      	main.c
+ * \version   	1.0
+ * \date      	2013
+ * \brief		Gestion globale de l'application
+ *
+ * \details   	Permet d'appeler les différentes fonctions qui composent le programme
+ * \details		et gère les différentes valeurs de retour
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <cairo/cairo.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
-#include <math.h>
 #include "main.h"
-#include "niveau.h"
-#include "interface.h"
 #include "affichage.h"
-#include "deplacement.h"
-#include "terrains.h"
+#include "interface.h"
+#include "niveau.h"
+#include <SDL/SDL_mixer.h>
 
 #include "edit_main.h"
 #include "edit_affichage.h"
+
+/**
+ * \param ew largeur de l'écran
+ * \param eh hauteur de l'écran
+ */
 int ew, eh;
+/**
+ * indicateur de volume
+ */
 int mute = 0;
 Mix_Music *musique;
 
+/**
+ * \brief Gestion globale du programme
+ *
+ * main fait appel aux fonctions permettant d'afficher les niveaux,
+ * les menus, les écrans spéciaux et l'éditeur de terrain
+ * et gère les retours de ces différentes fonctions
+ */
 int main(int argc, char *argv[]){
 
     if(SDL_Init(SDL_INIT_VIDEO) == -1){
@@ -30,54 +53,6 @@ int main(int argc, char *argv[]){
     int retourMenu = 0, retourChoixNiveau = 0, retourNiveau = 0, retourGO = 0, retourVict = 0;
     int continuer = 1, enNiveau = 1;
 
-    /* FMOD_SYSTEM *system;
-    FMOD_SOUND *lose, *win, *mort, *menumus, *gamemus;
-    FMOD_CHANNELGROUP *channelgroup;
-    FMOD_RESULT resultat;
-    /* Création et initialisation d'un objet système */
-    //FMOD_System_Create(&system);
-    //FMOD_System_Init(system, 32, FMOD_INIT_NORMAL, NULL);
-    /* Chargement du son et vérification du chargement */
-    /* resultat = FMOD_System_CreateSound(system, "OST-Lose.wav", FMOD_CREATESAMPLE, 0, &lose);
-    if (resultat != FMOD_OK)
-    {
-        fprintf(stderr, "Impossible de lire le fichier\n");
-        exit(EXIT_FAILURE);
-    }
-    resultat = FMOD_System_CreateSound(system, "OST-Win.wav", FMOD_CREATESAMPLE, 0, &win);
-    if (resultat != FMOD_OK)
-    {
-        fprintf(stderr, "Impossible de lire le fichier\n");
-        exit(EXIT_FAILURE);
-    }
-    resultat = FMOD_System_CreateSound(system, "OST-Lose.wav", FMOD_CREATESAMPLE, 0, &mort);
-    if (resultat != FMOD_OK)
-    {
-        fprintf(stderr, "Impossible de lire le fichier\n");
-        exit(EXIT_FAILURE);
-    }
-    resultat = FMOD_System_CreateSound(system, "OST-menu.wav", FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM, 0, &menumus);
-    if (resultat != FMOD_OK)
-    {
-        fprintf(stderr, "Impossible de lire le fichier mp3\n");
-        exit(EXIT_FAILURE);
-    }
-    resultat = FMOD_System_CreateSound(system, "OST-Game.wav", FMOD_SOFTWARE | FMOD_2D | FMOD_CREATESTREAM, 0, &gamemus);
-    if (resultat != FMOD_OK)
-    {
-        fprintf(stderr, "Impossible de lire le fichier mp3\n");
-        exit(EXIT_FAILURE);
-    } */
-
-    /* On active la répétition de la musique à l'infini */
-    //FMOD_Sound_SetLoopCount(menumus, -1);
-    //FMOD_Sound_SetLoopCount(gamemus, -1);
-
-    //FMOD_System_GetMasterChannelGroup(system, &channelgroup);
-
-    /* On joue la musique */
-    //FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
-
     if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) == -1) //Initialisation de l'API Mixer
     {
         fprintf(stderr,"%s", Mix_GetError());
@@ -87,14 +62,14 @@ int main(int argc, char *argv[]){
     Mix_Chunk *sonWin;
     Mix_Chunk *sonLose;
     Mix_Chunk *sonMort;
-    sonWin = Mix_LoadWAV("GameSound/OST-Win.wav"); //Chargement du son
-    sonLose = Mix_LoadWAV("GameSound/OST-Lose.wav"); //Chargement du son
-    sonMort = Mix_LoadWAV("GameSound/OST-Mort.wav"); //Chargement du son
+    sonWin = Mix_LoadWAV("GameSound/OST-Win.wav"); //Chargement du son joué lors d'une victoire
+    sonLose = Mix_LoadWAV("GameSound/OST-Lose.wav"); //Chargement du son joué lors d'une défaite
+    sonMort = Mix_LoadWAV("GameSound/OST-Mort.wav"); //Chargement du son joué lors d'une mort
 
-    musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
+    musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique du menu
 
     SDL_WM_SetIcon(icone, NULL);
-    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+    ecran = SDL_SetVideoMode(0, 0, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN);
     eh = ecran->h;
     ew = ecran->w;
     if (ecran == NULL){  // Si l'ouverture a échoué, on le note et on arrête
@@ -114,19 +89,13 @@ int main(int argc, char *argv[]){
             retourChoixNiveau = choixNiveau(ecran);
             if((0<=retourChoixNiveau) && (retourChoixNiveau<=6)){
                 while(enNiveau){
-                        /* FMOD_ChannelGroup_Stop(channelgroup);
-                        FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, gamemus, 0, NULL); */
-                        musique = Mix_LoadMUS("GameSound/gamemus.mp3"); //Chargement de la musique
+                        musique = Mix_LoadMUS("GameSound/gamemus.mp3"); //Chargement de la musique du jeu
                         if (!mute) {
                             Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
                         }
                     retourNiveau = niveau(ecran, retourChoixNiveau);
                     switch(retourNiveau){
                         case -1:
-                            /*FMOD_ChannelGroup_Stop(channelgroup);
-                             FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
-                             FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, mort, 0, NULL);
-                             FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, lose, 0, NULL); */
                             musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
                             if (!mute) {
                                 Mix_PlayChannel(-1, sonMort, 0);
@@ -147,9 +116,6 @@ int main(int argc, char *argv[]){
                             }
                             break;
                         case 0: //victoire
-                            /*FMOD_ChannelGroup_Stop(channelgroup);
-                            FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
-                            FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, win, 0, NULL); */
                             musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
                             if (!mute) {
                                 Mix_PlayChannel(-1, sonWin, 0);
@@ -162,7 +128,7 @@ int main(int argc, char *argv[]){
                                     if(retourChoixNiveau<6){
                                         retourChoixNiveau++;
                                     }
-                                    else retourChoixNiveau = 1; //ecran spécial vitoire finale !
+                                    else retourChoixNiveau = 1; //écran spécial vitoire finale !
                                     break;
                                 case MENU:
                                     enNiveau=0;
@@ -173,8 +139,6 @@ int main(int argc, char *argv[]){
                             }
                             break;
                         case MENU:
-                            //FMOD_ChannelGroup_Stop(channelgroup);
-                            //FMOD_System_PlaySound(system, FMOD_CHANNEL_FREE, menumus, 0, NULL);
                             musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
                             if (!mute) {
                                 Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
@@ -212,14 +176,6 @@ int main(int argc, char *argv[]){
     Mix_FreeChunk(sonMort);
     Mix_CloseAudio(); //Fermeture de l'API
     SDL_Quit();
-    /* On libère le son et on ferme et libère l'objet système */
-    /* FMOD_Sound_Release(menumus);
-    FMOD_Sound_Release(gamemus);
-    FMOD_Sound_Release(lose);
-    FMOD_Sound_Release(mort);
-    FMOD_Sound_Release(win);
-    FMOD_System_Close(system);
-    FMOD_System_Release(system); */
     return EXIT_SUCCESS;
 }
 

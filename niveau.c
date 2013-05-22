@@ -1,3 +1,13 @@
+/**
+ * \file      	niveau.c
+ * \version   	1.0
+ * \date      	2013
+ * \brief		Gestion des niveaux
+ *
+ * \details   	Permet de charger un niveau en particulier et gère son défilement
+ * \details		ainsi que les différentes intéractions entre le joueur et le terrain
+*/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <cairo/cairo.h>
@@ -15,31 +25,53 @@
 #include "edit_main.h"
 #include "edit_affichage.h"
 
+/**
+ * \param H_PERSO définit la hauteur du personnage à l'écran
+ * \param L_PERSO définit la largeur du personnage à l'écran
+ * \param EPAISSEUR_TRAIT définit l'épaisseur par défaut des traits tracés à l'écran
+ * \param X_FIN définit l'abscisse de fin de niveau
+ * \param NOMBRE_ECRANS définit la largeur, en nombre d'écrans, de chaque niveau
+ */
 int H_PERSO, L_PERSO, EPAISSEUR_TRAIT, X_FIN, NOMBRE_ECRANS;
 
+/**
+ * \brief	Gestion globale d'un niveau
+ *
+ *	Cette fonction gère l'affichage d'un niveau
+ *	ainsi que les intéractions utilisateurs avec ce dernier
+ *	\param ecran La surface visible à  l'écran sur laquelle est affichée la partie courante du niveau
+ *	\param choixTerrain Le niveau sélectionné dans le menu de sélection du niveau
+ *	\return Un \e int correspondant aux différentes fins possibles du niveaux (victoire, mort, ...)
+ */
 int niveau(SDL_Surface *ecran, int choixTerrain){
 
     Uint32 Blanc = 0xFFFFFFFF;
+
     int continuer = 1, select = 0;
-    int enSelection = 0, dejaSelectionne = 0, collagePossible = 0, enDrag = 0, chute = 0, enRotation = 0;
-    Uint32 temps_precedent = SDL_GetTicks(), temps_actuel = SDL_GetTicks();
-    int xSouris = 0, ySouris = 0;
+    int enSelection = 0, dejaSelectionne = 0, collagePossible = 0, enDrag = 0, chute = 0, enRotation = 0; //définition des différentes constantes indiquant un état particulier (en sélection ,en déplacement, ...)
+
+	Uint32 temps_precedent = SDL_GetTicks(), temps_actuel = SDL_GetTicks(); //constantes temporelles, permettant de gérer le rafraichissement
+
+	int xSouris = 0, ySouris = 0;
     int xSourisButton = 0, ySourisButton = 0;
-    int xRinit = 0, yRinit = 0;
-    double longueur = 0., longueur_proj = 0., angle = 0., angleTotal = 0., scale = 1.;
+    int xRinit = 0, yRinit = 0; //définitions de différentes positions utilisées pour les calcul d'angle, de déplacement, ...
+
+    double longueur = 0., longueur_proj = 0., angle = 0., angleTotal = 0., scale = 1.; // initialisation de différents paramètres géométriques
+
     H_PERSO = 110*eh/768;
     L_PERSO = 55*eh/768;
     EPAISSEUR_TRAIT = 7*eh/768;
     NOMBRE_ECRANS = 8;
-    X_FIN = (NOMBRE_ECRANS - 4)*ew - ew/5;
-    int k = 0, k1 = 0;
+    X_FIN = (NOMBRE_ECRANS - 4)*ew - ew/5; //initialisations des constantes globales définit en début de fichier
+
+    int k = 0, k1 = 0; //variables permettant la gestion de l'animation du personnage
 
 
     SDL_Surface *surfPerso = NULL, *surfPause = NULL, *surfLigne = NULL, *rect=NULL, *surfSelec=NULL;
     surfLigne = SDL_CreateRGBSurface(SDL_HWSURFACE, NOMBRE_ECRANS*ew, eh, 32, 0, 0, 0, 0);
     surfSelec = SDL_CreateRGBSurface(SDL_HWSURFACE, ew, eh, 32, 0, 0, 0, 0);
     surfPerso = SDL_CreateRGBSurface(SDL_HWSURFACE, L_PERSO, H_PERSO, 32, 0, 0, 0, 0);
-    surfPause = SDL_CreateRGBSurface(SDL_HWSURFACE, 70, 70, 32, 0, 0, 0, 0);
+    surfPause = SDL_CreateRGBSurface(SDL_HWSURFACE, 70, 70, 32, 0, 0, 0, 0); //initialisation des différentes surface utilisées pour afficher un niveau
 
     SDL_Rect posPointille, pos, posligne, pospersoNiveau, pospause, posrec, selecNiveau, posSelection, posDestination, posAppercu, posPersoEcran;
     pos.x = selecNiveau.x = posligne.x = posSelection.x = posDestination.x = posAppercu.x = 0;
@@ -51,7 +83,8 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     pospersoNiveau.x = ew/6;
     pospersoNiveau.y = 0.7*eh - 2*H_PERSO;
     posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
-    posPersoEcran.y = pospersoNiveau.y;
+    posPersoEcran.y = pospersoNiveau.y; //définition et initialisation des différentes positions de collage des différentes surfaces
+
     cairo_surface_t *surfaceFond;
     rect = selection(60*eh/768, 60*eh/768, surfLigne->format);
     SDL_Event event;
@@ -59,30 +92,28 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     SDL_FillRect(surfSelec, NULL, Blanc);
     SDL_FillRect(surfPause, NULL, Blanc);
     SDL_FillRect(surfPerso, NULL, Blanc);
-    SDL_FillRect(surfLigne, NULL, Blanc);
-    // Création d'une surface cairo ayant pour format d'affichage celui d'une surface SDL
+    SDL_FillRect(surfLigne, NULL, Blanc); //remplissage des surfaces
+
     surfaceFond = cairo_image_surface_create_for_data (surfLigne->pixels,
                                                       CAIRO_FORMAT_ARGB32,
                                                       surfLigne->w,
                                                       surfLigne->h,
-                                                      surfLigne->pitch);
+                                                      surfLigne->pitch); // Création d'une surface cairo (permettant les tracés vectorils) ayant pour format d'affichage celui d'une surface SDL
 
-
-
-    chargerTerrain(ecran, surfaceFond, choixTerrain);
-    cairo_t *perso = pperso(ecran, surfPerso, k);
-    afficherTexte(surfPause, "ariblk.ttf", 60*eh/768, "II", 0, 0);
-    SDL_SetAlpha(rect, SDL_SRCALPHA, 0);
-    SDL_EnableKeyRepeat(0,0);
-    SDL_Flip(ecran);
+    chargerTerrain(surfaceFond, choixTerrain); //Chargement du terrain sélectionné
+    pperso(surfPerso, k); //Initialisation du personnage
+    afficherTexte(surfPause, "ariblk.ttf", 60*eh/768, "II", 0, 0); //affichage du boutton pause
+    SDL_SetAlpha(rect, SDL_SRCALPHA, 0); //gestion de la transparence
+    SDL_EnableKeyRepeat(0,0); //désactivation de la persistance automatique des touches
+    SDL_Flip(ecran); //rafraichissement de l'écran visible
     while(continuer!=0){
         SDL_FillRect(surfSelec, NULL, Blanc);
-        continuer = avancer(&pospersoNiveau, surfLigne, selecNiveau);
-		if(continuer == 0)
+        continuer = avancer(&pospersoNiveau, surfLigne, selecNiveau); //appel de la fonction gérant le progression du personnage (prise en compte des obstacle, montée, descente, chutte)
+		if(continuer == 0) //Le personnage est bloqué et est au bord de l'écran
 			return (-1); //gameOver
-        if (continuer == -1)
+        if (continuer == -1) //Le personnage a atteint X_FIN
             return 0; //Victoire
-        if(continuer!=2){
+        if(continuer!=2){ //Le personnage avance normalement (il monte ou descend)
             if (chute >= 2*H_PERSO){
 				return -1;
             }
@@ -94,7 +125,8 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
             k = k%9;}
             selecNiveau.x = selecNiveau.x + 4;
 			}
-            else {chute +=5;}
+            else {chute +=5;} //Le personnage est en train de tomber
+
         if(enSelection){
             posPointille = pointilleSelection(surfSelec, selecNiveau, posSelection, xSouris, ySouris);
         }
@@ -129,19 +161,20 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
             angle = 0;
             angleTotal = 0;
             scale = 1;
-        }
+        } // Gestion des différents cas d'interaction (l'utilisateur a selectionné une zone du terrain , la déplace, la colle, la redimensionne ou la fait tourner
+
         posPersoEcran.x = pospersoNiveau.x - selecNiveau.x;
         posPersoEcran.y = pospersoNiveau.y;
-        perso = pperso(ecran, surfPerso, k);
+        pperso(surfPerso, k);
         insererSurface(surfPerso, NULL, ecran, &posPersoEcran);
         SDL_BlitSurface(rect, NULL, ecran, &posrec);
-        SDL_Flip(ecran);
+        SDL_Flip(ecran); //actualisation des positions relatives du personnage et du niveau par rapot à l'écran et rafraichissement
         temps_actuel = SDL_GetTicks();
-        SDL_Delay(max(40 - (temps_actuel-temps_precedent),0));
+        SDL_Delay(max(40 - (temps_actuel-temps_precedent),0)); //gestion du nombre d'images affichées par seconde
         temps_precedent = temps_actuel;
-        while (SDL_PollEvent(&event)) {
+        while (SDL_PollEvent(&event)) { //gestion des différentes actions de l'utilisateur
             switch(event.type){
-                case SDL_MOUSEMOTION:
+                case SDL_MOUSEMOTION: //mouvement de la souris
                     xSouris = event.button.x;
                     ySouris = event.button.y;
                     if(((ew - 77*eh/768) <= xSouris) && (ySouris < 76*eh/768)){
@@ -155,7 +188,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                 case SDL_MOUSEBUTTONDOWN:
                     xSourisButton = event.button.x;
                     ySourisButton = event.button.y;
-                    if(event.button.button == SDL_BUTTON_LEFT){
+                    if(event.button.button == SDL_BUTTON_LEFT){ //clic gauche enfoncé, qui permet la selection d'une zone de l'écran
                         xSourisButton = xSourisButton + selecNiveau.x;
                         ySourisButton = ySourisButton + selecNiveau.y;
                         if(enSelection == 0){
@@ -167,7 +200,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 
                         }
                     }
-                    else if(event.button.button == SDL_BUTTON_RIGHT){
+                    else if(event.button.button == SDL_BUTTON_RIGHT){ //clic droit enfoncé, qui permet de déplacer une zone sélectionnée
                         if(!enDrag){
                             xRinit = xSourisButton - xSouris;
                             yRinit = ySourisButton - ySouris;
@@ -179,7 +212,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                             }
                         }
                     }
-                    else if(event.button.button == SDL_BUTTON_WHEELDOWN){
+                    else if(event.button.button == SDL_BUTTON_WHEELDOWN){ //utilisation de la molette qui permet de redimensionner un objet en cours de selection
                         if(enDrag){
                             scale = scale - 0.05;
                             scale = max_d(scale, 0.5);
@@ -195,7 +228,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                 case SDL_MOUSEBUTTONUP:
                     xSourisButton = event.button.x;
                     ySourisButton = event.button.y;
-                    if(event.button.button == SDL_BUTTON_LEFT){
+                    if(event.button.button == SDL_BUTTON_LEFT){ //clic gauche relaché, qui permet de mettre le jeu en pause si la souris est sur le boutton ou de terminer la selection d'une zone de l'écran
                         if(((ew - 77*eh/768) <= xSourisButton) && (ySourisButton < 76*eh/768)){
                             switch (jeupause(ecran)){
                                 case SORTIE:
@@ -234,7 +267,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                             }
                         }
                     }
-                    if(event.button.button == SDL_BUTTON_RIGHT){
+                    if(event.button.button == SDL_BUTTON_RIGHT){ //clic droit relaché, qui permet de coller à l'écran un objet en cours de déplacement
                         enRotation  = 0;
                         xSourisButton = xSourisButton + selecNiveau.x;
                         ySourisButton = ySourisButton + selecNiveau.y;
@@ -249,17 +282,17 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                         }
                     }
                     break;
-                case SDL_KEYDOWN:
+                case SDL_KEYDOWN: //une touche est pressée
                     switch(event.key.keysym.sym){
-                        case SDLK_ESCAPE:
-                            switch (jeupause(ecran)){
-                                case SORTIE:
+                        case SDLK_ESCAPE: //appuis sur la touche echap, qui met le jeu en pause
+                            switch (jeupause(ecran)){ //gestion des retours de la pause
+                                case SORTIE: //sortie de jeu, cela ferme l'application
                                     return SORTIE;
                                     break;
-                                case MENU:
+                                case MENU: //retour au menu
                                     return MENU;
                                     break;
-                                case 0:
+                                case 0: //retour au jeu, on réinitialise les paramètres de selction
                                     collagePossible = 0;
                                     enSelection = 0;
                                     dejaSelectionne = 0;
@@ -273,7 +306,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                                     break;
                                 }
                             break;
-                            case SDLK_r:
+                            case SDLK_r: //appuis sur r, qui permet d'initier une rotation
                             if(enDrag)
                                 enRotation = 1;
                             break;
@@ -281,9 +314,9 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                             break;
                     }
                     break;
-                case SDL_KEYUP:
+                case SDL_KEYUP: //une touche est relachée
                     switch(event.key.keysym.sym){
-                        case SDLK_r:
+                        case SDLK_r: //r, termine la définition de l'angle de la rotation
                             if(enRotation){
                                 angleTotal = angle;
                             }
@@ -293,7 +326,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
                             break;
                     }
                     break;
-                case SDL_QUIT:
+                case SDL_QUIT: //le programme est fermé manuellement (via la croix ou le clic droit -> fermé)
                     return SORTIE;
                     break;
                 default:
@@ -304,7 +337,14 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
     return MENU;
 }
 
-cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
+/**
+ * \brief Gère l'affichage et l'animation du personnage
+ *
+ * \param surfPerso Surface SDL sur laquelle est collé le perso avant d'être affiché à l'écran
+ * \param k Variable définissant l'animation courante du personnage à afficher
+ * \return void
+ */
+void pperso(SDL_Surface *surfPerso, int k)
 {
     cairo_surface_t *surface = NULL;
     surface = cairo_image_surface_create_for_data (surfPerso->pixels,
@@ -348,7 +388,6 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
             cairo_line_to(perso, 38*eh/768, 92*eh/768);
             cairo_line_to(perso, 55*eh/768, 135*eh/768);
             cairo_stroke_preserve(perso);
-            return perso;
         break;
         case 1:
            cairo_arc(perso, (31+1)*eh/768, 19*eh/768, 10*eh/768, 0, 2*M_PI);
@@ -378,7 +417,6 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
             cairo_line_to(perso, (38-3)*eh/768, (92-1)*eh/768);
             cairo_line_to(perso, (55-7)*eh/768, (135-2)*eh/768);
             cairo_stroke_preserve(perso);
-            return perso;
     break;
     case 2:
            cairo_arc(perso, (31+1)*eh/768, (19-1)*eh/768, 10*eh/768, 0, 2*M_PI);
@@ -408,7 +446,6 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
             cairo_line_to(perso, (38-8)*eh/768, (92-1)*eh/768);
             cairo_line_to(perso, (55-17)*eh/768, (135+2)*eh/768);
             cairo_stroke_preserve(perso);
-            return perso;
     break;
      case 3:
            cairo_arc(perso, (31+2)*eh/768, (19-1)*eh/768, 10*eh/768, 0, 2*M_PI);
@@ -438,7 +475,6 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
             cairo_line_to(perso, (38-15)*eh/768, (92-2)*eh/768);
             cairo_line_to(perso, (55-29)*eh/768, (135+4)*eh/768);
             cairo_stroke_preserve(perso);
-            return perso;
     break;
     case 4:
            cairo_arc(perso, (31+3)*eh/768, (19-1)*eh/768, 10*eh/768, 0, 2*M_PI);
@@ -468,7 +504,6 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
             cairo_line_to(perso, (38-17)*eh/768, (92-2)*eh/768);
             cairo_line_to(perso, (55-42)*eh/768, (135+6)*eh/768);
             cairo_stroke_preserve(perso);
-            return perso;
     break;
     case 5:
            cairo_arc(perso, (31+4)*eh/768, (19-2)*eh/768, 10*eh/768, 0, 2*M_PI);
@@ -498,7 +533,6 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
             cairo_line_to(perso, (38-20)*eh/768, (92-2)*eh/768);
             cairo_line_to(perso, (55-52)*eh/768, (135+12)*eh/768);
             cairo_stroke_preserve(perso);
-            return perso;
     break;
     case 6:
            cairo_arc(perso, (31+3)*eh/768, (19-2)*eh/768, 10*eh/768, 0, 2*M_PI);
@@ -528,7 +562,6 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
             cairo_line_to(perso, (38-15)*eh/768, (92-2)*eh/768);
             cairo_line_to(perso, (55-32)*eh/768, (135+12)*eh/768);
             cairo_stroke_preserve(perso);
-            return perso;
     break;
     case 7:
            cairo_arc(perso, (31+2)*eh/768, (19-2)*eh/768, 10*eh/768, 0, 2*M_PI);
@@ -558,7 +591,6 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
             cairo_line_to(perso, (38-8)*eh/768, (92-1)*eh/768);
             cairo_line_to(perso, (55-17)*eh/768, (135+8)*eh/768);
             cairo_stroke_preserve(perso);
-            return perso;
     break;
     case 8:
            cairo_arc(perso, (31+2)*eh/768, (19-1)*eh/768, 10*eh/768, 0, 2*M_PI);
@@ -588,7 +620,6 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
             cairo_line_to(perso, (38-3)*eh/768, (92-1)*eh/768);
             cairo_line_to(perso, (55-5)*eh/768, 135*eh/768);
             cairo_stroke_preserve(perso);
-            return perso;
     break;
     case 9:
            cairo_arc(perso, (31+1)*eh/768, 19*eh/768, 10*eh/768, 0, 2*M_PI);
@@ -618,35 +649,49 @@ cairo_t * pperso(SDL_Surface *surfNiveau, SDL_Surface *surfPerso, int k)
             cairo_line_to(perso, 38*eh/768, 92*eh/768);
             cairo_line_to(perso, 55*eh/768, 135*eh/768);
             cairo_stroke_preserve(perso);
-            return perso;
     break;
     }
-return perso;
 }
 
+/**
+ * \brief retourne le minimum de deux entiers a et b
+ */
 int min(int a, int b){
     if(a <= b)
         return a;
     return b;
 }
 
+/**
+ * \brief retourne le maximum de deux entiers a et b
+ */
 int max(int a, int b){
     if(a <= b)
         return b;
     return a;
 }
 
+/**
+ * \brief retourne le minimum de deux réels a et b
+ */
 double min_d(double a, double b){
     if(a <= b)
         return a;
     return b;
 }
+
+/**
+ * \brief retourne le maximum de deux réels a et b
+ */
 double max_d(double a, double b){
     if(a <= b)
         return b;
     return a;
 }
 
+/**
+ * \brief retourne le modulo de deux réels a et b
+ */
 double mod_d(double a, double b){
 
     int q = (int)(a/b);
@@ -654,6 +699,19 @@ double mod_d(double a, double b){
     return (a - q*b);
 }
 
+/**
+ * \brief Cette fonction gère l'insertion d'une zone d'une surface dans une autre
+ *
+ * Elle permet d'afficher une zone du terrain en un autre endroit du terrain, en la tournant et l'agrandissant et peut aussi l'y coller
+ * \param enAppercu détermine si la zone sélectionnée doit être seulement affichée après avoir été modifiée ou aussi collée sur le terrain
+ * \param surfLigne l'écran ou la surface du niveau selon qu'il s'agit d'un apperçu ou non
+ * \param surfaceFond le calque vectoriel de surfLigne dans lequel le dessin est réalisé
+ * \param posSelection la zone de terrain selectionnée
+ * \param posDestination la zone de terrain où l'apperçu doit être affiché/collé
+ * \param angle l'angle de la rotation à effectuer
+ * \param scale le rapport de l'agrandssement à effectuer
+ * \return void Les modifiations sont faites directement sur les objets grâces aux pointeurs
+ */
 void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surfaceFond, SDL_Rect posSelection, SDL_Rect posDestination, double angle, double scale){
 
 
@@ -663,22 +721,23 @@ void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surf
     posRelative.x = 0;
     posRelative.y = 0;
     posRelative.w = posSelection.w;
-    posRelative.h = posSelection.h;
+    posRelative.h = posSelection.h; //définitions des positions relatives
+
     double diagonale = scale*sqrt((posSelection.w*(posSelection.w))+(posSelection.h*(posSelection.h)));
-    collage = SDL_CreateRGBSurface(SDL_HWSURFACE , diagonale, diagonale, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0);
+    collage = SDL_CreateRGBSurface(SDL_HWSURFACE , diagonale, diagonale, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0); //création d'une surface de travail intermédiaire
     SDL_FillRect(collage, NULL, Blanc);
+
     cairo_surface_t *surfCollage = cairo_image_surface_create_for_data (collage->pixels,
                                                       CAIRO_FORMAT_RGB24,
                                                       collage->w,
                                                       collage->h,
-                                                      collage->pitch);
+                                                      collage->pitch); //création d'un calque vectoriel
 
     if((angle == 0) && (scale == 1) &&(!enAppercu))
-        recollementContinu(surfLigne, posSelection, &posDestination);
+        recollementContinu(surfLigne, posSelection, &posDestination); //gestion du recolement continue dans le cas d'une simple translation
 
-	cairo_t *enSelect = cairo_create(surfCollage);
-	double long_centre =0; //scale_x = (posDestination.w/posSelection.w), scale_y = (posDestination.h/posSelection.h);
-    //cairo_translate(enSelect, long_centre-(long_centre*cos(M_PI_4)), -long_centre*sin(M_PI_4));
+	cairo_t *enSelect = cairo_create(surfCollage); //création du chemin de dessin vectoriel
+
     if((angle <= M_PI_2)&&(angle >= -M_PI_2))
         cairo_translate(enSelect, scale*max_d((posSelection.h)*sin(angle), 0.), -scale*min_d((posSelection.w)*sin(angle), 0));
     else if(angle > M_PI_2)
@@ -686,21 +745,23 @@ void decouperColler(int enAppercu, SDL_Surface *surfLigne, cairo_surface_t *surf
     else
         cairo_translate(enSelect,scale*(posSelection.w)*(cos(angle-M_PI)), scale*(posSelection.h)*cos(angle + M_PI) + scale*(posSelection.w)*cos(angle + M_PI_2));
     cairo_scale(enSelect, scale, scale);
-    cairo_rotate(enSelect,angle);
-    cairo_set_source_surface (enSelect, surfaceFond,  0 - posSelection.x, 0 - posSelection.y); //remplit cr avec le chemin présent
-    //dans surfaceFond en commancant en 0,0 dans cr => 0, 280 dans surfaceFond
-    //cairo_set_source_surface (enSelect, source, x_dest*scale_x-x_source, y_dest*scale_y-y_source);
-    //cairo_paint(enSelect); //recouvre tout surfaceFond avec cr
-    cairo_rectangle (enSelect, 0, 0, min(posDestination.w,posSelection.w), min(posDestination.h,posSelection.h)); //cairo_rectangle (enSelect, x_dest*scale_x, y_dest*scale_y, width, heigh);
-    cairo_fill(enSelect); // ne recouvre surfaceFond que
-    //dans le carrée dont le coin supérieur gauche est en 0,0 et de largeur 100
+    cairo_rotate(enSelect,angle); //gestion de la rotation et du redimensionnement
+
+    cairo_set_source_surface (enSelect, surfaceFond,  0 - posSelection.x, 0 - posSelection.y);
+    cairo_rectangle (enSelect, 0, 0, min(posDestination.w,posSelection.w), min(posDestination.h,posSelection.h));
+	cairo_fill(enSelect); //remplit le chemin vectoriel avec celui, transformé, de la zone à copier
+
     posDestination.w = posDestination.h = diagonale;
-    insererSurface(collage, NULL, surfLigne, &posDestination);
+    insererSurface(collage, NULL, surfLigne, &posDestination); //affiche le résultat dans la surface voulue
+
     cairo_destroy(enSelect);
     cairo_surface_destroy(surfCollage);
     SDL_FreeSurface(collage);
 }
 
+/**
+ * \brief Gère le recollement continu
+ */
 void recollementContinu(SDL_Surface *surfLigne, SDL_Rect posSelection, SDL_Rect *posDestination){
     int decallage = 0, trouve = 1, compteur = 0, rel_compteur, continuer = 1;
     while(continuer && (compteur < (min(posSelection.h, posDestination->h) - 16)) && (posDestination->y + compteur < eh)){
@@ -722,6 +783,15 @@ void recollementContinu(SDL_Surface *surfLigne, SDL_Rect posSelection, SDL_Rect 
     posDestination->y=max(posDestination->y+decallage, 0);
 }
 
+/**
+ * \brief Affiche des pointillés de sélection sur la zone sélectionnée
+ * \param surfSelec La surface sur laquelle sont affichés les pointillés
+ * \param selecNiveau Définit la position courante du niveau visibe à l'écran
+ * \param pos Définit la position d'origine (ou totale lorsque xSouris et ySouris valent -1), dans le niveau, des pointillés
+ * \param xSouris Définit l'abscisse de destination des pointillés
+ * \param ySouris Définit l'ordonnée de destination des pointillés
+ * \return Un \e SDL_Rect définissant le cadra contenant les pontillés à l'écran
+ */
 SDL_Rect pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Rect pos, int xSouris, int ySouris){
 
     cairo_surface_t *surfaceFond;
@@ -776,6 +846,14 @@ SDL_Rect pointilleSelection(SDL_Surface *surfSelec, SDL_Rect selecNiveau, SDL_Re
     return retour_erreur;
 }
 
+/**
+ * \brief Colle un surface SDL sur une autre en appliquant un transparence au blanc sur la surface à coller
+ * \param collage Surface à coller
+ * \param posSelection Le rectangle de selection
+ * \param surfLigne La surface de destination
+ * \param posDestination Le rectangle de destination
+ * \return void
+ */
 void insererSurface(SDL_Surface *collage, SDL_Rect *posSelection, SDL_Surface *surfLigne, SDL_Rect *posDestination){
 
     int i, j;
@@ -809,28 +887,34 @@ void insererSurface(SDL_Surface *collage, SDL_Rect *posSelection, SDL_Surface *s
     }
 }
 
-void chargerTerrain(SDL_Surface *ecran, cairo_surface_t *surfaceFond, int choixTerrain){
+/**
+ * \brief Gère le chargement du terrain en fonction du choix de l'utilisateur
+ * \param surfaceFond Calque vectoriel sur lequel le terrain est tracé
+ * \param choixTerrain terrain choisit par l'utilisateur
+ * \return void
+ */
+void chargerTerrain(cairo_surface_t *surfaceFond, int choixTerrain){
     switch(choixTerrain){
         case 0:
-            tterrain0(ecran, surfaceFond);
+            tterrain0(surfaceFond);
             break;
         case 1:
-            tterrain1(ecran, surfaceFond);
+            tterrain1(surfaceFond);
             break;
         case 2:
-            tterrain2(ecran, surfaceFond);
+            tterrain2(surfaceFond);
             break;
         case 3:
-            tterrain3(ecran, surfaceFond);
+            tterrain3(surfaceFond);
             break;
         case 4:
-            tterrain4(ecran, surfaceFond);
+            tterrain4(surfaceFond);
             break;
         case 5:
-            tterrain5(ecran, surfaceFond);
+            tterrain5(surfaceFond);
             break;
         case 6:
-            tterrain6(ecran, surfaceFond);
+            tterrain6(surfaceFond);
             break;
         default:
             break;

@@ -4,13 +4,11 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
-#include <math.h>
 #include "main.h"
 #include "niveau.h"
-#include "interface.h"
 #include "affichage.h"
-#include "deplacement.h"
-#include "terrains.h"
+#include "interface.h"
+#include <SDL/SDL_mixer.h>
 
 #include "edit_main.h"
 #include "edit_affichage.h"
@@ -121,6 +119,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
                             return 0;
                         }
                         else if(((eh*9/16) <= ySouris) && (ySouris < (eh*12/16))){
+                            Mix_HaltMusic();
                             return 1;
                         }
                         else if(((eh*12/16) <= ySouris) && (ySouris < (eh*14/16))){
@@ -151,6 +150,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
                                 return SORTIE;
                             }
                             else if(select == 1){
+                                Mix_HaltMusic();
                                 return 1;
                             }
                             else{
@@ -344,7 +344,7 @@ int choixNiveau (SDL_Surface *ecran) {
 	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "4", 4*ew/7, posyl1);
 	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "5", 5*ew/7, posyl1);
 	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "6", 6*ew/7, posyl1);
-    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Niveau personnalisé", centrex, posyl2);
+    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Niveau perso", centrex, posyl2);
 
     afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
     SDL_Flip(ecran);
@@ -495,7 +495,7 @@ int choixNiveau (SDL_Surface *ecran) {
 	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "4", 4*ew/7, posyl1);
 	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "5", 5*ew/7, posyl1);
 	afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "6", 6*ew/7, posyl1);
-    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Niveau personnalisé", centrex, posyl2);
+    afficherTexteCentre(ecran, "VirtualVectorVortex.ttf", 85*eh/768, "Niveau perso", centrex, posyl2);
 	afficherRectangleCentre (ecran, largeur, hauteur, posx, posy, 100);
     SDL_Flip(ecran);
     }

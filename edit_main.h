@@ -10,22 +10,22 @@ typedef enum {Vrai, Faux} Bool;
 /**
 * \brief Point d'une courbe.
 * \details Point d'une courbe,
-* pouvant aussi bien reprÃ©senter un point par lequel passe la courbe, qu'un point fictif permettant de dÃ©terminer la courbure de la courbe.
+* pouvant aussi bien représenter un point par lequel passe la courbe, qu'un point fictif permettant de déterminer la courbure de la courbe.
 */
 typedef struct point{
     int x; /**< Abscisse du point */
-    int y; /**< OrdonnÃ©e du point */
-    struct point* next; /**< Pointeur vers le point suivant, initialisÃ© Ã  NULL. */
+    int y; /**< Ordonnée du point */
+    struct point* next; /**< Pointeur vers le point suivant, initialisé à NULL. */
 } Point;
 
 /**
-* \brief Objet Ã  dessiner, constituÃ© de plusieurs points et d'une couleur.
+* \brief Objet à dessiner, constitué de plusieurs points et d'une couleur.
 */
 typedef struct fragment{
     Couleur couleur; /**< Couleur de l'objet */
     Point* chaine; /**< Pointeur vers le premier point de l'objet. */
     int lench; /**< Longueur de la liste de points. */
-    struct fragment* next; /**< Pointeur vers l'objet suivant, initialisÃ© Ã  NULL. */
+    struct fragment* next; /**< Pointeur vers l'objet suivant, initialisé à NULL. */
 } Fragment;
 
 int edit_main();

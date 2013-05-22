@@ -5,15 +5,11 @@
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_ttf.h>
 #include <math.h>
-#include "main.h"
 #include "niveau.h"
 #include "interface.h"
+#include "main.h"
 #include "affichage.h"
 #include "deplacement.h"
-#include "terrains.h"
-
-#include "edit_main.h"
-#include "edit_affichage.h"
 
 
 unsigned int getpixel(SDL_Surface *s, int x, int y) {
