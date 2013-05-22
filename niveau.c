@@ -54,11 +54,7 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 
 	int xSouris = 0, ySouris = 0;
     int xSourisButton = 0, ySourisButton = 0;
-<<<<<<< HEAD
     int xRinit = 0, yRinit = 0; //définitions de différentes positions utilisées pour les calcul d'angle, de déplacement, ...
-=======
-    int xRinit = 0, yRinit = 0; //définitions de différentes positions utilisées pour les calcul d'angle, de déplacement, ...
->>>>>>> a7af6f1b50d6cf89d211dd6cb1abf236e0ef1351
 
     double longueur = 0., longueur_proj = 0., angle = 0., angleTotal = 0., scale = 1.; // initialisation de différents paramètres géométriques
 
