@@ -56,6 +56,11 @@ void tterrain0(SDL_Surface *ecran, cairo_surface_t * surfaceFond){
     cairo_move_to (droite, 1.8*ew, 0.95*eh);
     cairo_show_text (droite, "et en bougeant la souris pour determiner l angle");
 
+	cairo_move_to (droite, 2.3*ew, 0.2*eh);
+    cairo_show_text (droite, "Et de la redimensionner en utilisant ");
+    cairo_move_to (droite, 2.3*ew, 0.275*eh);
+    cairo_show_text (droite, "la molette de la souris");
+
     cairo_move_to(droite, 0, 0.7*eh);
     cairo_line_to(droite, 2.3*ew, 0.7*eh);
     cairo_curve_to(droite, 2.4*ew, 0.5*eh, 2.5*ew, 0.4*eh, 2.6*ew, 0.7*eh);
