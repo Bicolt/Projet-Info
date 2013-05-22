@@ -6,7 +6,7 @@
  *
  * \details   	Permet de charger un niveau en particulier et gère son défilement
  * \details		ainsi que les différentes intéractions entre le joueur et le terrain
- */
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -39,7 +39,7 @@ int H_PERSO, L_PERSO, EPAISSEUR_TRAIT, X_FIN, NOMBRE_ECRANS;
  *
  *	Cette fonction gère l'affichage d'un niveau
  *	ainsi que les intéractions utilisateurs avec ce dernier
- *	\param ecran La surface visible à l'écran sur laquelle est affiché la partie courante du niveau
+ *	\param ecran La surface visible à  l'écran sur laquelle est affichée la partie courante du niveau
  *	\param choixTerrain Le niveau sélectionné dans le menu de sélection du niveau
  *	\return Un \e int correspondant aux différentes fins possibles du niveaux (victoire, mort, ...)
  */
@@ -54,7 +54,11 @@ int niveau(SDL_Surface *ecran, int choixTerrain){
 
 	int xSouris = 0, ySouris = 0;
     int xSourisButton = 0, ySourisButton = 0;
+<<<<<<< HEAD
     int xRinit = 0, yRinit = 0; //définitions de différentes positions utilisées pour les calcul d'angle, de déplacement, ...
+=======
+    int xRinit = 0, yRinit = 0; //définitions de différentes positions utilisées pour les calcul d'angle, de déplacement, ...
+>>>>>>> a7af6f1b50d6cf89d211dd6cb1abf236e0ef1351
 
     double longueur = 0., longueur_proj = 0., angle = 0., angleTotal = 0., scale = 1.; // initialisation de différents paramètres géométriques
 
