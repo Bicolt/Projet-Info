@@ -1,3 +1,11 @@
+/**
+* \file edit_affichage.c
+* \version 1.0
+* \date 2013
+* \brief Permet l'affichage du terrain dessiné.
+* \details Ce fichier permet d'afficher le terrain et les étapes intermédiaires.
+*/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <cairo.h>
@@ -16,34 +24,23 @@
 #include "edit_affichage.h"
 
 /**
-* \file affichage.c
-* \brief Permet l'affichage du terrain dessinÃ©.
-* \details Ce fichier permet d'afficher le terrain et les Ã©tapes intermÃ©diaires.
+* \brief Permet l'affichage du terrain.
+* \details Cette fonction affiche les objets déjà dessinés. Ele permet également de dessiner une version intermédiaire de l'objet en cours de dessin.
+* \param mode Mode courant. Pour l'instant, seul le mode Dessin a été implémenté.
+* \param debut Dans le cas où un objet est en train d'être dessiné, debut permet de préciser qu'il faut fournir une image intermédiaire pour l'objet en cours de dessin,
+* basé sur la position courante de la souris.
+* \param fragments Pointeur vers le premier objet devant être dessiné. Celui-ci contient un pointeur vers l'objet suivant, s'il n'est pas nul.
+* \param ecran L'écran sur lequel il faut dessiner.
+* \param posecran Position de l'écran, ajustable avec les flèches gauche et droite.
+* \param surfaceFond Surface Cairo sur laquelle on va dessiner.
+* \param surfLigne Surface SDL sr laquelle on va copier la surface Cairo pour l'affichage.
+* \param positionecran Permet de déterminer la position de la surface à dessiner.
+* \param droite Droite Cairo que l'on va dessiner.
+* \param tailleecran Taille de la surface qu'il faut dessiner.
+
 */
-
-struct timeval t1, t2;
-
-
 void edit_affichage(Mode mode, Bool debut, Fragment* fragments, SDL_Surface* ecran, int posecran,
                 cairo_surface_t *surfaceFond, SDL_Surface *surfLigne, SDL_Rect positionecran, cairo_t *droite, SDL_Rect tailleecran) {
-
-/**
-* \brief Permet l'affichage du terrain.
-* \details Cette fonction affiche les objets dÃ©jÃ  dessinÃ©s. Ele permet Ã©galement de dessiner une version intermÃ©diaire de l'objet en cours de dessin.
-* \param mode Mode courant. Pour l'instant, seul le mode Dessin a Ã©tÃ© implÃ©mentÃ©.
-* \debut Dans le cas oÃ¹ un objet est en train d'Ãªtre dessinÃ©, debut permet de prÃ©ciser qu'il faut fournir une image intermÃ©diaire pour l'objet en cours de dessin,
-* basÃ© sur la position courante de la souris.
-* \param fragments Pointeur vers le premier objet devant Ãªtre dessinÃ©. Celui-ci contient un pointeur vers l'objet suivant, s'il n'est pas nul.
-* \param ecran L'Ã©cran sur lequel il faut dessiner.
-* \posecran Position de l'Ã©cran, ajustable avec les flÃ¨ches gauche et droite.
-* \surfaceFond Surface Cairo sur laquelle on va dessiner.
-* \surfLigne Surface SDL sr laquelle on va copier la surface Cairo pour l'affichage.
-* \positionecran Permet de dÃ©terminer la position de la surface Ã  dessiner.
-* \droite Droite Cairo que l'on va dessiner.
-* \tailleecran Taille de la surface qu'il faut dessiner.
-
-*/
-
 
     int n, x, y;
     SDL_GetMouseState(&x, &y);

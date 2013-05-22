@@ -1,12 +1,11 @@
 /**
  * \file      affichage.c
- * \author    Nicolas Benning
  * \version   1.0
  * \date      2013
  * \brief     Affichage simple de certains éléments graphiques
  *
  * \details   Fonctions d'affichage simple de textes ou de rectangle sur l'écran via la bibliothèque SDL.
- *              Création automatique des SDL_Surface nécesaires, du remplissage, du chargement des polices utilisées...
+ *            Création automatique des SDL_Surface nécesaires, du remplissage, du chargement des polices utilisées...
  */
 
 #include <stdlib.h>
