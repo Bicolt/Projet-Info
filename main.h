@@ -1,4 +1,4 @@
-#include <SDL_mixer.h>
+#include <SDL/SDL_mixer.h>
 extern int eh, ew;
 extern int mute;
 extern Mix_Music *musique;
