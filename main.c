@@ -89,10 +89,10 @@ int main(int argc, char *argv[]){
             retourChoixNiveau = choixNiveau(ecran);
             if((0<=retourChoixNiveau) && (retourChoixNiveau<=6)){
                 while(enNiveau){
-                        musique = Mix_LoadMUS("GameSound/gamemus.mp3"); //Chargement de la musique du jeu
-                        if (!mute) {
-                            Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
-                        }
+                    musique = Mix_LoadMUS("GameSound/gamemus.mp3"); //Chargement de la musique du jeu
+                    if (!mute) {
+                        Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
+                    }
                     retourNiveau = niveau(ecran, retourChoixNiveau);
                     switch(retourNiveau){
                         case -1:

@@ -334,39 +334,42 @@ int scanner(FILE *fichier, int* x1, int* y1, int* x2, int* y2, int* x3, int* y3)
  * \brief le terrain 6 correspond au terrain créé via l'éditeur de terrain qui est ici chargé
  */
 void tterrain6(cairo_surface_t * surfaceFond) {
-    FILE *fichier = fopen("save.txt", "r");
-    int x1, y1, x2, y2, x3, y3;
+	FILE *fichier = fopen("save.txt", "r");
+    if (fichier != NULL){
+        int x1, y1, x2, y2, x3, y3;
 
-    int result;
-    int continuer = 1;
+        int result;
+        int continuer = 1;
 
-    cairo_t *droite = cairo_create(surfaceFond);
-    cairo_set_line_width(droite,EPAISSEUR_TRAIT);
-    cairo_set_source_rgba (droite, 0, 0, 0, 1);
+        cairo_t *droite = cairo_create(surfaceFond);
+        cairo_set_line_width(droite,EPAISSEUR_TRAIT);
+        cairo_set_source_rgba (droite, 0, 0, 0, 1);
 
-    fscanf(fichier, "%d %d %d %d ", &x1, &y2, &x2, &y2); // Ca vaut tout simplement -1 -1 -2 -2.
-
-    fscanf(fichier, "%d %d", &x1, &y1);
-    cairo_move_to(droite, x1, y1);
-    while (continuer==1) {
-        result = scanner(fichier, &x1, &y1, &x2, &y2, &x3, &y3);
-        switch(result) {
-            case 1:
-                cairo_curve_to(droite, x1, y1, x3, y3, x2, y2);
-                break;
-            case -1:
-                fscanf(fichier, "%d %d ", &x2, &y2);
-                cairo_move_to(droite, x2, y2);
-                break;
-            case -2:
-                cairo_stroke(droite);
-                cairo_set_source_rgba (droite, 1, 0, 0, 1);
-                break;
-            case -3:
-                cairo_stroke(droite);
-                cairo_destroy(droite);
-                continuer = 0;
-                break;
+        fscanf(fichier, "%d %d %d %d ", &x1, &y1, &x2, &y2);
+        if((x1 == -2)&&(y1 == -2)){ //on vérifie que le fichier ouvert est bien un fichier de sauvegarde
+            fscanf(fichier, "%d %d", &x1, &y1);
+            cairo_move_to(droite, x1, y1);
+            while (continuer==1) {
+                result = scanner(fichier, &x1, &y1, &x2, &y2, &x3, &y3);
+                switch(result) {
+                    case 1:
+                        cairo_curve_to(droite, x1, y1, x3, y3, x2, y2);
+                        break;
+                    case -1:
+                        fscanf(fichier, "%d %d ", &x2, &y2);
+                        cairo_move_to(droite, x2, y2);
+                        break;
+                    case -2:
+                        cairo_stroke(droite);
+                        cairo_set_source_rgba (droite, 1, 0, 0, 1);
+                        break;
+                    case -3:
+                        cairo_stroke(droite);
+                        cairo_destroy(droite);
+                        continuer = 0;
+                        break;
+                }
+            }
         }
     }
 }

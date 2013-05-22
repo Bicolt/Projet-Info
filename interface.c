@@ -1,3 +1,9 @@
+/**
+* \file interface.c
+* \version 1.0
+* \date 2013
+* \brief Contient l'implémentation des différents menus du jeu
+*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <cairo/cairo.h>
@@ -14,51 +20,63 @@
 #include "edit_affichage.h"
 
 
-// sélection sous forme de barre horizontale
+/**
+ * \brief Sélection sous forme de barre horizontale
+ * \param largeur Largeur de la barre de selection
+ * \param hauteur Hauteur de la barre de sélection
+ * \param pf Format des pixels pixels de l'écran
+ * \return Le rectangle de sélection
+ */
 SDL_Surface* selection(int largeur, int hauteur, SDL_PixelFormat *pf){
 
     SDL_Surface *rectangle = NULL;
 
-    rectangle = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur, hauteur, 32, 0, 0, 0, 0);
-    SDL_FillRect(rectangle, NULL, SDL_MapRGB(pf, 0, 0, 0));
-    SDL_SetAlpha(rectangle, SDL_SRCALPHA, 100);
-    SDL_SetColorKey(rectangle, SDL_SRCCOLORKEY, SDL_MapRGB(rectangle->format, 255, 255, 255));
+    rectangle = SDL_CreateRGBSurface(SDL_HWSURFACE, largeur, hauteur, 32, 0, 0, 0, 0); // création du rectangle
+    SDL_FillRect(rectangle, NULL, SDL_MapRGB(pf, 0, 0, 0)); // remplissage en noir selon le format de pixel de l'écran d'affichage
+    SDL_SetAlpha(rectangle, SDL_SRCALPHA, 100); // réglage de la transparence du rectangle
 
     return rectangle;
 }
 
-//menu
+/**
+ * \brief menu principal 
+ * \param ecran Ecran d'affichage du menu 
+ * \param police Police utilisée
+ * \return un \e int correspondant au choix effectué par l'utilisateur
+ */
 int menu(SDL_Surface *ecran, TTF_Font *police){
-    SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
+    SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL; //Création des différentes surfaces
 	SDL_Color Black = {0, 0, 0};
-	SDL_Color White = {255, 255, 255};
+	SDL_Color White = {255, 255, 255}; //créations des couleurs utilisées
     SDL_Event event;
-    SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos, posmute;
+    SDL_Rect positiontitre, positiontexte1, positiontexte2, positiontexte3, posrec, pos, posmute; //Création des positions des différentes surfaces
     int xSouris, ySouris;
-    int continuer = 1, select=0;
+    int continuer = 1, select=0; //Créations de constantes de choix
 
     musique = Mix_LoadMUS("GameSound/menumus.mp3"); //Chargement de la musique
     if (!mute)
-        Mix_PlayMusic(musique, -1);
-
+        Mix_PlayMusic(musique, -1); //On joue la musique si elle n'est pas mute
+		
     SDL_Surface *speaker;
-    speaker = SDL_LoadBMP("speaker.bmp");
+    speaker = SDL_LoadBMP("speaker.bmp"); //Chargement de l'icone du son 
+	
     if (mute)
-        SDL_SetAlpha(speaker, SDL_SRCALPHA, 100);
+        SDL_SetAlpha(speaker, SDL_SRCALPHA, 100); //On grise le boutton si la musique est coupée
     posmute.x = 0; posmute.y = 0;
 
     pos.x = 0; pos.y = 0;
 
     rect = selection(ew, eh/8, ecran->format);
+	//intialisation des différentes surfaces 
     titre = TTF_RenderText_Shaded(police, "Super Scalable Land", Black, White);
     texte1 = TTF_RenderText_Shaded(police, "Jouer", Black, White);
 	texte2 = TTF_RenderText_Shaded(police, "Editeur de terrain", Black, White);
     texte3 = TTF_RenderText_Shaded(police, "Quitter", Black, White);
 	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ew, eh, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-    // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
 
-    positiontitre.x = ((ew - titre->w)/2);
+    //initialisation de la position des surfaces
+	positiontitre.x = ((ew - titre->w)/2);
     positiontitre.y = (eh/8);
     positiontexte1.x = ((ew - texte1->w)/2);
     positiontexte2.x = ((ew - texte2->w)/2);
@@ -69,22 +87,24 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
     posrec.x = 0;
     posrec.y = positiontexte1.y;
 
-    SDL_BlitSurface(fond, NULL, ecran, &pos);
+    //collage des surfaces à l'écran 
+	SDL_BlitSurface(fond, NULL, ecran, &pos);
     SDL_BlitSurface(titre, NULL, ecran, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
     SDL_BlitSurface(texte2, NULL, ecran, &positiontexte2);
 	SDL_BlitSurface(texte3, NULL, ecran, &positiontexte3);
     SDL_BlitSurface(rect, NULL, ecran, &posrec);
     SDL_BlitSurface(speaker, NULL, ecran, &posmute);
-    SDL_Flip(ecran);
+    SDL_Flip(ecran); //rafraichissement de l'écran 
 
-    SDL_EnableKeyRepeat(150, 10);
+    SDL_EnableKeyRepeat(150, 10); //autorise la rémanence des touches du clavier
 
     while(continuer){
+		//gère les intéractions avec l'utilisateur
         while (SDL_PollEvent(&event)) {
             switch(event.type)
             {
-                case SDL_MOUSEMOTION:
+                case SDL_MOUSEMOTION: //modifie la position du rectangle de selecton en fonction de la position de la souris
                     xSouris = event.button.x;
                     ySouris = event.button.y;
                     if(((eh*6/16) <= ySouris) && (ySouris < (eh*9/16))){
@@ -101,7 +121,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
                     }
                     break;
                 case SDL_MOUSEBUTTONUP:
-                    if(event.button.button == SDL_BUTTON_LEFT){
+                    if(event.button.button == SDL_BUTTON_LEFT){ //le clic gauche est pressé : cela coupe le son ou sélection une option selon la position de la souris
                         xSouris = event.button.x;
                         ySouris = event.button.y;
                         if ((xSouris < speaker->w) && (ySouris < speaker->h)) {
@@ -127,7 +147,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
                         }
                     }
                 break;
-                case SDL_KEYDOWN:
+                case SDL_KEYDOWN: //selon les bouttons pressés au clavier, on modifie la position du rectangle de sélection
                     switch (event.key.keysym.sym)
                     {
                         case SDLK_UP:
@@ -142,10 +162,10 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
                                 posrec.y = posrec.y - eh*6/16;
                             else posrec.y = posrec.y + eh*3/16;
                             break;
-                        case SDLK_ESCAPE:
+                        case SDLK_ESCAPE: //quitte le programme lorque échap est pressée
                                 return SORTIE;
                             break;
-                        case SDLK_RETURN:
+                        case SDLK_RETURN: //retourne la valeur du choix lorsque l'utilisateur presse entrée
                             if(select == 2){
                                 return SORTIE;
                             }
@@ -168,6 +188,7 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
         }
     //SDL_Delay(30);
 
+	// On réactualise ce qui s'affiche à l'écran 
     SDL_BlitSurface(fond, NULL, ecran, &pos);
     SDL_BlitSurface(titre, NULL, ecran, &positiontitre);
     SDL_BlitSurface(texte1, NULL, ecran, &positiontexte1);
@@ -180,8 +201,17 @@ int menu(SDL_Surface *ecran, TTF_Font *police){
     return SORTIE;
 }
 
+/**
+ * \brief menu de pause 
+ * \param ecran Ecran d'affichage du menu 
+ * \return un \e int correspondant au choix effectué par l'utilisateur
+ */
 int jeupause(SDL_Surface* ecran){
 
+    /*
+	Le fonctionnement est identique à celui de menu, seuls les choix possibles et la mise en page diffèrent
+	*/
+	
     TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85*eh/768);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
@@ -313,10 +343,16 @@ int jeupause(SDL_Surface* ecran){
     return MENU;
 }
 
-
+/**
+ * \brief menu de choix du niveau 
+ * \param ecran Ecran d'affichage du menu 
+ * \return un \e int correspondant au choix effectué par l'utilisateur
+ */
 int choixNiveau (SDL_Surface *ecran) {
 
-    /*TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85*eh/768);*/
+	/*
+	Le fonctionnement est identique à celui de menu, seuls les choix possibles et la mise en page diffèrent
+	*/
     SDL_Surface *fond = NULL;
     SDL_Event event;
     SDL_Rect pos;
@@ -502,9 +538,17 @@ int choixNiveau (SDL_Surface *ecran) {
     return MENU;
 }
 
-int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau chargé pour le recharger dans recommencer
+/**
+ * \brief menu de Game Over 
+ * \param ecran Ecran d'affichage du menu 
+ * \return un \e int correspondant au choix effectué par l'utilisateur
+ */
+int gameover(SDL_Surface *ecran){
 
-    TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85*eh/768);
+    /*
+	Le fonctionnement est identique à celui de menu, seuls les choix possibles et la mise en page diffèrent
+	*/
+	TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85*eh/768);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
 	SDL_Color Black = {0, 0, 0};
 	SDL_Color White = {255, 255, 255};
@@ -627,7 +671,16 @@ int gameover(SDL_Surface *ecran){ // Devra prendre en entrée plus tard le niveau
     return MENU;
 }
 
+/**
+ * \brief menu de victoire
+ * \param ecran Ecran d'affichage du menu 
+ * \return un \e int correspondant au choix effectué par l'utilisateur
+ */
 int victoire(SDL_Surface *ecran){
+
+	/*
+	Le fonctionnement est identique à celui de menu, seuls les choix possibles et la mise en page diffèrent
+	*/
 
     TTF_Font *police = TTF_OpenFont("VirtualVectorVortex.ttf", 85*eh/768);
     SDL_Surface *titre = NULL, *texte1 =NULL, *texte2 = NULL, *texte3 = NULL, *rect = NULL, *fond = NULL;
@@ -647,7 +700,6 @@ int victoire(SDL_Surface *ecran){
     texte3 = TTF_RenderText_Shaded(police, "Quitter", Black, White);
 	fond = SDL_CreateRGBSurface(SDL_HWSURFACE, ew, eh, 32, 0, 0, 0, 0);
 	SDL_FillRect(fond, NULL, SDL_MapRGB(ecran->format, 255, 255, 255));
-    // fond = IMG_Load("ressources/1.jpg"); lorsque le fond est une image
 
     positiontitre.x = ((ew - titre->w)/2);
     positiontitre.y = (eh/8);

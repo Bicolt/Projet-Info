@@ -1,3 +1,10 @@
+/**
+* \file edit_main.c
+* \version 1.0
+* \date 2013
+* \brief Gère l'éditeur de terrain
+*/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <cairo/cairo.h>
@@ -28,7 +35,12 @@ typedef enum {Type type, int x, int y, Key key} Event;
 
 
 
-
+/**
+ * \brief Gère l'édteur de terrain 
+ * 
+ * Appelle les différentes fonctions de gestion de l'éditeur comme la sauvegarde, l'ajout d'un objet, l'affichage, ...
+ * \param ecran l'écran sur lequel est affiché l'éditeur
+ */
 int edit_main(SDL_Surface *ecran){
 /*
     if(SDL_Init(SDL_INIT_VIDEO) == -1){
